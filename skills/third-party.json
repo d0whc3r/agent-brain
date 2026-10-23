@@ -126,6 +126,198 @@
       "kinds": [
         "review"
       ]
+    },
+    {
+      "name": "code-review-and-quality",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "review"
+      ]
+    },
+    {
+      "name": "security-and-hardening",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "review"
+      ]
+    },
+    {
+      "name": "golang-security",
+      "source": "samber/cc-skills-golang",
+      "kinds": [
+        "go"
+      ]
+    },
+    {
+      "name": "golang-concurrency",
+      "source": "samber/cc-skills-golang",
+      "kinds": [
+        "go"
+      ]
+    },
+    {
+      "name": "golang-context",
+      "source": "samber/cc-skills-golang",
+      "kinds": [
+        "go"
+      ]
+    },
+    {
+      "name": "sqlalchemy-alembic-expert-best-practices-code-review",
+      "source": "wispbit-ai/skills",
+      "kinds": [
+        "python",
+        "migration"
+      ]
+    },
+    {
+      "name": "protobuf",
+      "source": "bufbuild/claude-plugins",
+      "kinds": [
+        "proto"
+      ]
+    },
+    {
+      "name": "accessibility",
+      "source": "addyosmani/web-quality-skills",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "web-design-guidelines",
+      "source": "vercel-labs/agent-skills",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "tanstack-query",
+      "source": "tanstack-skills/tanstack-skills",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "tanstack-router",
+      "source": "tanstack-skills/tanstack-skills",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "vitest",
+      "source": "antfu/skills",
+      "kinds": [
+        "test",
+        "ui"
+      ]
+    },
+    {
+      "name": "zod-validation",
+      "source": "oakoss/agent-skills",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "typescript-advanced-types",
+      "source": "wshobson/agents",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "react-hook-form",
+      "source": "pproenca/dot-skills",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "frontend-design",
+      "source": "anthropics/skills",
+      "kinds": [
+        "ui"
+      ]
+    },
+    {
+      "name": "python-testing-patterns",
+      "source": "wshobson/agents",
+      "kinds": [
+        "python",
+        "test"
+      ]
+    },
+    {
+      "name": "fastapi-python",
+      "source": "mindrally/skills",
+      "kinds": [
+        "python"
+      ]
+    },
+    {
+      "name": "test-driven-development",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "test"
+      ]
+    },
+    {
+      "name": "code-simplification",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "review"
+      ]
+    },
+    {
+      "name": "source-driven-development",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "review"
+      ]
+    },
+    {
+      "name": "grilling",
+      "source": "mattpocock/skills",
+      "kinds": [
+        "workflow"
+      ]
+    },
+    {
+      "name": "planning-and-task-breakdown",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "workflow"
+      ]
+    },
+    {
+      "name": "receiving-code-review",
+      "source": "obra/superpowers",
+      "kinds": [
+        "workflow"
+      ]
+    },
+    {
+      "name": "verification-before-completion",
+      "source": "obra/superpowers",
+      "kinds": [
+        "workflow"
+      ]
+    },
+    {
+      "name": "git-workflow-and-versioning",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "workflow"
+      ]
+    },
+    {
+      "name": "writing-for-agents",
+      "source": "mattpocock/skills",
+      "kinds": [
+        "workflow"
+      ]
     }
   ]
 }

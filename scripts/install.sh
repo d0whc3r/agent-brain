@@ -2,12 +2,10 @@
 # Install or update the review brain for the current user.
 # Safe to run again: each step replaces what an earlier run created.
 #
-#   BRAIN_WORKSPACE  directory that holds the repos (default: $HOME/projects/qdrant)
 #   BRAIN_BIN_DIR    directory for the brain command (default: $HOME/.local/bin)
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
-workspace="${BRAIN_WORKSPACE:-$HOME/projects/qdrant}"
 bin_dir="${BRAIN_BIN_DIR:-$HOME/.local/bin}"
 profile="$HOME/.local/share/qdrant-review-brain/chrome-profile"
 cd "$root"
@@ -37,7 +35,7 @@ case ":$PATH:" in
   *) echo "Add $bin_dir to PATH: export PATH=\"$bin_dir:\$PATH\"" ;;
 esac
 
-step "Link active skills"
+step "Link brain and third-party skills"
 targets=()
 while IFS= read -r line; do
   if [ -n "$line" ]; then
@@ -68,7 +66,10 @@ else
 fi
 
 step "Add the SessionStart premises hook"
-node scripts/setup-config.mjs hook-add "BRAIN_WORKSPACE=$workspace node $root/bin/session-premises.mjs 2>/dev/null || true"
+node scripts/setup-config.mjs hook-add "node $root/bin/session-premises.mjs 2>/dev/null || true"
+
+step "Ask before git commit, push, and destructive git commands"
+node scripts/setup-config.mjs guard-add
 
 step "Register MCP servers in Codex"
 node scripts/setup-config.mjs codex-add

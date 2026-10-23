@@ -19,7 +19,8 @@ while IFS= read -r target; do
     continue
   fi
   for link in "$target"/*; do
-    if [ -L "$link" ] && [[ "$(readlink "$link")" == "$root/skills/active/"* ]]; then
+    target_of="$(readlink "$link" 2>/dev/null || true)"
+    if [ -L "$link" ] && { [[ "$target_of" == "$root/skills/active/"* ]] || [[ "$target_of" == "$root/.agents/skills/"* ]]; }; then
       rm "$link"
       echo "rm $link"
     fi
@@ -51,6 +52,9 @@ fi
 
 step "Remove the SessionStart premises hook"
 node scripts/setup-config.mjs hook-remove
+
+step "Remove the git confirmation rules"
+node scripts/setup-config.mjs guard-remove
 
 step "Remove MCP servers from Codex"
 node scripts/setup-config.mjs codex-remove

@@ -12,11 +12,15 @@ Run these commands from this repo:
 
 ```bash
 brain premise list [--repo qdrant-cloud-ui]
-brain premise add "New RPC lands in cluster-service" --strength always --repo qdrant-cloud-cluster-service
+brain premise add "New RPC lands in cluster-service" --strength always --scope qdrant --repo qdrant-cloud-cluster-service
 brain premise show <id>
 brain premise rm <id>
 brain premise stats
 ```
+
+Pass at least one `--repo` when you add a premise. Use `--repo "*"` for every repo in its scope.
+
+Updates and deletes keep the Markdown body and additional Obsidian metadata. If you reuse an ID, deletion keeps both archived versions in `memory/dropped/`.
 
 `brain premise stats` prints each active premise with its applied count, rejected count, last applied date, and a flag. The counts come from the `applied` and `rejected` lists in `memory/sessions/`. The flag is `unused` (never applied), `stale` (not applied in 90 days), or `noisy` (rejected at least twice and at least as often as applied). Review a flagged premise, then keep it, change it, or drop it.
 
@@ -56,7 +60,11 @@ brain workspace check
 
 Run `scripts/install.sh` to set up or update the brain, and `scripts/uninstall.sh` to remove it. [docs/getting-started.md](docs/getting-started.md) lists each step.
 
-`bin/session-premises.mjs` is the Claude Code `SessionStart` hook that the install adds. It prints the active premises for the repo of the session directory. It names the repo from `git remote get-url origin`, so a copy or a worktree loads the premises of the repo it was cloned from. `BRAIN_WORKSPACE` is the directory that holds the repos. A directory outside it prints nothing.
+The decision to record each installed item in a receipt is in [docs/superpowers/specs/2026-10-23-install-receipt-design.md](docs/superpowers/specs/2026-10-23-install-receipt-design.md). The scripts do not write that file yet.
+
+The installer creates missing Claude Code and Codex configuration files. Before changing an existing file, it saves a `.brain-bak` copy. Repeating the install produces the same configuration and preserves links to configuration files.
+
+`bin/session-premises.mjs` is the Claude Code `SessionStart` hook that the install adds. It prints the scope, the active premises for the repo of the session directory, and the matching flows. `brain.config.json` maps origin owners and roots to scopes. It names the repo from `git remote get-url origin`, so a copy or a worktree loads the premises of the repo it was cloned from.
 
 `agents/brain-reviewer.md` is a read-only review subagent. The install links it into `~/.claude/agents`. It has no Edit tool, and it follows `review-brain` in a fresh context. Ask for it by name, for example: "Use the brain-reviewer agent on this diff."
 
@@ -102,14 +110,18 @@ brain link-skills --target /Users/josep/.claude/skills --target /Users/josep/.ag
 ```
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.claude/skills/accept-skill
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.claude/skills/garden
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/harvest /Users/josep/.claude/skills/harvest
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.claude/skills/learn
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/qdrant-personal-review /Users/josep/.claude/skills/qdrant-personal-review
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/next /Users/josep/.claude/skills/next
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.claude/skills/review-brain
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/workspace-audit /Users/josep/.claude/skills/workspace-audit
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.agents/skills/accept-skill
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.agents/skills/garden
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/harvest /Users/josep/.agents/skills/harvest
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.agents/skills/learn
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/qdrant-personal-review /Users/josep/.agents/skills/qdrant-personal-review
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/next /Users/josep/.agents/skills/next
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.agents/skills/review-brain
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/workspace-audit /Users/josep/.agents/skills/workspace-audit
 ```
 
 No line contains `example-draft`.
