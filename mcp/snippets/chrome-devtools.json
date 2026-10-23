@@ -1,0 +1,12 @@
+{
+  "command": "npx",
+  "args": [
+    "-y",
+    "chrome-devtools-mcp@latest",
+    "--user-data-dir=${HOME}/.local/share/qdrant-review-brain/chrome-profile",
+    "--no-usage-statistics",
+    "--no-performance-crux",
+    "--redact-network-headers",
+    "--filesystemRoot=${HOME}/projects/qdrant-review-brain/memory/sessions/screenshots"
+  ]
+}
