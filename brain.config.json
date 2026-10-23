@@ -1,0 +1,14 @@
+{
+  "scopes": {
+    "qdrant": {
+      "description": "Qdrant work repos.",
+      "owners": ["qdrant", "josep-qdrant"],
+      "roots": ["~/projects/qdrant"]
+    },
+    "personal": {
+      "description": "Personal repos.",
+      "owners": ["d0whc3r"],
+      "roots": ["~/projects/github"]
+    }
+  }
+}

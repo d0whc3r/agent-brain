@@ -5,10 +5,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { serveMCP } from "../lib/mcp.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
+import { anyScope, loadConfig, resolveRepo } from "../lib/scope.mjs";
 import { acceptSkill, linkSkills } from "../lib/skills.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { premiseStats } from "../lib/stats.mjs";
-import { brainSkills, conflicts, drift, readInventory, scanWorkspace, workspaceRoot, writeInventory } from "../lib/workspace.mjs";
+import { brainSkills, conflicts, drift, readInventory, scanScopes, writeInventory } from "../lib/workspace.mjs";
 import { runSkills, skillsUsage } from "../lib/third-party.mjs";
 
 const strengths = new Set(["always", "never", "prefer"]);
@@ -22,6 +23,9 @@ export async function run(args, stdout, stderr) {
   }
   if (args.length > 0 && args[0] === "accept-skill") {
     return cmdAcceptSkill(args.slice(1), stderr);
+  }
+  if (args.length > 0 && args[0] === "scope") {
+    return cmdScope(args.slice(1), stdout, stderr);
   }
   if (args.length > 0 && args[0] === "next") {
     return cmdNext(args.slice(1), stdout, stderr);
@@ -67,7 +71,7 @@ async function runPremise(args, stdout, stderr) {
 }
 
 async function cmdList(args, stdout, stderr) {
-  const parsed = parseNamed(args, ["repo"], stderr);
+  const parsed = parseNamed(args, ["repo", "scope"], stderr);
   if (parsed.code !== 0) {
     return parsed.code;
   }
@@ -80,7 +84,8 @@ async function cmdList(args, stdout, stderr) {
     return opened.code;
   }
   try {
-    const items = await opened.store.list(last(parsed.flags.repo));
+    const scope = parsed.flags.scope.length > 0 ? last(parsed.flags.scope) : null;
+    const items = await opened.store.list(last(parsed.flags.repo), scope);
     writePremises(stdout, items);
     return 0;
   } catch (err) {
@@ -89,7 +94,7 @@ async function cmdList(args, stdout, stderr) {
 }
 
 async function cmdAdd(args, stdout, stderr) {
-  const parsed = parseNamed(args, ["strength", "id", "source", "repo"], stderr);
+  const parsed = parseNamed(args, ["strength", "scope", "id", "source", "repo"], stderr);
   if (parsed.code !== 0) {
     return parsed.code;
   }
@@ -102,6 +107,12 @@ async function cmdAdd(args, stdout, stderr) {
     stderr.write("add needs --strength always, never, or prefer\n");
     return 1;
   }
+  const scope = last(parsed.flags.scope);
+  const scopes = Object.keys(loadConfig(brainRoot()).scopes);
+  if (scope !== anyScope && !scopes.includes(scope)) {
+    stderr.write(`add needs --scope ${[...scopes, '"*"'].join(", ")}\n`);
+    return 1;
+  }
   const opened = await openStore(stderr);
   if (opened.code !== 0) {
     return opened.code;
@@ -111,6 +122,7 @@ async function cmdAdd(args, stdout, stderr) {
       id: last(parsed.flags.id),
       text: parsed.pos[0],
       strength,
+      scope,
       repos: parsed.flags.repo,
       source: last(parsed.flags.source),
     });
@@ -191,6 +203,21 @@ async function cmdStats(args, stdout, stderr) {
   }
 }
 
+// cmdScope prints the scope, repo, and origin owner of the repo at --cwd.
+// "-" as the scope means the repo is in no scope, so only global premises apply.
+function cmdScope(args, stdout, stderr) {
+  let cwd = process.cwd();
+  if (args.length === 2 && args[0] === "--cwd") {
+    cwd = args[1];
+  } else if (args.length !== 0) {
+    usage(stderr);
+    return 1;
+  }
+  const found = resolveRepo(cwd, loadConfig(brainRoot()));
+  stdout.write(`${found.scope || "-"}\t${found.repo}\t${found.owner || "-"}\n`);
+  return 0;
+}
+
 // cmdNext reads the repo state at --cwd (default: the current directory) and lists
 // the flows that match it, most specific first.
 async function cmdNext(args, stdout, stderr) {
@@ -209,20 +236,20 @@ async function cmdNext(args, stdout, stderr) {
       return 1;
     }
   }
-  const ctx = repoContext(cwd, { pr });
+  const ctx = repoContext(cwd, { pr, config: loadConfig(brainRoot()) });
   if (!ctx) {
     stderr.write(`not a git repo: ${cwd}\n`);
     return 1;
   }
   const flows = matchFlows(await loadFlows(brainRoot()), ctx);
   const store = await open(brainRoot());
-  const premises = await store.list(ctx.repo);
+  const premises = await store.list(ctx.repo, ctx.scope);
   if (json) {
     stdout.write(`${JSON.stringify({ context: ctx, premises: premises.map((p) => p.id), flows }, null, 2)}\n`);
     return 0;
   }
   const ticket = ctx.ticket ? ` (${ctx.ticket})` : "";
-  stdout.write(`repo ${ctx.repo}, branch ${ctx.branch || "detached"}${ticket}, ahead ${ctx.ahead}, behind ${ctx.behind}, ${ctx.dirty ? "dirty" : "clean"}, pr ${ctx.pr}\n`);
+  stdout.write(`repo ${ctx.repo}, scope ${ctx.scope || "-"}, branch ${ctx.branch || "detached"}${ticket}, ahead ${ctx.ahead}, behind ${ctx.behind}, ${ctx.dirty ? "dirty" : "clean"}, pr ${ctx.pr}\n`);
   stdout.write(`kinds: ${ctx.kinds.join(", ") || "-"}; ${premises.length} active premises\n`);
   flows.forEach((flow, i) => {
     stdout.write(`${i + 1}. ${flow.name}: ${flow.description ?? ""}\n`);
@@ -239,14 +266,17 @@ async function cmdFlows(stdout) {
 
 // workspace scan stores the agent config of every repo as the baseline.
 // workspace check prints drift since that baseline and new conflicts with the brain.
+// With --all it prints every current conflict.
 async function cmdWorkspace(args, stdout, stderr) {
-  if (args.length !== 1 || (args[0] !== "scan" && args[0] !== "check")) {
+  const all = args[0] === "check" && args[1] === "--all";
+  const valid = (args.length === 1 && (args[0] === "scan" || args[0] === "check")) || (args.length === 2 && all);
+  if (!valid) {
     usage(stderr);
     return 1;
   }
   const brain = brainRoot();
   try {
-    const live = await scanWorkspace(workspaceRoot());
+    const live = await scanScopes(loadConfig(brain));
     const found = conflicts(live, await brainSkills(brain));
     if (args[0] === "scan") {
       await writeInventory(brain, live, found);
@@ -258,7 +288,8 @@ async function cmdWorkspace(args, stdout, stderr) {
       stderr.write("no baseline. Run brain workspace scan\n");
       return 1;
     }
-    const known = new Set(baseline.conflicts ?? []);
+    // --all also prints the conflicts that the baseline already knows.
+    const known = new Set(all ? [] : baseline.conflicts ?? []);
     const lines = [...drift(baseline, live), ...found.filter((c) => !known.has(c)).map((c) => `conflict\t${c}`)];
     for (const line of lines) {
       stdout.write(`${line}\n`);
@@ -457,18 +488,20 @@ function writePremises(stdout, items) {
 }
 
 function writePremise(stdout, item) {
-  stdout.write(`${item.id}\t${item.strength}\t${item.text}\n`);
+  stdout.write(`${item.id}\t${item.scope}\t${item.strength}\t${item.text}\n`);
 }
 
 function usage(stderr) {
   stderr.write(`usage:
-  brain premise list [--repo name]
-  brain premise add TEXT --strength always|never|prefer [--repo name ...] [--id slug] [--source path]
+  brain premise list [--repo name] [--scope name]
+  brain premise add TEXT --strength always|never|prefer --scope name|"*" --repo name [--repo name ...] [--id slug] [--source path]
   brain premise show ID
   brain premise rm ID
   brain premise search QUERY
   brain premise stats
-  brain workspace scan|check
+  brain scope [--cwd DIR]
+  brain workspace scan
+  brain workspace check [--all]
   brain next [--cwd DIR] [--json] [--no-pr]
   brain flows
   brain mcp

@@ -1,6 +1,7 @@
 ---
 name: ui-change-verify
 description: Lint, type-check, test, and look at a qdrant-cloud-ui change before review.
+scopes: [qdrant]
 repos: [qdrant-cloud-ui]
 kinds: [ui]
 mcp: [chrome-devtools]

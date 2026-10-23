@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -37,12 +37,18 @@ test("cli", { concurrency: 1 }, async (t) => {
       process.env.BRAIN_ROOT = previous;
     });
 
+    const unscoped = await invoke(["premise", "add", "Rule without a repo", "--strength", "always", "--scope", "*"]);
+    assert.equal(unscoped.code, 2);
+    assert.match(unscoped.stderr, /repos/);
+
     let result = await invoke([
       "premise",
       "add",
       "New RPC lands in service-a",
       "--strength",
       "always",
+      "--scope",
+      "*",
       "--repo",
       "repo-a",
     ]);
@@ -50,7 +56,7 @@ test("cli", { concurrency: 1 }, async (t) => {
 
     result = await invoke(["premise", "list"]);
     assert.equal(result.code, 0, result.stderr);
-    const want = "new-rpc-lands-in-service-a\talways\tNew RPC lands in service-a\n";
+    const want = "new-rpc-lands-in-service-a\t*\talways\tNew RPC lands in service-a\n";
     assert.equal(result.stdout, want);
 
     result = await invoke(["premise", "list", "--repo", "repo-a"]);
@@ -88,8 +94,42 @@ test("cli", { concurrency: 1 }, async (t) => {
       "api_key=abcdefghij123456",
       "--strength",
       "never",
+      "--scope",
+      "*",
+      "--repo",
+      "*",
     ]);
     assert.equal(result.code, 2, result.stderr);
+    assert.match(result.stderr, /secret/);
+  });
+
+  await t.test("TestCLIScopeRequired", async (t) => {
+    const root = await mkdtemp(join(tmpdir(), "brain-"));
+    t.after(() => rm(root, { recursive: true, force: true }));
+    const previous = process.env.BRAIN_ROOT;
+    process.env.BRAIN_ROOT = root;
+    t.after(() => {
+      if (previous === undefined) {
+        delete process.env.BRAIN_ROOT;
+        return;
+      }
+      process.env.BRAIN_ROOT = previous;
+    });
+    await writeFile(join(root, "brain.config.json"), JSON.stringify({ scopes: { work: { owners: ["org"] } } }));
+
+    let result = await invoke(["premise", "add", "Work rule", "--strength", "always", "--repo", "*"]);
+    assert.equal(result.code, 1);
+    assert.match(result.stderr, /--scope work, "\*"/);
+    result = await invoke(["premise", "add", "Work rule", "--strength", "always", "--scope", "home", "--repo", "*"]);
+    assert.equal(result.code, 1);
+    result = await invoke(["premise", "add", "Work rule", "--strength", "always", "--scope", "work", "--repo", "*"]);
+    assert.equal(result.code, 0, result.stderr);
+    await invoke(["premise", "add", "Every rule", "--strength", "never", "--scope", "*", "--repo", "*"]);
+
+    result = await invoke(["premise", "list", "--scope", "work"]);
+    assert.equal(result.stdout, "every-rule\t*\tnever\tEvery rule\nwork-rule\twork\talways\tWork rule\n");
+    result = await invoke(["premise", "list", "--scope", ""]);
+    assert.equal(result.stdout, "every-rule\t*\tnever\tEvery rule\n");
   });
 
   await t.test("TestCLIMissingID", async (t) => {

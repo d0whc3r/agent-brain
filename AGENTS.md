@@ -79,7 +79,7 @@ The user talks in natural language. You run `brain` and the review steps. Do not
 
 - This repo is the user's. It is not a team repo. Do not edit `/Users/josep/projects/qdrant/AGENTS.md`.
 - Do not learn from the copy directories named in that workspace file. Do not modify the engine repo `qdrant/`.
-- Before a review, call `premise_list` for the repo. Apply every active `always` and `never` premise. Quote each one you applied.
+- Before a review, call `premise_list` for the repo and its scope. `brain scope` prints both. Apply every active `always` and `never` premise. Quote each one you applied.
 - Add a premise with `brain premise add` or `premise_add`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.
 - Do not edit `skills/active/` unless the user accepted that skill in this turn.
 - Do not write tokens, `.env` values, or customer data into a note.

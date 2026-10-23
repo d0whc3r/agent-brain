@@ -6,4 +6,5 @@ repos:
   - qdrant-cloud-ui
 status: active
 source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-ui/memory/feedback_formatter_oxfmt.md
+scope: qdrant
 ---

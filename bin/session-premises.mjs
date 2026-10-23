@@ -1,65 +1,41 @@
 #!/usr/bin/env node
 
-// SessionStart hook. Print the active premises for the repo in the session cwd.
-// BRAIN_WORKSPACE is the directory that holds the repos. Claude Code adds the output
-// to the session context. A cwd outside BRAIN_WORKSPACE prints nothing.
+// SessionStart hook. Print the brain scope, the active premises, and the matching flows
+// for the git repo in the session cwd. Claude Code adds the output to the session context.
+// brain.config.json maps origin owners and root directories to scopes. A repo in no scope
+// gets only the premises that hold in every scope and every repo. A cwd outside git prints nothing.
 
-import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { basename, relative, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
+import { loadConfig } from "../lib/scope.mjs";
 
-// repoFor names the repo from its origin URL, so a copy or a worktree loads the
-// premises of the repo it was cloned from. A directory with no origin uses its name.
-export function repoFor(cwd, root = process.env.BRAIN_WORKSPACE ?? "", origin = originURL) {
-  if (root === "") {
-    return "";
+export function formatContext(ctx, premises, flows) {
+  const where = ctx.scope ? `scope ${ctx.scope}` : "no scope, so only global premises apply";
+  const out = [`Brain: repo ${ctx.repo}, ${where}.`];
+  if (premises.length > 0) {
+    out.push("Apply every always and never premise. Quote each one you apply.");
+    out.push(...premises.map((p) => `- [${p.strength}] ${p.text} (${p.id}, scope ${p.scope})`));
   }
-  const rel = relative(root, cwd);
-  if (rel === "" || rel.startsWith("..")) {
-    return "";
+  if (flows.length > 0) {
+    out.push(`Flows that match this repo state: ${flows.map((f) => f.name).join(", ")}. The next skill runs them.`);
   }
-  const url = origin(cwd);
-  if (url !== "") {
-    return basename(url).replace(/\.git$/, "");
-  }
-  return rel.split(sep)[0];
-}
-
-function originURL(cwd) {
-  try {
-    return execFileSync("git", ["-C", cwd, "remote", "get-url", "origin"], {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      timeout: 2000,
-    }).trim();
-  } catch {
-    return "";
-  }
+  return `${out.join("\n")}\n`;
 }
 
 export async function premiseContext(cwd) {
-  const repo = repoFor(cwd);
-  if (repo === "") {
+  const brain = brainRoot();
+  // Skip the PR lookup: it calls the network and the hook must stay fast.
+  const ctx = repoContext(cwd, { pr: false, config: loadConfig(brain) });
+  if (!ctx) {
     return "";
   }
-  const store = await open(brainRoot());
-  const items = await store.list(repo);
-  const out = [];
-  if (items.length > 0) {
-    const lines = items.map((p) => `- [${p.strength}] ${p.text} (${p.id})`);
-    out.push(`Active brain premises for ${repo}. Apply every always and never premise. Quote each one you apply.`, ...lines);
-  }
-  // Skip the PR lookup: it calls the network and the hook must stay fast.
-  const ctx = repoContext(cwd, { pr: false });
-  const flows = ctx ? matchFlows(await loadFlows(brainRoot()), ctx).slice(0, 3) : [];
-  if (flows.length > 0) {
-    out.push(`Brain flows that match this repo state: ${flows.map((f) => f.name).join(", ")}. The next skill runs them.`);
-  }
-  return out.length > 0 ? `${out.join("\n")}\n` : "";
+  const store = await open(brain);
+  const premises = await store.list(ctx.repo, ctx.scope);
+  const flows = matchFlows(await loadFlows(brain), ctx).slice(0, 3);
+  return formatContext(ctx, premises, flows);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

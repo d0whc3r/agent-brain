@@ -82,14 +82,16 @@ reject_write_active() {
 }
 
 required=(
-  skills/active/qdrant-personal-review/SKILL.md
+  skills/active/next/SKILL.md
+  skills/active/harvest/SKILL.md
+  skills/active/workspace-audit/SKILL.md
   skills/active/learn/SKILL.md
   skills/active/garden/SKILL.md
   skills/active/review-brain/SKILL.md
   skills/active/accept-skill/SKILL.md
   skills/drafts/example-draft/SKILL.md
   memory/decisions/2026-10-23-example.md
-  memory/premises/example-new-rpc.md
+  memory/dropped/example-new-rpc.md
 )
 
 missing=0
@@ -136,9 +138,9 @@ if [ "$found" -eq 0 ]; then
   fail "no active skills"
 fi
 
-need skills/active/qdrant-personal-review/SKILL.md "qdrant-cloud-cluster-service"
-need skills/active/qdrant-personal-review/SKILL.md "qdrant-cloud-ui-copy"
-need skills/active/qdrant-personal-review/SKILL.md "read-only"
+need skills/active/review-brain/SKILL.md "brain scope"
+need skills/active/learn/SKILL.md "--scope"
+need skills/active/workspace-audit/SKILL.md "Do not edit them"
 need skills/active/garden/SKILL.md "skills/drafts"
 need skills/active/garden/SKILL.md "three similar premises"
 need skills/active/garden/SKILL.md "Do not edit skills/active"
@@ -149,9 +151,10 @@ need skills/active/review-brain/SKILL.md "skills/third-party.json"
 need skills/active/review-brain/SKILL.md "do not edit the diff"
 need skills/active/accept-skill/SKILL.md "brain accept-skill"
 need skills/active/accept-skill/SKILL.md "do not push"
-need memory/premises/example-new-rpc.md "example: true"
-need memory/premises/example-new-rpc.md "text: New RPC lands in cluster-service"
-need memory/premises/example-new-rpc.md "strength: always"
+need memory/dropped/example-new-rpc.md "example: true"
+need memory/dropped/example-new-rpc.md "text: New RPC lands in cluster-service"
+need memory/dropped/example-new-rpc.md "strength: always"
+need memory/dropped/example-new-rpc.md "status: dropped"
 need memory/decisions/2026-10-23-example.md "example: true"
 
 for slash in learn garden review-brain accept-skill; do

@@ -9,7 +9,7 @@
     "test": "node --test",
     "check": "node --test && node bin/brain.mjs skills check && bash scripts/check-layout.sh && bash scripts/check-skills.sh && bash scripts/check-snippets.sh",
     "skills:check": "node bin/brain.mjs skills check",
-    "skills:drift": "node scripts/check-repo-skills.mjs",
+    "skills:drift": "node bin/brain.mjs workspace check --all",
     "skills:update": "node bin/brain.mjs skills sync"
   },
   "dependencies": {

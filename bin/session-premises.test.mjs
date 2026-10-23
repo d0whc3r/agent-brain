@@ -1,19 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { repoFor } from "./session-premises.mjs";
+import { formatContext } from "./session-premises.mjs";
 
-test("TestRepoFor", () => {
-  const root = "/q";
-  const none = () => "";
-  assert.equal(repoFor("/q/repo-b/src/app", root, none), "repo-b");
-  assert.equal(repoFor("/q", root, none), "");
-  assert.equal(repoFor("/elsewhere/repo-b", root, none), "");
-  assert.equal(repoFor("/q/repo-b", "", none), "");
-});
-
-test("TestRepoForUsesOrigin", () => {
-  const root = "/q";
-  assert.equal(repoFor("/q/repo-b-copy2/src", root, () => "git@github.com:org/repo-b.git"), "repo-b");
-  assert.equal(repoFor("/q/repo-b-copy2-wt/task-1", root, () => "https://github.com/org/repo-b"), "repo-b");
+test("TestFormatContext", () => {
+  const premise = { id: "rule-a", text: "Rule A.", strength: "never", scope: "*" };
+  const scoped = formatContext({ repo: "repo-a", scope: "work" }, [premise], [{ name: "review-diff" }]);
+  assert.equal(scoped, "Brain: repo repo-a, scope work.\nApply every always and never premise. Quote each one you apply.\n- [never] Rule A. (rule-a, scope *)\nFlows that match this repo state: review-diff. The next skill runs them.\n");
+  assert.equal(formatContext({ repo: "clone", scope: "" }, [], []), "Brain: repo clone, no scope, so only global premises apply.\n");
 });

@@ -14,7 +14,7 @@ The user asks in chat. "What can become a skill?" is enough. You write the draft
 ## Steps
 
 1. Read the open notes in `memory/decisions` and call `premise_list` with an empty repo.
-2. Cluster the premises that share a repo and a rule.
+2. Cluster the premises that share a scope, a repo, and a rule. Do not mix scopes in one cluster.
 3. Draft one skill when three similar premises share that rule. One `always` or `never` correction stays a premise until that count is met, or until the user asks for a skill.
 4. Write `skills/drafts/<name>/SKILL.md` from `templates/skill.md`. Give it a kebab-case `name` and a description that says what the skill does and when to use it.
 5. Set each used decision status to `drafted`.

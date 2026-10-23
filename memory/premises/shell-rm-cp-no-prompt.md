@@ -6,4 +6,5 @@ repos:
   - "*"
 status: active
 source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-ui-buf-plugins/memory/shell-interactive-aliases.md
+scope: "*"
 ---

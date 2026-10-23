@@ -6,4 +6,5 @@ repos:
   - "*"
 status: active
 source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-public-api/memory/no-hard-wrapped-markdown.md
+scope: "*"
 ---

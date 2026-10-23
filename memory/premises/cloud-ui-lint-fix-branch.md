@@ -6,4 +6,5 @@ repos:
   - qdrant-cloud-ui
 status: active
 source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-ui-copy/memory/lint-format-scoped-to-branch.md
+scope: qdrant
 ---

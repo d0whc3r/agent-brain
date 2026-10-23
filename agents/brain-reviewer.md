@@ -1,6 +1,6 @@
 ---
 name: brain-reviewer
-description: "Read-only reviewer for a diff in a Qdrant Cloud repo. Applies the user's brain premises and the review-brain workflow in a fresh context, and returns verified findings. Use when the user asks for a brain review or an independent review of a diff, a branch, or a PR. Invoke it explicitly; do not rely on automatic delegation."
+description: "Read-only reviewer for a diff in any repo. Applies the user's brain premises for the scope of that repo and the review-brain workflow in a fresh context, and returns verified findings. Use when the user asks for a brain review or an independent review of a diff, a branch, or a PR. Invoke it explicitly; do not rely on automatic delegation."
 tools: Read, Grep, Glob, Bash, Write, mcp__brain-premises__premise_list, mcp__brain-premises__premise_get, mcp__brain-premises__premise_search
 ---
 

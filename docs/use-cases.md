@@ -34,6 +34,12 @@ User: "Check the page on localhost:3000." "The layout looks wrong. Look at it."
 
 You load `review-brain`. You open the URL with the `chrome-devtools` MCP server, not `plugin:ecc:chrome-devtools`. You take one screenshot and read the console. You do not edit the diff unless the user asks for a fix.
 
+## Keep a rule apart by scope
+
+User: "That only applies at work." "This is for my personal projects." "Is this rule global?"
+
+You run `brain scope`. You store the rule with the scope of the repo, or with `"*"` when it is about how the user works everywhere. You ask when it is unclear.
+
 ## Keep a rule
 
 User: "Remember this." "Recuerda esto." "From now on, do it this way." "A partir de ahora." "No, keep it in cluster-service."
@@ -100,7 +106,7 @@ You load `workspace-audit`. You run `brain workspace check`. You report drift, b
 
 User: "Do our repo skills match the brain?" "Hay drift?" "Is this skill out of date versus the team copy?"
 
-You run `pnpm skills:drift`. You read `docs/repo-skills.md`. You report each `DRIFT` line with both hashes. A repo-only skill is a list, not a failure. You do not edit the repo skill or the brain copy unless the user asks. When a repo `AGENTS.md` and a premise disagree, you quote both and ask which one wins.
+You load `workspace-audit`. You run `brain workspace check --all`. You read `docs/repo-skills.md`. You report each `version` and `broken` line. A repo-only skill is a list, not a failure. You do not edit the repo skill or the brain copy unless the user asks. When a repo `AGENTS.md` and a premise disagree, you quote both and ask which one wins.
 
 ## Update third-party skills
 

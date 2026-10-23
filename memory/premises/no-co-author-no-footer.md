@@ -6,4 +6,5 @@ repos:
   - "*"
 status: active
 source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-public-api/memory/no-co-author-trailer-no-pr-comments.md
+scope: "*"
 ---

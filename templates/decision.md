@@ -1,6 +1,7 @@
 ---
 date: 2026-10-23
 tool: claude-code
+scope: qdrant
 repo: qdrant-cloud-ui
 correction: New RPC lands in cluster-service
 strength: always

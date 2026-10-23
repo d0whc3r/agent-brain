@@ -1,90 +1,131 @@
 {
-  "agents": ["claude-code", "opencode", "codex"],
+  "agents": [
+    "claude-code",
+    "opencode",
+    "codex"
+  ],
   "skills": [
     {
       "name": "using-agent-skills",
       "source": "addyosmani/agent-skills",
-      "flows": ["review"]
+      "kinds": [
+        "review"
+      ]
     },
     {
       "name": "api-and-interface-design",
       "source": "addyosmani/agent-skills",
-      "flows": ["proto", "review"]
+      "kinds": [
+        "proto",
+        "review"
+      ]
     },
     {
       "name": "deprecation-and-migration",
       "source": "addyosmani/agent-skills",
-      "flows": ["go", "python"]
+      "kinds": [
+        "go",
+        "python"
+      ]
     },
     {
       "name": "observability-and-instrumentation",
       "source": "addyosmani/agent-skills",
-      "flows": ["go"]
+      "kinds": [
+        "go"
+      ]
     },
     {
       "name": "doubt-driven-development",
       "source": "addyosmani/agent-skills",
-      "flows": ["review"]
+      "kinds": [
+        "review"
+      ]
     },
     {
       "name": "golang-code-style",
       "source": "samber/cc-skills-golang",
-      "flows": ["go"]
+      "kinds": [
+        "go"
+      ]
     },
     {
       "name": "golang-error-handling",
       "source": "samber/cc-skills-golang",
-      "flows": ["go"]
+      "kinds": [
+        "go"
+      ]
     },
     {
       "name": "golang-testing",
       "source": "samber/cc-skills-golang",
-      "flows": ["go"]
+      "kinds": [
+        "go"
+      ]
     },
     {
       "name": "golang-safety",
       "source": "samber/cc-skills-golang",
-      "flows": ["go"]
+      "kinds": [
+        "go"
+      ]
     },
     {
       "name": "golang-grpc",
       "source": "samber/cc-skills-golang",
-      "flows": ["go", "proto"]
+      "kinds": [
+        "go",
+        "proto"
+      ]
     },
     {
       "name": "golang-performance",
       "source": "samber/cc-skills-golang",
-      "flows": ["go"]
+      "kinds": [
+        "go"
+      ]
     },
     {
       "name": "golang-observability",
       "source": "samber/cc-skills-golang",
-      "flows": ["go"]
+      "kinds": [
+        "go"
+      ]
     },
     {
       "name": "vercel-react-best-practices",
       "source": "vercel-labs/agent-skills",
-      "flows": ["ui"]
+      "kinds": [
+        "ui"
+      ]
     },
     {
       "name": "vercel-composition-patterns",
       "source": "vercel-labs/agent-skills",
-      "flows": ["ui"]
+      "kinds": [
+        "ui"
+      ]
     },
     {
       "name": "retro",
       "source": "mattpocock/skills",
-      "flows": ["review"]
+      "kinds": [
+        "review"
+      ]
     },
     {
       "name": "diagnosing-bugs",
       "source": "mattpocock/skills",
-      "flows": ["review"]
+      "kinds": [
+        "review"
+      ]
     },
     {
       "name": "handoff",
       "source": "mattpocock/skills",
-      "flows": ["review"]
+      "kinds": [
+        "review"
+      ]
     }
   ]
 }

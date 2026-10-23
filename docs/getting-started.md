@@ -12,9 +12,9 @@ This page gets you from "I cloned the repo" to "I asked for a review in chat".
 | pnpm or npm | Installs the one dependency | The install script picks pnpm when it is present |
 | Claude Code, OpenCode, or Codex | The chat | Open a new session after install |
 | `~/.local/bin` on `PATH` | The agent finds `brain` | The install script prints the export line when it is missing |
-| A Qdrant Cloud repo | The code you talk about | Default workspace: `~/projects/qdrant` |
+| A git repo | The code you talk about | `brain.config.json` maps it to a scope |
 
-Set `BRAIN_WORKSPACE` when the repos are not in `~/projects/qdrant`.
+`brain.config.json` defines the scopes: `qdrant` for work repos and `personal` for your own. The owner of the `origin` picks the scope. Add owners or roots there when you add a place to work.
 
 ## 2. Install once
 
@@ -25,13 +25,15 @@ scripts/install.sh
 
 Run it again after a pull or a skill change. That is also the update.
 
-The script links `brain`, links the skills, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a repo under `BRAIN_WORKSPACE`. A copy or a worktree uses the premises of the repo it was cloned from.
+The script links `brain`, links the brain skills and the third-party skills from `.agents/skills`, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a git repo. A repo outside every scope gets only the global premises. A copy or a worktree uses the premises of the repo it was cloned from.
 
 Start a new chat after install. The old chat does not see the new skills.
 
 OpenCode reads MCP servers from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`. The skills still load, because OpenCode reads `~/.agents/skills`.
 
 To remove the setup, run `scripts/uninstall.sh`. It keeps the repo, the notes, and the Chrome profile.
+
+The decision to record each installed item in a receipt is in [the install receipt spec](superpowers/specs/2026-10-23-install-receipt-design.md). The script does not write that file yet.
 
 ## 3. How a chat works
 
@@ -62,7 +64,7 @@ Review this diff. Do not change any files.
 ### What the agent does
 
 1. The session hook has already printed the premises for that repo.
-2. The agent loads `qdrant-personal-review`.
+2. The agent runs `brain scope` to learn the scope of the repo.
 3. The agent calls `premise_list` and quotes each `always` and `never` premise.
 4. The agent reads the diff and the Go skills under `.agents/skills/` because the files are `.go`.
 5. The agent writes findings with file and line. It does not edit the diff.
@@ -92,7 +94,7 @@ The new line is the proof.
 | "That draft is good. Make go-error-wrapping active." | Runs `brain accept-skill` and shows the commit. It does not push |
 | "Is there a skill for Go context cancellation?" | Loads `find-skills` and shows the add command. It does not install |
 | "Update the third-party skills." | Runs `pnpm skills:update` and shows the diff |
-| "Do the repo skills match the brain?" | Runs `pnpm skills:drift` and quotes each drifted file |
+| "Do the repo skills match the brain?" | Runs `brain workspace check --all` and quotes each conflict |
 
 Full phrases and the commands the agent must run are in [use-cases.md](use-cases.md).
 

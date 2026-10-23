@@ -6,4 +6,5 @@ repos:
   - "*"
 status: active
 source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-skills/memory/verify-cloud-ui-facts-against-origin-main.md
+scope: qdrant
 ---
