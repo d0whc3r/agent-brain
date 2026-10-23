@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { serveMCP } from "../lib/mcp.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
+import { acceptSkill, linkSkills } from "../lib/skills.mjs";
 import { runSkills, skillsUsage } from "../lib/third-party.mjs";
 
 const strengths = new Set(["always", "never", "prefer"]);
@@ -15,6 +16,12 @@ export async function run(args, stdout, stderr) {
   }
   if (args.length > 0 && args[0] === "skills") {
     return runSkills(args.slice(1), stdout, stderr);
+  }
+  if (args.length > 0 && args[0] === "accept-skill") {
+    return cmdAcceptSkill(args.slice(1), stderr);
+  }
+  if (args.length > 0 && args[0] === "link-skills") {
+    return cmdLinkSkills(args.slice(1), stdout, stderr);
   }
   if (args.length === 0 || args[0] !== "premise") {
     usage(stderr);
@@ -153,6 +160,92 @@ async function cmdSearch(args, stdout, stderr) {
   }
 }
 
+async function cmdAcceptSkill(args, stderr) {
+  if (args.length === 1 && (args[0] === "-h" || args[0] === "--help")) {
+    usage(stderr);
+    return 1;
+  }
+  if (args.length !== 1 || args[0].startsWith("-")) {
+    stderr.write("accept-skill needs one NAME\n");
+    return 1;
+  }
+  try {
+    await acceptSkill(brainRoot(), args[0]);
+    return 0;
+  } catch (err) {
+    return failSkill(stderr, err);
+  }
+}
+
+async function cmdLinkSkills(args, stdout, stderr) {
+  let apply = false;
+  const targets = [];
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === "--apply") {
+      apply = true;
+      continue;
+    }
+    if (arg === "--target" || arg.startsWith("--target=")) {
+      const taken = takeFlagValue(arg, args, i);
+      if (taken.error) {
+        stderr.write(`${taken.error}\n`);
+        return 1;
+      }
+      i = taken.index;
+      targets.push(taken.value);
+      continue;
+    }
+    if (arg === "-h" || arg === "--help") {
+      usage(stderr);
+      return 1;
+    }
+    if (arg.startsWith("-")) {
+      stderr.write(`unknown flag ${arg}\n`);
+      return 1;
+    }
+    stderr.write("link-skills takes no text\n");
+    return 1;
+  }
+  if (targets.length === 0) {
+    stderr.write("link-skills needs --target PATH\n");
+    return 1;
+  }
+  try {
+    const lines = await linkSkills(brainRoot(), targets, apply);
+    for (const line of lines) {
+      stdout.write(`${line}\n`);
+    }
+    return 0;
+  } catch (err) {
+    return failSkill(stderr, err);
+  }
+}
+
+function takeFlagValue(arg, args, index) {
+  const eq = arg.indexOf("=");
+  if (eq !== -1) {
+    const value = arg.slice(eq + 1);
+    if (value === "") {
+      return { error: `flag ${arg.slice(0, eq)} needs a value` };
+    }
+    return { value, index };
+  }
+  const next = index + 1;
+  if (next >= args.length || args[next].startsWith("-")) {
+    return { error: `flag ${arg} needs a value` };
+  }
+  return { value: args[next], index: next };
+}
+
+function failSkill(stderr, err) {
+  stderr.write(`${err.message}\n`);
+  if (err.code === "ENOENT" || err.code === "BAD_NAME") {
+    return 1;
+  }
+  return 2;
+}
+
 async function cmdMCP(args, stderr) {
   if (args.length !== 0) {
     usage(stderr);
@@ -265,6 +358,8 @@ function usage(stderr) {
   brain premise rm ID
   brain premise search QUERY
   brain mcp
+  brain accept-skill NAME
+  brain link-skills [--apply] --target PATH [--target PATH ...]
 ${skillsUsage}`);
 }
 
