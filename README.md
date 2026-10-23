@@ -2,7 +2,7 @@
 
 This repo is a personal review brain.
 
-Start with [docs/getting-started.md](docs/getting-started.md). That guide has the setup checks, the prompts, and the use cases.
+Start with [docs/getting-started.md](docs/getting-started.md). [docs/catalog.md](docs/catalog.md) lists every skill, agent, flow, command, and MCP server, with the words that start each one. That guide has the setup checks, the prompts, and the use cases.
 
 Repo path: `/Users/josep/projects/qdrant-review-brain`
 

@@ -25,7 +25,7 @@ scripts/install.sh
 
 Run it again after a pull or a skill change. That is also the update.
 
-The script links `brain`, links the skills, registers the MCP servers, and adds the session hook. The hook prints the active premises when you open a repo under `BRAIN_WORKSPACE`. A copy directory prints nothing.
+The script links `brain`, links the skills, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a repo under `BRAIN_WORKSPACE`. A copy or a worktree uses the premises of the repo it was cloned from.
 
 Start a new chat after install. The old chat does not see the new skills.
 
@@ -49,7 +49,7 @@ Remember this: new RPCs go in cluster-service, not cluster-api.
 
 The agent loads `learn` and runs `brain premise add`. You do not type `/learn`.
 
-The map of phrases to actions is `docs/use-cases.md`. The agent reads that file when your words match a case.
+The map of phrases to actions is `docs/use-cases.md`. The agent reads that file when your words match a case. The full list of skills, agents, flows, and commands is `docs/catalog.md`.
 
 ## 4. Worked example
 

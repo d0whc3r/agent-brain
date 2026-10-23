@@ -4,6 +4,24 @@ The user talks. You run the commands. Do not ask the user to type a slash comman
 
 Read this file when the user's words match a case below. The skill for that case has the steps.
 
+## Suggest the next steps
+
+User: "What should I do next?" "¿Qué hago ahora?" "What would be good to do in this repo?"
+
+You load `next`. You run `brain next --json --cwd <repo>`. You show at most three flows with the reason each one matches. You run the flow the user picks, with its skills, agents, MCP servers, and model.
+
+## Save or change a flow
+
+User: "Save this as a flow." "Use sonnet for review-diff." "Add the e2e tests to prepare-pr."
+
+You load `next`. You edit or write the file in `flows/` and show the diff. You write a new flow only after the user agrees.
+
+## Get an independent review
+
+User: "Review this with a fresh pair of eyes." "Use the brain-reviewer agent."
+
+You run the `brain-reviewer` agent by name on the diff. You show its findings. You do not edit the diff.
+
 ## Review the current work
 
 User: "Review this diff." "Revisa este cambio." "Look at the branch." "Is this PR safe to merge?"
@@ -59,6 +77,24 @@ You load `find-skills` from `.agents/skills/find-skills/SKILL.md`. You show the 
 User: "Write a skill for our proto field numbers."
 
 You load `skill-creator` from `.agents/skills/skill-creator/SKILL.md`. You write the draft under `skills/drafts/`. You do not edit `skills/active/`.
+
+## Import rules from memory
+
+User: "Which of my corrections are not premises yet?" "Import the rules from my memories."
+
+You load `harvest`. You show a table of proposed premises with their sources. You add only the rows the user approves.
+
+## Check premise use
+
+User: "Which rules never apply?" "Are any rules noisy?"
+
+You run `brain premise stats`. You show each `unused`, `stale`, and `noisy` premise. You ask whether to keep, change, or drop each one.
+
+## Audit the workspace config
+
+User: "Do the repo rules contradict the brain?" "Audit the workspace." "Did any repo change its AGENTS.md?"
+
+You load `workspace-audit`. You run `brain workspace check`. You report drift, broken skill links, and rules that contradict, duplicate, or miss a premise. You do not edit a team repo.
 
 ## Check repo skills against the brain
 
