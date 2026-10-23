@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { basename, relative, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
 
 // repoFor names the repo from its origin URL, so a copy or a worktree loads the
@@ -47,11 +48,18 @@ export async function premiseContext(cwd) {
   }
   const store = await open(brainRoot());
   const items = await store.list(repo);
-  if (items.length === 0) {
-    return "";
+  const out = [];
+  if (items.length > 0) {
+    const lines = items.map((p) => `- [${p.strength}] ${p.text} (${p.id})`);
+    out.push(`Active brain premises for ${repo}. Apply every always and never premise. Quote each one you apply.`, ...lines);
   }
-  const lines = items.map((p) => `- [${p.strength}] ${p.text} (${p.id})`);
-  return `Active brain premises for ${repo}. Apply every always and never premise. Quote each one you apply.\n${lines.join("\n")}\n`;
+  // Skip the PR lookup: it calls the network and the hook must stay fast.
+  const ctx = repoContext(cwd, { pr: false });
+  const flows = ctx ? matchFlows(await loadFlows(brainRoot()), ctx).slice(0, 3) : [];
+  if (flows.length > 0) {
+    out.push(`Brain flows that match this repo state: ${flows.map((f) => f.name).join(", ")}. The next skill runs them.`);
+  }
+  return out.length > 0 ? `${out.join("\n")}\n` : "";
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

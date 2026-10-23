@@ -24,6 +24,34 @@ brain premise stats
 
 Run `npm run check` before a commit. It runs the tests, `brain skills check`, and the three scripts in `scripts/`.
 
+## Next steps and flows
+
+`brain next` reads the state of the repo you are in: branch, ticket key, changed file kinds, dirty tree, PR state, and commits behind `origin/main`. It lists the flows in `flows/` that match, most specific first. The `next` skill shows them and runs the one you pick, with the skills, agents, MCP servers, and model that the flow names. The session hook prints the top three matches at session start.
+
+```bash
+brain next [--cwd DIR] [--json] [--no-pr]
+brain flows
+```
+
+[flows/README.md](flows/README.md) lists the flow fields. Edit a flow to change its steps or its model. Add a flow for a task you repeat.
+
+## Workspace config
+
+Many workspace repos carry their own `AGENTS.md`, `CLAUDE.md`, skills, agents, and commands. `brain workspace scan` lists them in [memory/workspace/inventory.md](memory/workspace/inventory.md) and stores a baseline. Copies of a repo are skipped.
+
+```bash
+brain workspace scan
+brain workspace check
+```
+
+`check` prints each file added, changed, or removed since the baseline, and each new conflict with the brain:
+
+- `broken`: a repo skill entry with no readable `SKILL.md`, such as a link to a skill that is not installed.
+- `version`: a third-party skill that the brain also vendors, with different content.
+- `collision`: a repo skill with the name of a brain skill.
+
+`/workspace-audit` reads the changes and compares the repo rules with the premises. It reports contradictions, duplicates, gaps, and stale premises, and changes the brain only after you approve.
+
 ## Install
 
 Run `scripts/install.sh` to set up or update the brain, and `scripts/uninstall.sh` to remove it. [docs/getting-started.md](docs/getting-started.md) lists each step.

@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { serveMCP } from "../lib/mcp.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
 import { acceptSkill, linkSkills } from "../lib/skills.mjs";
+import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { premiseStats } from "../lib/stats.mjs";
 import { brainSkills, conflicts, drift, readInventory, scanWorkspace, workspaceRoot, writeInventory } from "../lib/workspace.mjs";
 import { runSkills, skillsUsage } from "../lib/third-party.mjs";
@@ -21,6 +22,12 @@ export async function run(args, stdout, stderr) {
   }
   if (args.length > 0 && args[0] === "accept-skill") {
     return cmdAcceptSkill(args.slice(1), stderr);
+  }
+  if (args.length > 0 && args[0] === "next") {
+    return cmdNext(args.slice(1), stdout, stderr);
+  }
+  if (args.length > 0 && args[0] === "flows") {
+    return cmdFlows(stdout);
   }
   if (args.length > 0 && args[0] === "workspace") {
     return cmdWorkspace(args.slice(1), stdout, stderr);
@@ -182,6 +189,52 @@ async function cmdStats(args, stdout, stderr) {
   } catch (err) {
     return failStore(stderr, err);
   }
+}
+
+// cmdNext reads the repo state at --cwd (default: the current directory) and lists
+// the flows that match it, most specific first.
+async function cmdNext(args, stdout, stderr) {
+  let cwd = process.cwd();
+  let json = false;
+  let pr = true;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--json") {
+      json = true;
+    } else if (args[i] === "--no-pr") {
+      pr = false;
+    } else if (args[i] === "--cwd" && i + 1 < args.length) {
+      cwd = args[++i];
+    } else {
+      usage(stderr);
+      return 1;
+    }
+  }
+  const ctx = repoContext(cwd, { pr });
+  if (!ctx) {
+    stderr.write(`not a git repo: ${cwd}\n`);
+    return 1;
+  }
+  const flows = matchFlows(await loadFlows(brainRoot()), ctx);
+  const store = await open(brainRoot());
+  const premises = await store.list(ctx.repo);
+  if (json) {
+    stdout.write(`${JSON.stringify({ context: ctx, premises: premises.map((p) => p.id), flows }, null, 2)}\n`);
+    return 0;
+  }
+  const ticket = ctx.ticket ? ` (${ctx.ticket})` : "";
+  stdout.write(`repo ${ctx.repo}, branch ${ctx.branch || "detached"}${ticket}, ahead ${ctx.ahead}, behind ${ctx.behind}, ${ctx.dirty ? "dirty" : "clean"}, pr ${ctx.pr}\n`);
+  stdout.write(`kinds: ${ctx.kinds.join(", ") || "-"}; ${premises.length} active premises\n`);
+  flows.forEach((flow, i) => {
+    stdout.write(`${i + 1}. ${flow.name}: ${flow.description ?? ""}\n`);
+  });
+  return 0;
+}
+
+async function cmdFlows(stdout) {
+  for (const flow of await loadFlows(brainRoot())) {
+    stdout.write(`${flow.name}\t${flow.model ?? "-"}\t${flow.description ?? ""}\n`);
+  }
+  return 0;
 }
 
 // workspace scan stores the agent config of every repo as the baseline.
@@ -416,6 +469,8 @@ function usage(stderr) {
   brain premise search QUERY
   brain premise stats
   brain workspace scan|check
+  brain next [--cwd DIR] [--json] [--no-pr]
+  brain flows
   brain mcp
   brain accept-skill NAME
   brain link-skills [--apply] --target PATH [--target PATH ...]
