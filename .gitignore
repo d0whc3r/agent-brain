@@ -1,0 +1,5 @@
+memory/sessions/screenshots/*
+!memory/sessions/screenshots/.gitkeep
+mcp/snippets/obsidian.url
+mcp/snippets/obsidian.key
+.DS_Store
