@@ -16,6 +16,12 @@ User: "Save this as a flow." "Use sonnet for review-diff." "Add the e2e tests to
 
 You load `next`. You edit or write the file in `flows/` and show the diff. You write a new flow only after the user agrees.
 
+## Stress-test a plan
+
+User: "Grill this plan." "Interrógame sobre este diseño." "Is this approach sound?"
+
+You load `next` and run the `grill-plan` flow: `grilling` in rounds with a recommended answer for each question, then `doubt-driven-development` for decisions that are hard to undo. You look up facts yourself.
+
 ## Get an independent review
 
 User: "Review this with a fresh pair of eyes." "Use the brain-reviewer agent."
