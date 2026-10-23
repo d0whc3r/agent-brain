@@ -15,7 +15,12 @@ brain premise list [--repo qdrant-cloud-ui]
 brain premise add "New RPC lands in cluster-service" --strength always --repo qdrant-cloud-cluster-service
 brain premise show <id>
 brain premise rm <id>
+brain premise stats
 ```
+
+`brain premise stats` prints each active premise with its applied count, rejected count, last applied date, and a flag. The counts come from the `applied` and `rejected` lists in `memory/sessions/`. The flag is `unused` (never applied), `stale` (not applied in 90 days), or `noisy` (rejected at least twice and at least as often as applied). Review a flagged premise, then keep it, change it, or drop it.
+
+`/harvest` reads the Claude Code project memories and Engram, and proposes premises for rules that are not premises yet. It adds only the rows you approve.
 
 Run `npm run check` before a commit. It runs the tests, `brain skills check`, and the three scripts in `scripts/`.
 
@@ -23,7 +28,9 @@ Run `npm run check` before a commit. It runs the tests, `brain skills check`, an
 
 Run `scripts/install.sh` to set up or update the brain, and `scripts/uninstall.sh` to remove it. [docs/getting-started.md](docs/getting-started.md) lists each step.
 
-`bin/session-premises.mjs` is the Claude Code `SessionStart` hook that the install adds. It prints the active premises for the repo that holds the session directory. `BRAIN_WORKSPACE` is the directory that holds the repos. A directory outside it, or a `-copy` directory, prints nothing.
+`bin/session-premises.mjs` is the Claude Code `SessionStart` hook that the install adds. It prints the active premises for the repo of the session directory. It names the repo from `git remote get-url origin`, so a copy or a worktree loads the premises of the repo it was cloned from. `BRAIN_WORKSPACE` is the directory that holds the repos. A directory outside it prints nothing.
+
+`agents/brain-reviewer.md` is a read-only review subagent. The install links it into `~/.claude/agents`. It has no Edit tool, and it follows `review-brain` in a fresh context. Ask for it by name, for example: "Use the brain-reviewer agent on this diff."
 
 `.claude/settings.json` in this repo allows the read-only premise commands. It asks before `git commit`, `git push`, and a premise delete.
 

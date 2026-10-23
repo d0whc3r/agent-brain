@@ -1,0 +1,1893 @@
+{
+  "root": "~/projects/qdrant",
+  "repos": [
+    {
+      "dir": ".",
+      "origin": "(workspace)",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "113a803ce4b4"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "113a803ce4b4"
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "hash": "e2989d234434"
+        }
+      ],
+      "skills": [
+        {
+          "name": "architecture-patterns",
+          "path": ".claude/skills/architecture-patterns",
+          "hash": "350caf22b856",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "async-python-patterns",
+          "path": ".claude/skills/async-python-patterns",
+          "hash": "beeac92f802f",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "building-pydantic-ai-agents",
+          "path": ".claude/skills/building-pydantic-ai-agents",
+          "hash": "410584ea3727",
+          "source": "pydantic/skills"
+        },
+        {
+          "name": "fastapi-python",
+          "path": ".claude/skills/fastapi-python",
+          "hash": "cd00a58e397f",
+          "source": "mindrally/skills"
+        },
+        {
+          "name": "fastapi-templates",
+          "path": ".claude/skills/fastapi-templates",
+          "hash": "92d4394d0300",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "find-skills",
+          "path": ".claude/skills/find-skills",
+          "hash": "c00eeea0e13e",
+          "source": "vercel-labs/skills"
+        },
+        {
+          "name": "frontend-design",
+          "path": ".claude/skills/frontend-design",
+          "hash": "1608ea77fbb6",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "frontend-ui-engineering",
+          "path": ".claude/skills/frontend-ui-engineering",
+          "hash": "9c284b1f06d6",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "golang-cli",
+          "path": ".claude/skills/golang-cli",
+          "hash": "da9eef3871a9",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-concurrency",
+          "path": ".claude/skills/golang-concurrency",
+          "hash": "10753e04b7ff",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-context",
+          "path": ".claude/skills/golang-context",
+          "hash": "2b8bd84acae4",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-continuous-integration",
+          "path": ".claude/skills/golang-continuous-integration",
+          "hash": "7a8947a0a080",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-database",
+          "path": ".claude/skills/golang-database",
+          "hash": "3ebfcf48cdb5",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-dependency-management",
+          "path": ".claude/skills/golang-dependency-management",
+          "hash": "426db8dfbb8a",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-error-handling",
+          "path": ".claude/skills/golang-error-handling",
+          "hash": "ca442131bb40",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-grpc",
+          "path": ".claude/skills/golang-grpc",
+          "hash": "a080ffbaf5b4",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-lint",
+          "path": ".claude/skills/golang-lint",
+          "hash": "aaef260875d7",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-observability",
+          "path": ".claude/skills/golang-observability",
+          "hash": "c314b828e2a4",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-pro",
+          "path": ".claude/skills/golang-pro",
+          "hash": "937bafb4bd14",
+          "source": "jeffallan/claude-skills"
+        },
+        {
+          "name": "golang-project-layout",
+          "path": ".claude/skills/golang-project-layout",
+          "hash": "e9ebd29c76ce",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-security",
+          "path": ".claude/skills/golang-security",
+          "hash": "dc3330dba380",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-spf13-cobra",
+          "path": ".claude/skills/golang-spf13-cobra",
+          "hash": "37d60a2ced13",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-spf13-viper",
+          "path": ".claude/skills/golang-spf13-viper",
+          "hash": "00f358a35556",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-stretchr-testify",
+          "path": ".claude/skills/golang-stretchr-testify",
+          "hash": "0a2b5fefbc2e",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-testing",
+          "path": ".claude/skills/golang-testing",
+          "hash": "6056559e12e9",
+          "source": "affaan-m/everything-claude-code"
+        },
+        {
+          "name": "humanize",
+          "path": ".claude/skills/humanize",
+          "hash": "1febfc24392c",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "lavish",
+          "path": ".claude/skills/lavish",
+          "hash": "54ca75ad41da",
+          "source": "kunchenguid/lavish-axi"
+        },
+        {
+          "name": "new-terraform-provider",
+          "path": ".claude/skills/new-terraform-provider",
+          "hash": "df03083901ab",
+          "source": "hashicorp/agent-skills"
+        },
+        {
+          "name": "pr-description",
+          "path": ".claude/skills/pr-description",
+          "hash": "67506d1dc8f8",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "protobuf",
+          "path": ".claude/skills/protobuf",
+          "hash": "8b09f409f34a",
+          "source": "bufbuild/claude-plugins"
+        },
+        {
+          "name": "python-executor",
+          "path": ".claude/skills/python-executor",
+          "hash": "07b9c819e9fc",
+          "source": "inferen-sh/skills"
+        },
+        {
+          "name": "python-patterns",
+          "path": ".claude/skills/python-patterns",
+          "hash": "bcdc0e72c463",
+          "source": "affaan-m/everything-claude-code"
+        },
+        {
+          "name": "python-testing-patterns",
+          "path": ".claude/skills/python-testing-patterns",
+          "hash": "a1020718f316",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "react-hook-form",
+          "path": ".claude/skills/react-hook-form",
+          "hash": "cb3175578461",
+          "source": "pproenca/dot-skills"
+        },
+        {
+          "name": "rust-best-practices",
+          "path": ".claude/skills/rust-best-practices",
+          "hash": "e2e93a95c899",
+          "source": "apollographql/skills"
+        },
+        {
+          "name": "speckit-agent-context-update",
+          "path": ".claude/skills/speckit-agent-context-update",
+          "hash": "23817e2f2448",
+          "source": ""
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "e1f8323285ed",
+          "source": ""
+        },
+        {
+          "name": "speckit-axi-review",
+          "path": ".claude/skills/speckit-axi-review",
+          "hash": "df4c66947ee5",
+          "source": ""
+        },
+        {
+          "name": "speckit-brownfield-bootstrap",
+          "path": ".claude/skills/speckit-brownfield-bootstrap",
+          "hash": "b4a940e9fa8f",
+          "source": ""
+        },
+        {
+          "name": "speckit-brownfield-migrate",
+          "path": ".claude/skills/speckit-brownfield-migrate",
+          "hash": "89ae1033ef05",
+          "source": ""
+        },
+        {
+          "name": "speckit-brownfield-scan",
+          "path": ".claude/skills/speckit-brownfield-scan",
+          "hash": "974537bb5c74",
+          "source": ""
+        },
+        {
+          "name": "speckit-brownfield-validate",
+          "path": ".claude/skills/speckit-brownfield-validate",
+          "hash": "138239d6bdc9",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "34c8c681f547",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "f4b3f2c95087",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "a93047917a5f",
+          "source": ""
+        },
+        {
+          "name": "speckit-converge",
+          "path": ".claude/skills/speckit-converge",
+          "hash": "65ea8b863835",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "51bd89322e02",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "2fe3f96886e9",
+          "source": ""
+        },
+        {
+          "name": "speckit-product-brief",
+          "path": ".claude/skills/speckit-product-brief",
+          "hash": "d1ed203a82c3",
+          "source": ""
+        },
+        {
+          "name": "speckit-product-design",
+          "path": ".claude/skills/speckit-product-design",
+          "hash": "65fd64db726e",
+          "source": ""
+        },
+        {
+          "name": "speckit-product-plan",
+          "path": ".claude/skills/speckit-product-plan",
+          "hash": "dd219b2527b2",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "42fe016b9183",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "597853362a0a",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "76a6ec1fcc2d",
+          "source": ""
+        },
+        {
+          "name": "speckit-tdd-plan",
+          "path": ".claude/skills/speckit-tdd-plan",
+          "hash": "e2040f624475",
+          "source": ""
+        },
+        {
+          "name": "speckit-tdd-run",
+          "path": ".claude/skills/speckit-tdd-run",
+          "hash": "f1c44a940acf",
+          "source": ""
+        },
+        {
+          "name": "speckit-tdd-setup",
+          "path": ".claude/skills/speckit-tdd-setup",
+          "hash": "4f65c2f8d3fb",
+          "source": ""
+        },
+        {
+          "name": "speckit-tdd-verify",
+          "path": ".claude/skills/speckit-tdd-verify",
+          "hash": "485c7569c2cb",
+          "source": ""
+        },
+        {
+          "name": "sqlalchemy-alembic-expert-best-practices-code-review",
+          "path": ".claude/skills/sqlalchemy-alembic-expert-best-practices-code-review",
+          "hash": "9f23bc2d6d66",
+          "source": "wispbit-ai/skills"
+        },
+        {
+          "name": "tanstack-query",
+          "path": ".claude/skills/tanstack-query",
+          "hash": "813406a8fa59",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-router",
+          "path": ".claude/skills/tanstack-router",
+          "hash": "085fa7cfcd14",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-table",
+          "path": ".claude/skills/tanstack-table",
+          "hash": "ffd4c5988fd8",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "typescript-best-practices",
+          "path": ".claude/skills/typescript-best-practices",
+          "hash": "ead45ba0d67c",
+          "source": "0xbigboss/claude-code"
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-optimize",
+          "path": ".claude/skills/vercel-optimize",
+          "hash": "95ae2683b30d",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-react-native-skills",
+          "path": ".claude/skills/vercel-react-native-skills",
+          "hash": "4012750a5ccb",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-react-view-transitions",
+          "path": ".claude/skills/vercel-react-view-transitions",
+          "hash": "8c4c0f8b5581",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "web-design-guidelines",
+          "path": ".claude/skills/web-design-guidelines",
+          "hash": "f4647ca866a3",
+          "source": "vercel-labs/agent-skills"
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "cloud-rc-docs",
+      "origin": "cloud-rc-docs",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "c2b3ba54625a"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "d0818f1644e7"
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "hash": "0c85b093ccc5"
+        }
+      ],
+      "skills": [
+        {
+          "name": "docs-doctor",
+          "path": ".claude/skills/docs-doctor",
+          "hash": "71c791143c2c",
+          "source": ""
+        },
+        {
+          "name": "living-docs-authoring",
+          "path": ".claude/skills/living-docs-authoring",
+          "hash": "c340dffee3fc",
+          "source": ""
+        },
+        {
+          "name": "living-docs-automation",
+          "path": ".claude/skills/living-docs-automation",
+          "hash": "e243004e9e48",
+          "source": ""
+        },
+        {
+          "name": "living-docs-vault",
+          "path": ".claude/skills/living-docs-vault",
+          "hash": "2d053488eda7",
+          "source": ""
+        },
+        {
+          "name": "living-docs-workflow",
+          "path": ".claude/skills/living-docs-workflow",
+          "hash": "8627fd3ad129",
+          "source": ""
+        },
+        {
+          "name": "living-documentation",
+          "path": ".claude/skills/living-documentation",
+          "hash": "f2d8caace15f",
+          "source": ""
+        }
+      ],
+      "agents": [
+        {
+          "name": "docs-architect.md",
+          "path": ".claude/agents/docs-architect.md",
+          "hash": "b7e98232eed7"
+        },
+        {
+          "name": "docs-author.md",
+          "path": ".claude/agents/docs-author.md",
+          "hash": "eab5f400bed0"
+        },
+        {
+          "name": "docs-automation-engineer.md",
+          "path": ".claude/agents/docs-automation-engineer.md",
+          "hash": "8fe0e812ac57"
+        },
+        {
+          "name": "docs-curator.md",
+          "path": ".claude/agents/docs-curator.md",
+          "hash": "cc5c4a1a3ec0"
+        },
+        {
+          "name": "docs-doctor.md",
+          "path": ".claude/agents/docs-doctor.md",
+          "hash": "c1d7ab1cd975"
+        },
+        {
+          "name": "docs-navigator.md",
+          "path": ".claude/agents/docs-navigator.md",
+          "hash": "cf39d3c6603f"
+        },
+        {
+          "name": "docs-reviewer.md",
+          "path": ".claude/agents/docs-reviewer.md",
+          "hash": "98a63bcc82ed"
+        },
+        {
+          "name": "docs-sync-auditor.md",
+          "path": ".claude/agents/docs-sync-auditor.md",
+          "hash": "9771994e461d"
+        }
+      ],
+      "commands": [
+        {
+          "name": "docs-architect.md",
+          "path": ".claude/commands/docs-architect.md",
+          "hash": "aebb22625f80"
+        },
+        {
+          "name": "docs-author.md",
+          "path": ".claude/commands/docs-author.md",
+          "hash": "a5b88e9a57be"
+        },
+        {
+          "name": "docs-automation-engineer.md",
+          "path": ".claude/commands/docs-automation-engineer.md",
+          "hash": "a64d83a3c708"
+        },
+        {
+          "name": "docs-curator.md",
+          "path": ".claude/commands/docs-curator.md",
+          "hash": "bce834527619"
+        },
+        {
+          "name": "docs-doctor.md",
+          "path": ".claude/commands/docs-doctor.md",
+          "hash": "e2fe87228dcd"
+        },
+        {
+          "name": "docs-navigator.md",
+          "path": ".claude/commands/docs-navigator.md",
+          "hash": "30eb4e60025a"
+        },
+        {
+          "name": "docs-reviewer.md",
+          "path": ".claude/commands/docs-reviewer.md",
+          "hash": "f28e068c7624"
+        },
+        {
+          "name": "docs-sync-auditor.md",
+          "path": ".claude/commands/docs-sync-auditor.md",
+          "hash": "8157c17ccbb5"
+        }
+      ]
+    },
+    {
+      "dir": "cloud-test",
+      "origin": "cloud-test",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "9f2302e6406f"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "design-figma",
+      "origin": "design-figma",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "ceb98d8340a1"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "design-tokens",
+          "path": ".claude/skills/design-tokens",
+          "hash": "951eb7680b1c",
+          "source": "julianoczkowski/designer-skills"
+        },
+        {
+          "name": "figma-code-connect",
+          "path": ".claude/skills/figma-code-connect",
+          "hash": "d69cfc0e2080",
+          "source": "figma/mcp-server-guide"
+        },
+        {
+          "name": "figma-create-new-file",
+          "path": ".claude/skills/figma-create-new-file",
+          "hash": "82e0a018692d",
+          "source": "figma/mcp-server-guide"
+        },
+        {
+          "name": "figma-design-build",
+          "path": ".claude/skills/figma-design-build",
+          "hash": "d28ab7bb1fa2",
+          "source": ""
+        },
+        {
+          "name": "figma-design-review",
+          "path": ".claude/skills/figma-design-review",
+          "hash": "af1d603a353c",
+          "source": ""
+        },
+        {
+          "name": "figma-generate-design",
+          "path": ".claude/skills/figma-generate-design",
+          "hash": "25952b947fcb",
+          "source": ""
+        },
+        {
+          "name": "figma-generate-library",
+          "path": ".claude/skills/figma-generate-library",
+          "hash": "38d9381d4fb0",
+          "source": "figma/mcp-server-guide"
+        },
+        {
+          "name": "figma-inventory-sync",
+          "path": ".claude/skills/figma-inventory-sync",
+          "hash": "2eb356149da9",
+          "source": ""
+        },
+        {
+          "name": "figma-use",
+          "path": ".claude/skills/figma-use",
+          "hash": "d49f54f7dbb2",
+          "source": ""
+        },
+        {
+          "name": "find-skills",
+          "path": ".claude/skills/find-skills",
+          "hash": "deddc03b4b5f",
+          "source": "vercel-labs/skills"
+        },
+        {
+          "name": "material-ui-styling",
+          "path": ".claude/skills/material-ui-styling",
+          "hash": "d7d46b3b0a33",
+          "source": "mui/material-ui"
+        },
+        {
+          "name": "material-ui-theming",
+          "path": ".claude/skills/material-ui-theming",
+          "hash": "5271fe75c064",
+          "source": "mui/material-ui"
+        },
+        {
+          "name": "skill-creator",
+          "path": ".claude/skills/skill-creator",
+          "hash": "dcd4803e61e9",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "ui-design",
+          "path": ".claude/skills/ui-design",
+          "hash": "f3ad7f264e46",
+          "source": "shajith003/awesome-claude-skills"
+        }
+      ],
+      "agents": [
+        {
+          "name": "figma-design-builder.md",
+          "path": ".claude/agents/figma-design-builder.md",
+          "hash": "72e3741fd137"
+        },
+        {
+          "name": "figma-design-reviewer.md",
+          "path": ".claude/agents/figma-design-reviewer.md",
+          "hash": "4c61da35cbcb"
+        },
+        {
+          "name": "figma-inventory-curator.md",
+          "path": ".claude/agents/figma-inventory-curator.md",
+          "hash": "98a3fa303a7b"
+        }
+      ],
+      "commands": []
+    },
+    {
+      "dir": "nats-locking-sidecar",
+      "origin": "nats-locking-sidecar",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "193157cb797d"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qcloud-cli",
+      "origin": "qcloud-cli",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "bd009de451c7"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": [
+        {
+          "name": "review-api-coverage.md",
+          "path": ".claude/commands/review-api-coverage.md",
+          "hash": "411ef4c0302b"
+        }
+      ]
+    },
+    {
+      "dir": "qdrant",
+      "origin": "qdrant",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "51a36dbcbe0d"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-admin-v2",
+      "origin": "qdrant-cloud-admin-v2",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "a8eb6a3f44a7"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "267fb2a0707d",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "performance",
+          "path": ".claude/skills/performance",
+          "hash": "b0c220185d88",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "pnpm",
+          "path": ".claude/skills/pnpm",
+          "hash": "e7f6c224184c",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "pr-description",
+          "path": ".claude/skills/pr-description",
+          "hash": "67506d1dc8f8",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "react-hook-form",
+          "path": ".claude/skills/react-hook-form",
+          "hash": "cb3175578461",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "shadcn",
+          "path": ".claude/skills/shadcn",
+          "hash": "deba6c5152d9",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "tailwind-css-patterns",
+          "path": ".claude/skills/tailwind-css-patterns",
+          "hash": "63984406824e",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "tanstack-devtools",
+          "path": ".claude/skills/tanstack-devtools",
+          "hash": "1e70693ddba7",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "tanstack-query",
+          "path": ".claude/skills/tanstack-query",
+          "hash": "813406a8fa59",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "tanstack-router",
+          "path": ".claude/skills/tanstack-router",
+          "hash": "085fa7cfcd14",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "tanstack-table",
+          "path": ".claude/skills/tanstack-table",
+          "hash": "ffd4c5988fd8",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "valibot",
+          "path": ".claude/skills/valibot",
+          "hash": "8c7397be7b71",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "vite",
+          "path": ".claude/skills/vite",
+          "hash": "3cb7a75336e3",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "vitest",
+          "path": ".claude/skills/vitest",
+          "hash": "2da9b15c28b9",
+          "source": "qdrant/qdrant-cloud-skills"
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-cluster-api",
+      "origin": "qdrant-cloud-cluster-api",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "f1755bbcb41e"
+        }
+      ],
+      "skills": [
+        {
+          "name": "bash-defensive-patterns",
+          "path": ".claude/skills/bash-defensive-patterns",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "fastapi-python",
+          "path": ".claude/skills/fastapi-python",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "fastapi-templates",
+          "path": ".claude/skills/fastapi-templates",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "pydantic",
+          "path": ".claude/skills/pydantic",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "python-executor",
+          "path": ".claude/skills/python-executor",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "python-patterns",
+          "path": ".claude/skills/python-patterns",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "python-testing-patterns",
+          "path": ".claude/skills/python-testing-patterns",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "2eef0fbff6ca",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "26419fc118dc",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "f2560f9f2007",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "c1a044aba243",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "6029565c1a56",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "8141ebbce228",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "caadc05119ec",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "54c4665be618",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "99bf5ffd90dc",
+          "source": ""
+        },
+        {
+          "name": "sqlalchemy",
+          "path": ".claude/skills/sqlalchemy",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "sqlalchemy-alembic-expert-best-practices-code-review",
+          "path": ".claude/skills/sqlalchemy-alembic-expert-best-practices-code-review",
+          "hash": "",
+          "source": ""
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-cluster-service",
+      "origin": "qdrant-cloud-cluster-service",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "8fdc6569b16b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "architecture-patterns",
+          "path": ".claude/skills/architecture-patterns",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "find-skills",
+          "path": ".claude/skills/find-skills",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-cli",
+          "path": ".claude/skills/golang-cli",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-concurrency",
+          "path": ".claude/skills/golang-concurrency",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-context",
+          "path": ".claude/skills/golang-context",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-continuous-integration",
+          "path": ".claude/skills/golang-continuous-integration",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-database",
+          "path": ".claude/skills/golang-database",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-dependency-management",
+          "path": ".claude/skills/golang-dependency-management",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-error-handling",
+          "path": ".claude/skills/golang-error-handling",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-grpc",
+          "path": ".claude/skills/golang-grpc",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-lint",
+          "path": ".claude/skills/golang-lint",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-observability",
+          "path": ".claude/skills/golang-observability",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-pro",
+          "path": ".claude/skills/golang-pro",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-project-layout",
+          "path": ".claude/skills/golang-project-layout",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-security",
+          "path": ".claude/skills/golang-security",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-spf13-cobra",
+          "path": ".claude/skills/golang-spf13-cobra",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-spf13-viper",
+          "path": ".claude/skills/golang-spf13-viper",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-stretchr-testify",
+          "path": ".claude/skills/golang-stretchr-testify",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-testing",
+          "path": ".claude/skills/golang-testing",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "protobuf",
+          "path": ".claude/skills/protobuf",
+          "hash": "",
+          "source": ""
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-iam-service",
+      "origin": "qdrant-cloud-iam-service",
+      "files": [],
+      "skills": [
+        {
+          "name": "golang-patterns",
+          "path": ".claude/skills/golang-patterns",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "golang-testing",
+          "path": ".claude/skills/golang-testing",
+          "hash": "",
+          "source": ""
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-platform-api",
+      "origin": "qdrant-cloud-platform-api",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "80aec372c8b4"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-public-api",
+      "origin": "qdrant-cloud-public-api",
+      "files": [],
+      "skills": [
+        {
+          "name": "humanize",
+          "path": ".claude/skills/humanize",
+          "hash": "1febfc24392c",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "pr-description",
+          "path": ".claude/skills/pr-description",
+          "hash": "67506d1dc8f8",
+          "source": "qdrant/qdrant-cloud-skills"
+        },
+        {
+          "name": "protobuf",
+          "path": ".claude/skills/protobuf",
+          "hash": "8b09f409f34a",
+          "source": "bufbuild/claude-plugins"
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-ui",
+      "origin": "qdrant-cloud-ui",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "62dfd8915026"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "267fb2a0707d",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-access-control",
+          "path": ".claude/skills/cloud-ui-access-control",
+          "hash": "06a12a2d7b5f",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-architecture",
+          "path": ".claude/skills/cloud-ui-architecture",
+          "hash": "921318bc15fa",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-e2e",
+          "path": ".claude/skills/cloud-ui-e2e",
+          "hash": "13d2e37726b2",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-mfa-post-login-actions",
+          "path": ".claude/skills/cloud-ui-mfa-post-login-actions",
+          "hash": "40b9e214242f",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-msw-mocking",
+          "path": ".claude/skills/cloud-ui-msw-mocking",
+          "hash": "66299096d439",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-regression",
+          "path": ".claude/skills/cloud-ui-regression",
+          "hash": "7446974e8d32",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-route-hooks",
+          "path": ".claude/skills/cloud-ui-route-hooks",
+          "hash": "a2d3bec4321a",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "cloud-ui-testing",
+          "path": ".claude/skills/cloud-ui-testing",
+          "hash": "732b10d96f9f",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "demo-video",
+          "path": ".claude/skills/demo-video",
+          "hash": "bb45ab295496",
+          "source": ""
+        },
+        {
+          "name": "frontend-design",
+          "path": ".claude/skills/frontend-design",
+          "hash": "d91970639e9f",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "humanize",
+          "path": ".claude/skills/humanize",
+          "hash": "1febfc24392c",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "i-have-adhd",
+          "path": ".claude/skills/i-have-adhd",
+          "hash": "3170b16ace00",
+          "source": ""
+        },
+        {
+          "name": "material-ui-render-loops",
+          "path": ".claude/skills/material-ui-render-loops",
+          "hash": "1339227a0c02",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "material-ui-styling",
+          "path": ".claude/skills/material-ui-styling",
+          "hash": "d7d46b3b0a33",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "material-ui-theming",
+          "path": ".claude/skills/material-ui-theming",
+          "hash": "5271fe75c064",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "performance",
+          "path": ".claude/skills/performance",
+          "hash": "b0c220185d88",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "playwright-best-practices",
+          "path": ".claude/skills/playwright-best-practices",
+          "hash": "42684b93abd5",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "pnpm",
+          "path": ".claude/skills/pnpm",
+          "hash": "a4bcad9e69af",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "pr-description",
+          "path": ".claude/skills/pr-description",
+          "hash": "22573d17a85c",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "react-hook-form",
+          "path": ".claude/skills/react-hook-form",
+          "hash": "cb3175578461",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "e1f8323285ed",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "34c8c681f547",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "f4b3f2c95087",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "a93047917a5f",
+          "source": ""
+        },
+        {
+          "name": "speckit-converge",
+          "path": ".claude/skills/speckit-converge",
+          "hash": "65ea8b863835",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "51bd89322e02",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "2fe3f96886e9",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "42fe016b9183",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "597853362a0a",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "76a6ec1fcc2d",
+          "source": ""
+        },
+        {
+          "name": "tanstack-devtools",
+          "path": ".claude/skills/tanstack-devtools",
+          "hash": "1e70693ddba7",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "tanstack-query",
+          "path": ".claude/skills/tanstack-query",
+          "hash": "813406a8fa59",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "tanstack-router",
+          "path": ".claude/skills/tanstack-router",
+          "hash": "085fa7cfcd14",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "tanstack-table",
+          "path": ".claude/skills/tanstack-table",
+          "hash": "ffd4c5988fd8",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "vite",
+          "path": ".claude/skills/vite",
+          "hash": "20bddfc0d23d",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "vitest",
+          "path": ".claude/skills/vitest",
+          "hash": "d0c470a07b90",
+          "source": "qdrant/skills-team-cloud-ui"
+        },
+        {
+          "name": "zod-validation",
+          "path": ".claude/skills/zod-validation",
+          "hash": "b29a41445211",
+          "source": "qdrant/skills-team-cloud-ui"
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "qdrant-cloud-ui-buf-plugins",
+      "origin": "qdrant-cloud-ui-buf-plugins",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "514d211db180"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "serverless-backend",
+      "origin": "serverless-backend",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "e20f6fe85a46"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "serverless-metering",
+      "origin": "serverless-metering",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "d9c890527cd9"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "serverless-operator",
+      "origin": "serverless-operator",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "4b01d14b8eb8"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "serverless-search-distributer",
+      "origin": "serverless-search-distributer",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "6373a6cdc7e0"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "skills-internal",
+      "origin": "skills-internal",
+      "files": [],
+      "skills": [
+        {
+          "name": "advisor",
+          "path": "skills/advisor",
+          "hash": "cf025d014cc1",
+          "source": ""
+        },
+        {
+          "name": "capacity-planning",
+          "path": "skills/capacity-planning",
+          "hash": "99cf4cfb81e1",
+          "source": ""
+        },
+        {
+          "name": "community-qa-triage",
+          "path": "skills/community-qa-triage",
+          "hash": "ea16f0174054",
+          "source": ""
+        },
+        {
+          "name": "core-project-management",
+          "path": "skills/core-project-management",
+          "hash": "8be1d4a4024a",
+          "source": ""
+        },
+        {
+          "name": "design",
+          "path": "skills/design",
+          "hash": "f50d57c822fd",
+          "source": ""
+        },
+        {
+          "name": "developer-content-strategy",
+          "path": "skills/developer-content-strategy",
+          "hash": "db0da618c73b",
+          "source": ""
+        },
+        {
+          "name": "landing-page-contribution",
+          "path": "skills/landing-page-contribution",
+          "hash": "bc29c6375bac",
+          "source": ""
+        },
+        {
+          "name": "messaging",
+          "path": "skills/messaging",
+          "hash": "a0b347f246f9",
+          "source": ""
+        },
+        {
+          "name": "writing-style",
+          "path": "skills/writing-style",
+          "hash": "fabf3ff28e71",
+          "source": ""
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
+      "dir": "skills-team-cloud-ui",
+      "origin": "skills-team-cloud-ui",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "6d7f35697091"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": "skills/accessibility",
+          "hash": "267fb2a0707d",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-access-control",
+          "path": "skills/cloud-ui-access-control",
+          "hash": "06a12a2d7b5f",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-architecture",
+          "path": "skills/cloud-ui-architecture",
+          "hash": "921318bc15fa",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-e2e",
+          "path": "skills/cloud-ui-e2e",
+          "hash": "13d2e37726b2",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-mfa-post-login-actions",
+          "path": "skills/cloud-ui-mfa-post-login-actions",
+          "hash": "40b9e214242f",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-msw-mocking",
+          "path": "skills/cloud-ui-msw-mocking",
+          "hash": "66299096d439",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-regression",
+          "path": "skills/cloud-ui-regression",
+          "hash": "7446974e8d32",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-route-hooks",
+          "path": "skills/cloud-ui-route-hooks",
+          "hash": "a2d3bec4321a",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-skeleton-loading",
+          "path": "skills/cloud-ui-skeleton-loading",
+          "hash": "a5bf0f0d0cc4",
+          "source": ""
+        },
+        {
+          "name": "cloud-ui-testing",
+          "path": "skills/cloud-ui-testing",
+          "hash": "732b10d96f9f",
+          "source": ""
+        },
+        {
+          "name": "find-skills",
+          "path": ".claude/skills/find-skills",
+          "hash": "c00eeea0e13e",
+          "source": "vercel-labs/skills"
+        },
+        {
+          "name": "frontend-design",
+          "path": "skills/frontend-design",
+          "hash": "d91970639e9f",
+          "source": ""
+        },
+        {
+          "name": "humanize",
+          "path": "skills/humanize",
+          "hash": "1febfc24392c",
+          "source": ""
+        },
+        {
+          "name": "material-ui-render-loops",
+          "path": "skills/material-ui-render-loops",
+          "hash": "1339227a0c02",
+          "source": ""
+        },
+        {
+          "name": "material-ui-styling",
+          "path": "skills/material-ui-styling",
+          "hash": "d7d46b3b0a33",
+          "source": ""
+        },
+        {
+          "name": "material-ui-theming",
+          "path": "skills/material-ui-theming",
+          "hash": "5271fe75c064",
+          "source": ""
+        },
+        {
+          "name": "performance",
+          "path": "skills/performance",
+          "hash": "b0c220185d88",
+          "source": ""
+        },
+        {
+          "name": "playwright-best-practices",
+          "path": "skills/playwright-best-practices",
+          "hash": "42684b93abd5",
+          "source": ""
+        },
+        {
+          "name": "pnpm",
+          "path": "skills/pnpm",
+          "hash": "a4bcad9e69af",
+          "source": ""
+        },
+        {
+          "name": "pr-description",
+          "path": "skills/pr-description",
+          "hash": "22573d17a85c",
+          "source": ""
+        },
+        {
+          "name": "react-hook-form",
+          "path": "skills/react-hook-form",
+          "hash": "cb3175578461",
+          "source": ""
+        },
+        {
+          "name": "shadcn",
+          "path": "skills/shadcn",
+          "hash": "93951e5e83f6",
+          "source": ""
+        },
+        {
+          "name": "skill-creator",
+          "path": ".claude/skills/skill-creator",
+          "hash": "dcd4803e61e9",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "skill-grouping",
+          "path": ".claude/skills/skill-grouping",
+          "hash": "bdabb671c35f",
+          "source": ".agents/skills/skill-grouping"
+        },
+        {
+          "name": "stripe-best-practices",
+          "path": "skills/stripe-best-practices",
+          "hash": "2a85f02dbed4",
+          "source": ""
+        },
+        {
+          "name": "tailwind-css-patterns",
+          "path": "skills/tailwind-css-patterns",
+          "hash": "63984406824e",
+          "source": ""
+        },
+        {
+          "name": "tanstack-devtools",
+          "path": "skills/tanstack-devtools",
+          "hash": "1e70693ddba7",
+          "source": ""
+        },
+        {
+          "name": "tanstack-query",
+          "path": "skills/tanstack-query",
+          "hash": "813406a8fa59",
+          "source": ""
+        },
+        {
+          "name": "tanstack-router",
+          "path": "skills/tanstack-router",
+          "hash": "085fa7cfcd14",
+          "source": ""
+        },
+        {
+          "name": "tanstack-table",
+          "path": "skills/tanstack-table",
+          "hash": "ffd4c5988fd8",
+          "source": ""
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": "skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": ""
+        },
+        {
+          "name": "valibot",
+          "path": "skills/valibot",
+          "hash": "8c7397be7b71",
+          "source": ""
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": "skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": ""
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": "skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": ""
+        },
+        {
+          "name": "vite",
+          "path": "skills/vite",
+          "hash": "20bddfc0d23d",
+          "source": ""
+        },
+        {
+          "name": "vitest",
+          "path": "skills/vitest",
+          "hash": "d0c470a07b90",
+          "source": ""
+        },
+        {
+          "name": "zod-validation",
+          "path": "skills/zod-validation",
+          "hash": "b29a41445211",
+          "source": ""
+        }
+      ],
+      "agents": [
+        {
+          "name": "skill-author.md",
+          "path": ".claude/agents/skill-author.md",
+          "hash": "584b6264c8cf"
+        },
+        {
+          "name": "skill-curator.md",
+          "path": ".claude/agents/skill-curator.md",
+          "hash": "f9947a5fb10a"
+        }
+      ],
+      "commands": []
+    }
+  ],
+  "copies": [
+    "qdrant-cloud-ui-copy (copy of qdrant-cloud-ui)",
+    "qdrant-cloud-ui-copy2 (copy of qdrant-cloud-ui)"
+  ],
+  "conflicts": [
+    "version\t./.claude/skills/golang-error-handling\tca442131bb40 differs from brain .agents/skills/golang-error-handling 536c25e624c3",
+    "version\t./.claude/skills/golang-grpc\ta080ffbaf5b4 differs from brain .agents/skills/golang-grpc d8732f076189",
+    "version\t./.claude/skills/golang-observability\tc314b828e2a4 differs from brain .agents/skills/golang-observability 539f7fc73370",
+    "version\t./.claude/skills/golang-testing\t6056559e12e9 differs from brain .agents/skills/golang-testing 55eea3ed4536",
+    "version\tdesign-figma/.claude/skills/find-skills\tdeddc03b4b5f differs from brain .agents/skills/find-skills c00eeea0e13e",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/bash-defensive-patterns\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/fastapi-python\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/fastapi-templates\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/pydantic\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/python-executor\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/python-patterns\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/python-testing-patterns\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/sqlalchemy\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-api/.claude/skills/sqlalchemy-alembic-expert-best-practices-code-review\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/architecture-patterns\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/find-skills\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-cli\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-concurrency\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-context\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-continuous-integration\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-database\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-dependency-management\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-error-handling\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-grpc\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-lint\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-observability\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-pro\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-project-layout\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-security\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-spf13-cobra\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-spf13-viper\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-stretchr-testify\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-testing\tno readable SKILL.md",
+    "broken\tqdrant-cloud-cluster-service/.claude/skills/protobuf\tno readable SKILL.md",
+    "broken\tqdrant-cloud-iam-service/.claude/skills/golang-patterns\tno readable SKILL.md",
+    "broken\tqdrant-cloud-iam-service/.claude/skills/golang-testing\tno readable SKILL.md"
+  ]
+}

@@ -46,6 +46,13 @@ while IFS= read -r line; do
 done < mcp/link-targets.txt
 node bin/brain.mjs link-skills --apply "${targets[@]}"
 
+step "Link agents"
+mkdir -p "$HOME/.claude/agents"
+for agent in agents/*.md; do
+  ln -sfn "$root/$agent" "$HOME/.claude/agents/$(basename "$agent")"
+  echo "$HOME/.claude/agents/$(basename "$agent") -> $root/$agent"
+done
+
 step "Create the Chrome profile directory"
 mkdir -p "$profile"
 echo "$profile"

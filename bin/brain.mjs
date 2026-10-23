@@ -6,6 +6,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { serveMCP } from "../lib/mcp.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
 import { acceptSkill, linkSkills } from "../lib/skills.mjs";
+import { premiseStats } from "../lib/stats.mjs";
+import { brainSkills, conflicts, drift, readInventory, scanWorkspace, workspaceRoot, writeInventory } from "../lib/workspace.mjs";
 import { runSkills, skillsUsage } from "../lib/third-party.mjs";
 
 const strengths = new Set(["always", "never", "prefer"]);
@@ -19,6 +21,9 @@ export async function run(args, stdout, stderr) {
   }
   if (args.length > 0 && args[0] === "accept-skill") {
     return cmdAcceptSkill(args.slice(1), stderr);
+  }
+  if (args.length > 0 && args[0] === "workspace") {
+    return cmdWorkspace(args.slice(1), stdout, stderr);
   }
   if (args.length > 0 && args[0] === "link-skills") {
     return cmdLinkSkills(args.slice(1), stdout, stderr);
@@ -46,6 +51,8 @@ async function runPremise(args, stdout, stderr) {
       return cmdRm(args.slice(1), stderr);
     case "search":
       return cmdSearch(args.slice(1), stdout, stderr);
+    case "stats":
+      return cmdStats(args.slice(1), stdout, stderr);
     default:
       usage(stderr);
       return 1;
@@ -157,6 +164,56 @@ async function cmdSearch(args, stdout, stderr) {
     return 0;
   } catch (err) {
     return failStore(stderr, err);
+  }
+}
+
+// cmdStats prints id, applied, rejected, last applied date, and a flag:
+// unused (never applied), stale (not applied in 90 days), or noisy (often rejected).
+async function cmdStats(args, stdout, stderr) {
+  if (args.length !== 0) {
+    stderr.write("stats takes no arguments\n");
+    return 1;
+  }
+  try {
+    for (const row of await premiseStats(brainRoot())) {
+      stdout.write(`${row.id}\t${row.applied}\t${row.rejected}\t${row.last || "-"}\t${row.flag || "-"}\n`);
+    }
+    return 0;
+  } catch (err) {
+    return failStore(stderr, err);
+  }
+}
+
+// workspace scan stores the agent config of every repo as the baseline.
+// workspace check prints drift since that baseline and new conflicts with the brain.
+async function cmdWorkspace(args, stdout, stderr) {
+  if (args.length !== 1 || (args[0] !== "scan" && args[0] !== "check")) {
+    usage(stderr);
+    return 1;
+  }
+  const brain = brainRoot();
+  try {
+    const live = await scanWorkspace(workspaceRoot());
+    const found = conflicts(live, await brainSkills(brain));
+    if (args[0] === "scan") {
+      await writeInventory(brain, live, found);
+      stdout.write(`${live.repos.length} repos, ${found.length} conflicts. Wrote memory/workspace/inventory.md\n`);
+      return 0;
+    }
+    const baseline = await readInventory(brain);
+    if (!baseline) {
+      stderr.write("no baseline. Run brain workspace scan\n");
+      return 1;
+    }
+    const known = new Set(baseline.conflicts ?? []);
+    const lines = [...drift(baseline, live), ...found.filter((c) => !known.has(c)).map((c) => `conflict\t${c}`)];
+    for (const line of lines) {
+      stdout.write(`${line}\n`);
+    }
+    return lines.length === 0 ? 0 : 1;
+  } catch (err) {
+    stderr.write(`${err.message}\n`);
+    return 2;
   }
 }
 
@@ -357,6 +414,8 @@ function usage(stderr) {
   brain premise show ID
   brain premise rm ID
   brain premise search QUERY
+  brain premise stats
+  brain workspace scan|check
   brain mcp
   brain accept-skill NAME
   brain link-skills [--apply] --target PATH [--target PATH ...]

@@ -26,6 +26,14 @@ while IFS= read -r target; do
   done
 done < mcp/link-targets.txt
 
+step "Remove agent links"
+for link in "$HOME/.claude/agents"/*.md; do
+  if [ -L "$link" ] && [[ "$(readlink "$link")" == "$root/agents/"* ]]; then
+    rm "$link"
+    echo "rm $link"
+  fi
+done
+
 step "Remove the brain command"
 if [ -L "$bin_dir/brain" ] && [ "$(readlink "$bin_dir/brain")" = "$root/bin/brain.mjs" ]; then
   rm "$bin_dir/brain"

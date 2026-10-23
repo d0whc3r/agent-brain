@@ -124,6 +124,6 @@ function main(args) {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   process.exit(main(process.argv.slice(2)));
 }
