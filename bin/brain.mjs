@@ -9,6 +9,7 @@ import { anyScope, loadConfig, resolveRepo } from "../lib/scope.mjs";
 import { acceptSkill, linkSkills } from "../lib/skills.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { premiseStats } from "../lib/stats.mjs";
+import { formatWorktree, listWorktrees } from "../lib/worktrees.mjs";
 import { brainSkills, conflicts, drift, readInventory, scanScopes, writeInventory } from "../lib/workspace.mjs";
 import { runSkills, skillsUsage } from "../lib/third-party.mjs";
 
@@ -29,6 +30,9 @@ export async function run(args, stdout, stderr) {
   }
   if (args.length > 0 && args[0] === "next") {
     return cmdNext(args.slice(1), stdout, stderr);
+  }
+  if (args.length > 0 && args[0] === "worktree") {
+    return cmdWorktree(args.slice(1), stdout, stderr);
   }
   if (args.length > 0 && args[0] === "flows") {
     return cmdFlows(stdout);
@@ -218,6 +222,39 @@ function cmdScope(args, stdout, stderr) {
   return 0;
 }
 
+// cmdWorktree lists the worktrees of the repo at --cwd with state, parent branch, and size.
+function cmdWorktree(args, stdout, stderr) {
+  let cwd = process.cwd();
+  let json = false;
+  if (args[0] !== "list") {
+    usage(stderr);
+    return 1;
+  }
+  for (let i = 1; i < args.length; i++) {
+    if (args[i] === "--json") {
+      json = true;
+    } else if (args[i] === "--cwd" && i + 1 < args.length) {
+      cwd = args[++i];
+    } else {
+      usage(stderr);
+      return 1;
+    }
+  }
+  const list = listWorktrees(cwd);
+  if (!list) {
+    stderr.write(`not a git repo: ${cwd}\n`);
+    return 1;
+  }
+  if (json) {
+    stdout.write(`${JSON.stringify(list, null, 2)}\n`);
+    return 0;
+  }
+  for (const w of list) {
+    stdout.write(`${formatWorktree(w)}\n`);
+  }
+  return 0;
+}
+
 // cmdNext reads the repo state at --cwd (default: the current directory) and lists
 // the flows that match it, most specific first.
 async function cmdNext(args, stdout, stderr) {
@@ -249,7 +286,7 @@ async function cmdNext(args, stdout, stderr) {
     return 0;
   }
   const ticket = ctx.ticket ? ` (${ctx.ticket})` : "";
-  stdout.write(`repo ${ctx.repo}, scope ${ctx.scope || "-"}, branch ${ctx.branch || "detached"}${ticket}, ahead ${ctx.ahead}, behind ${ctx.behind}, ${ctx.dirty ? "dirty" : "clean"}, pr ${ctx.pr}\n`);
+  stdout.write(`repo ${ctx.repo}, scope ${ctx.scope || "-"}, branch ${ctx.branch || "detached"}${ticket}, ahead ${ctx.ahead}, behind ${ctx.behind}, ${ctx.dirty ? "dirty" : "clean"}, pr ${ctx.pr}, worktrees ${ctx.worktrees}\n`);
   stdout.write(`kinds: ${ctx.kinds.join(", ") || "-"}; ${premises.length} active premises\n`);
   flows.forEach((flow, i) => {
     stdout.write(`${i + 1}. ${flow.name}: ${flow.description ?? ""}\n`);
@@ -504,6 +541,7 @@ function usage(stderr) {
   brain workspace check [--all]
   brain next [--cwd DIR] [--json] [--no-pr]
   brain flows
+  brain worktree list [--cwd DIR] [--json]
   brain mcp
   brain accept-skill NAME
   brain link-skills [--apply] --target PATH [--target PATH ...]
