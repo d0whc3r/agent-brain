@@ -7,6 +7,6 @@
     "--no-usage-statistics",
     "--no-performance-crux",
     "--redact-network-headers",
-    "--filesystemRoot=${HOME}/projects/qdrant-review-brain/memory/sessions/screenshots"
+    "--filesystemRoot=${BRAIN_ROOT}/memory/sessions/screenshots"
   ]
 }

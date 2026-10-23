@@ -12,22 +12,38 @@ export PATH="$HOME/.local/bin:$PATH"
 
 The file at `~/.local/bin/brain` is a link to `bin/brain.mjs`.
 
-## One-time setup
+## Install, update, and remove
 
-Run these checks once on this machine.
+Run the install once on a new machine:
 
 ```bash
 cd /Users/josep/projects/qdrant-review-brain
-pnpm test
-pnpm skills:check
-brain premise list
+scripts/install.sh
 ```
 
-`pnpm test` runs the brain tests. `pnpm skills:check` confirms every third-party skill and both internal skills have a `SKILL.md` in this repo.
+The script does these steps:
 
-Open a new session in Claude Code, OpenCode, or Codex. Ask the tool to list skills. You should see `qdrant-personal-review`, `learn`, `review-brain`, `garden`, and `accept-skill`. You should not see `example-draft`.
+1. It installs the Node dependencies with `pnpm`.
+2. It links `~/.local/bin/brain` to `bin/brain.mjs`.
+3. It links each active skill into each path in `mcp/link-targets.txt`, and it removes links to skills that are gone.
+4. It creates the Chrome profile directory.
+5. It registers the `brain-premises` and `chrome-devtools` MCP servers in Claude Code and Codex from `mcp/snippets/`.
+6. It adds the `SessionStart` hook that loads the premises for the current repo.
+7. It runs `brain skills check` and `brain premise list`.
 
-Codex reads `~/.agents/skills`. Claude Code reads `~/.claude/skills`. OpenCode reads `~/.agents/skills`. Do not add a second link for the same skill.
+Set `BRAIN_WORKSPACE` when the repos are not in `~/projects/qdrant`.
+
+To update, pull or change the repo, then run `scripts/install.sh` again. Each step replaces what the last run made.
+
+To remove the setup, run `scripts/uninstall.sh`. It removes the links, the MCP servers, and the hook. It keeps the repo, the memory notes, and the Chrome profile.
+
+Each config file that a script changes keeps a copy with the `.brain-bak` suffix.
+
+OpenCode reads its MCP servers from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`.
+
+After the install, open a new session in Claude Code, OpenCode, or Codex. Ask the tool to list skills. You should see `qdrant-personal-review`, `learn`, `review-brain`, `garden`, and `accept-skill`. You should not see `example-draft`.
+
+Codex and OpenCode read `~/.agents/skills`. Claude Code reads `~/.claude/skills`. Do not add a second link for the same skill.
 
 ## Start work in a code project
 

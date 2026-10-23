@@ -19,15 +19,11 @@ brain premise rm <id>
 
 Run `npm run check` before a commit. It runs the tests, `brain skills check`, and the three scripts in `scripts/`.
 
-## Session premises
+## Install
 
-`bin/session-premises.mjs` is a Claude Code `SessionStart` hook. It prints the active premises for the repo that holds the session directory, and Claude Code adds them to the session context. `BRAIN_WORKSPACE` is the directory that holds the repos. A directory outside it, or a `-copy` directory, prints nothing.
+Run `scripts/install.sh` to set up or update the brain, and `scripts/uninstall.sh` to remove it. [docs/getting-started.md](docs/getting-started.md) lists each step.
 
-The hook entry in `~/.claude/settings.json`:
-
-```bash
-BRAIN_WORKSPACE=/Users/josep/projects/qdrant node /Users/josep/projects/qdrant-review-brain/bin/session-premises.mjs 2>/dev/null || true
-```
+`bin/session-premises.mjs` is the Claude Code `SessionStart` hook that the install adds. It prints the active premises for the repo that holds the session directory. `BRAIN_WORKSPACE` is the directory that holds the repos. A directory outside it, or a `-copy` directory, prints nothing.
 
 `.claude/settings.json` in this repo allows the read-only premise commands. It asks before `git commit`, `git push`, and a premise delete.
 
@@ -37,7 +33,7 @@ Profile path: `$HOME/.local/share/qdrant-review-brain/chrome-profile`
 
 ## MCP
 
-Snippet files are in `mcp/snippets/`. Claude Code and Codex use the expanded paths from these snippets. A tool that does not expand `${HOME}` needs the absolute path.
+Snippet files are in `mcp/snippets/`. `${HOME}` and `${BRAIN_ROOT}` are placeholders. `scripts/setup-config.mjs` fills them when the install registers each server.
 
 `~/.config/opencode/opencode.json` is a symlink to `/Users/josep/dotfiles/agents/opencode.json`. This task did not edit that file or anything under `/Users/josep/dotfiles`. A later dotfiles install can add `chrome-devtools` and `brain-premises` from these snippets.
 
@@ -51,11 +47,11 @@ This section records the probe that picked the skill paths. Repeat its steps whe
 
 The four directory tests on 2026-10-23 printed `claude`, `agents`, `codex`, and `opencode-config`. All four directories exist.
 
-Claude Code reads `~/.claude/skills`. OpenCode reads `~/.agents/skills` when that directory exists. `brain link-skills` passes each `--target` value to Node as written. `mcp/link-targets.txt` stores the absolute paths so the links land in the home directories.
+Claude Code reads `~/.claude/skills`. OpenCode reads `~/.agents/skills` when that directory exists. `mcp/link-targets.txt` stores one path per line. A leading `~/` is the home directory. `brain accept-skill` and `scripts/install.sh` expand it before they link.
 
 ```
-/Users/josep/.claude/skills
-/Users/josep/.agents/skills
+~/.claude/skills
+~/.agents/skills
 ```
 
 The file omits `~/.config/opencode/skills`. OpenCode already reads `~/.agents/skills`. A second link loads each skill twice.

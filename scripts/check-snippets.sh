@@ -25,6 +25,10 @@ need "--no-usage-statistics"
 need "--redact-network-headers"
 need '${HOME}/.local/share/qdrant-review-brain/chrome-profile'
 
+if grep -F -q -e "@latest" "$chrome"; then
+  fail "$chrome uses @latest. Pin a version"
+fi
+
 if grep -F -q -e "--isolated" "$chrome"; then
   fail "$chrome contains --isolated"
 fi

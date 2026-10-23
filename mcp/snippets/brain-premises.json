@@ -1,7 +1,7 @@
 {
-  "command": "/Users/josep/.local/bin/brain",
+  "command": "${HOME}/.local/bin/brain",
   "args": ["mcp"],
   "env": {
-    "BRAIN_ROOT": "/Users/josep/projects/qdrant-review-brain"
+    "BRAIN_ROOT": "${BRAIN_ROOT}"
   }
 }
