@@ -2,6 +2,8 @@
 
 This repo is Josep's personal review brain.
 
+Start with [docs/getting-started.md](docs/getting-started.md). That guide has the setup checks, the prompts, and the use cases.
+
 Repo path: `/Users/josep/projects/qdrant-review-brain`
 
 ## Commands
