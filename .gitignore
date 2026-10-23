@@ -3,3 +3,4 @@ memory/sessions/screenshots/*
 mcp/snippets/obsidian.url
 mcp/snippets/obsidian.key
 .DS_Store
+node_modules/
