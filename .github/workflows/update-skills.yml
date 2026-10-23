@@ -1,0 +1,63 @@
+name: Update third-party skills
+
+on:
+  schedule:
+    # Monday 06:00 UTC.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-skills
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Update project skills
+        run: npx --yes skills update -p -y
+
+      - name: Confirm every catalog skill is present
+        run: node bin/brain.mjs skills check
+
+      - name: Open a pull request when skills change
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git add -- .agents/skills skills-lock.json
+          if git diff --cached --quiet; then
+            echo "No skill updates."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          branch="bot/update-skills"
+          git checkout -B "$branch"
+          git commit -m "chore: update third-party skills"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            git push --force-with-lease origin "$branch"
+          else
+            git push -u origin "$branch"
+          fi
+          if gh pr view "$branch" >/dev/null 2>&1; then
+            echo "Pull request for $branch already exists."
+            exit 0
+          fi
+          gh pr create \
+            --base "${{ github.ref_name }}" \
+            --head "$branch" \
+            --title "chore: update third-party skills" \
+            --body "This pull request refreshes the copies in .agents/skills from skills-lock.json. Review the diff before you merge."
