@@ -3,7 +3,7 @@
 // Edit the user config files that install.sh and uninstall.sh manage.
 // Each command is safe to run twice. A file write keeps a .brain-bak copy.
 
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -22,6 +22,39 @@ export const guardRules = [
   "Bash(git clean:*)",
   "Bash(git branch -D:*)",
 ];
+
+// The brain block in a global instruction file, between these markers.
+const blockStart = "<!-- brain:start -->";
+const blockEnd = "<!-- brain:end -->";
+
+// setBlock removes the brain block from text, then appends block when it is set.
+export function setBlock(text, block) {
+  const start = text.indexOf(blockStart);
+  const end = text.indexOf(blockEnd);
+  let out = text;
+  if (start !== -1 && end > start) {
+    out = (text.slice(0, start) + text.slice(end + blockEnd.length)).replace(/\n{3,}/g, "\n\n");
+  }
+  out = out.trimEnd();
+  if (block) {
+    out += `${out ? "\n\n" : ""}${blockStart}\n${block.trimEnd()}\n${blockEnd}`;
+  }
+  return out ? `${out}\n` : "";
+}
+
+// opencodeAgent turns a Claude Code agent file into an OpenCode subagent file.
+// OpenCode takes a tools map, so a tool missing from the Claude list is turned off.
+export function opencodeAgent(text) {
+  const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!match) {
+    throw new Error("agent file has no frontmatter");
+  }
+  const field = (name) => (match[1].match(new RegExp(`^${name}:\\s*(.*)$`, "m")) ?? [])[1] ?? "";
+  const tools = field("tools").split(",").map((t) => t.trim());
+  const lines = ["---", `description: ${field("description")}`, "mode: subagent", "tools:"];
+  lines.push(`  edit: ${tools.includes("Edit")}`, `  write: ${tools.includes("Write")}`);
+  return `${lines.join("\n")}\n---\n${match[2]}`;
+}
 
 // render fills ${HOME} and ${BRAIN_ROOT} in an MCP snippet.
 export function render(name, vars) {
@@ -145,6 +178,25 @@ function main(args) {
       process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
       return 0;
     }
+    case "opencode-agents": {
+      // Rebuild the OpenCode copies of the agents. install.sh links them.
+      const out = join(root, ".agents", "linked", "opencode-agents");
+      rmSync(out, { recursive: true, force: true });
+      mkdirSync(out, { recursive: true });
+      for (const name of readdirSync(join(root, "agents")).filter((n) => n.endsWith(".md"))) {
+        writeFileSync(join(out, name), opencodeAgent(readFileSync(join(root, "agents", name), "utf8")));
+        process.stdout.write(`${join(out, name)}\n`);
+      }
+      return 0;
+    }
+    case "instructions-add":
+    case "instructions-remove": {
+      // arg is the global instruction file of a tool, such as ~/.codex/AGENTS.md.
+      const block = cmd === "instructions-add" ? readFileSync(join(root, "templates", "agent-instructions.md"), "utf8") : "";
+      const changed = edit(arg, (text) => setBlock(text, block), cmd === "instructions-add" ? "" : undefined);
+      process.stdout.write(`${changed ? "updated" : "unchanged"} ${arg}\n`);
+      return 0;
+    }
     case "codex-add":
     case "codex-remove": {
       const path = join(home, ".codex", "config.toml");
@@ -159,7 +211,7 @@ function main(args) {
       return 0;
     }
     default:
-      process.stderr.write("usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | guard-add | guard-remove | codex-add | codex-remove\n");
+      process.stderr.write("usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n");
       return 1;
   }
 }

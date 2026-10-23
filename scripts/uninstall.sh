@@ -12,6 +12,9 @@ step() {
   printf '\n== %s\n' "$1"
 }
 
+step "Remove what the install receipt lists"
+node bin/brain.mjs installed remove
+
 step "Remove skill links"
 while IFS= read -r target; do
   target="${target/#\~/$HOME}"
@@ -20,7 +23,7 @@ while IFS= read -r target; do
   fi
   for link in "$target"/*; do
     target_of="$(readlink "$link" 2>/dev/null || true)"
-    if [ -L "$link" ] && { [[ "$target_of" == "$root/skills/active/"* ]] || [[ "$target_of" == "$root/.agents/skills/"* ]]; }; then
+    if [ -L "$link" ] && { [[ "$target_of" == "$root/skills/active/"* ]] || [[ "$target_of" == "$root/.agents/skills/"* ]] || [[ "$target_of" == "$root/.agents/linked/"* ]]; }; then
       rm "$link"
       echo "rm $link"
     fi
@@ -28,9 +31,9 @@ while IFS= read -r target; do
 done < mcp/link-targets.txt
 
 step "Remove agent links"
-for link in "$HOME/.claude/agents"/*.md; do
-  if [ -L "$link" ] && [[ "$(readlink "$link")" == "$root/agents/"* ]]; then
-    rm "$link"
+for link in "$HOME/.claude/agents"/*.md "$HOME/.config/opencode/agents"/*.md; do
+  if [ -L "$link" ] && { [[ "$(readlink "$link")" == "$root/agents/"* ]] || [[ "$(readlink "$link")" == "$root/.agents/linked/"* ]]; }; then
+    command rm -f "$link"
     echo "rm $link"
   fi
 done
@@ -58,6 +61,13 @@ node scripts/setup-config.mjs guard-remove
 
 step "Remove MCP servers from Codex"
 node scripts/setup-config.mjs codex-remove
+
+step "Remove the brain instructions from Codex"
+node scripts/setup-config.mjs instructions-remove "$HOME/.codex/AGENTS.md"
+
+step "Remove the generated copies"
+command rm -rf "$root/.agents/linked"
+echo "rm $root/.agents/linked"
 
 cat <<MSG
 

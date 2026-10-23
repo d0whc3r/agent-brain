@@ -1,10 +1,12 @@
 ---
 id: stay-in-request-scope
-text: Keep a change inside the request. Mention unrelated dead code and leave it in place.
+text: "Keep a change inside the request. Mention unrelated dead code and leave it in place."
 strength: always
 scope: "*"
 repos:
   - "*"
 status: active
-source: "skills/active/qdrant-personal-review/SKILL.md@0b353e2"
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: A change outside the request is harder to review and can break what the user did not ask to touch.

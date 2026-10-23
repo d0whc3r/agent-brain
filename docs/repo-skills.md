@@ -5,10 +5,10 @@ Many repos already ship skills. The brain does not replace those skills. A revie
 The live check is:
 
 ```bash
-brain workspace check --all
+brain workspace check
 ```
 
-It reads the baseline in `memory/workspace/inventory.json`. It hashes `SKILL.md` in each repo of each scope root and compares the shared names with `.agents/skills/` in this repo. It also reports skill links with no readable `SKILL.md`. `pnpm skills:drift` runs the same command. Exit 1 means a line was printed.
+It hashes `SKILL.md` in each repo of each scope root and compares the shared names with `.agents/skills/` in this repo. It also reports skill links with no readable `SKILL.md`. `pnpm skills:drift` runs the same command. Exit 1 means a line was printed.
 
 Copy directories are out of scope. Do not learn rules from them.
 
@@ -27,10 +27,6 @@ Copy directories are out of scope. Do not learn rules from them.
 | Regions and clusters docs | `cloud-rc-docs/.agents/skills` | Living-docs skills. |
 
 `skills-team-cloud-ui` keeps three lists apart. `skills.json` is the published vendor set. `skills-lock.json` is the authoring tools. `.claude-plugin/marketplace.json` is the install groups. Do not merge those lists into the brain catalog.
-
-## Current state
-
-`memory/workspace/inventory.md` lists the skills of every repo and the known conflicts with the brain. `brain workspace scan` writes it. Read that file for the current drift. Do not copy hashes into this page.
 
 ## What a hash cannot see
 

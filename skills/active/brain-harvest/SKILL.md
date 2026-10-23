@@ -1,6 +1,6 @@
 ---
-name: harvest
-description: "Collect rules and repeated review defects from Claude Code project memories and Engram, and propose them as brain premises for the user to approve. Use when the user runs /harvest, asks to import rules from memory, or asks which corrections are not yet premises."
+name: brain-harvest
+description: "Collect rules and repeated review defects from Claude Code project memories and Engram, and propose them as brain premises for the user to approve. Use when the user runs /brain-harvest, asks to import rules from memory, or asks which corrections are not yet premises."
 metadata:
   opencode/slash: "true"
 ---
@@ -26,8 +26,8 @@ A memory from a session in a copy directory is a correction from the user, so it
 4. Merge items that say the same rule in different repos. Give each row the scope of its sources. A rule found in three or more repos of one scope gets `repos: ["*"]` in that scope. A rule found in two scopes gets scope `"*"` only when it is about how the user works, not about one team or project.
 5. Show a table: proposed id, text, strength, scope, repos, and the source paths. One sentence per text.
 6. Ask the user which rows to add. Add nothing before the answer.
-7. Add each approved row with `brain premise add` or `premise_add`. Set `source` to the first source path.
-8. Write one decision note for the batch, `memory/decisions/YYYY-MM-DD-harvest.md` from `templates/decision.md`. List each premise id and its sources.
+7. Write one decision note for the batch, `memory/decisions/YYYY-MM-DD-harvest.md` from `templates/decision.md`. For each premise id, state its reason and its origin in words: the repo, the tool, and what happened. Do not cite a memory file, an Engram id, or any path outside the brain, because another machine does not have them.
+8. Add each approved row with `brain premise add` or `premise_add`. Set `source` to that decision note.
 9. Run `brain premise list` and show the new lines.
 
 ## Limits

@@ -1,10 +1,12 @@
 ---
 id: no-schema-or-deploy-unasked
-text: Change a database schema or deploy to production without an explicit request.
+text: "Change a database schema or deploy to production without an explicit request."
 strength: never
 scope: "*"
 repos:
   - "*"
 status: active
-source: "skills/active/qdrant-personal-review/SKILL.md@0b353e2"
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: Both are hard to undo and affect other people.

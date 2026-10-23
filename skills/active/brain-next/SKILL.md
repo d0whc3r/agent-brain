@@ -1,20 +1,20 @@
 ---
-name: next
-description: "Suggest and run the next steps for the repo the user is working in. Reads the repo state (branch, ticket, changed file kinds, dirty tree, PR state, behind main), matches the brain flows, and runs the chosen flow with its skills, agents, MCP servers, and model. Use when the user asks what to do next, asks for help with the next steps, asks what would be good to do in this repo, or runs /next."
+name: brain-next
+description: "Suggest and run the next steps for the repo the user is working in. Reads the repo state (branch, ticket, changed file kinds, dirty tree, PR state, behind main), matches the brain flows, and runs the chosen flow with its skills, agents, MCP servers, and model. Use when the user asks what to do next, asks for help with the next steps, asks what would be good to do in this repo, or runs /brain-next."
 metadata:
   opencode/slash: "true"
 ---
 
 # Next
 
-The brain keeps the usual tasks as flows in `/Users/josep/projects/qdrant-review-brain/flows/`. This skill finds the flows that fit the current state of the repo and runs the one the user picks.
+The brain keeps the usual tasks as flows in `flows/` under `brain root`. This skill finds the flows that fit the current state of the repo and runs the one the user picks.
 
 ## Suggest
 
 1. Run `brain next --json --cwd <repo directory>`.
-2. Show one line of context: repo, branch, ticket, ahead, behind, dirty, PR state, and file kinds.
+2. Show one line of context: repo, branch, ticket, ahead, behind, dirty, PR state, worktrees, and file kinds.
 3. Show at most three flows, in the order of the output. For each one, give the description, the reason it matches (the signals in its frontmatter), and what it uses: skills, agents, MCP servers, and model.
-4. Add one suggestion that no flow covers when the context shows it. Examples: a branch far behind main, untracked files that no check sees, or a ticket key with no Jira link in the commits.
+4. Add one suggestion that no flow covers when the context shows it. Examples: a branch far behind main, untracked files that no check sees, a ticket key with no Jira link in the commits, a diff too big for one review (offer `split-branch`), or worktrees that `brain worktree list` marks `merged` or `gone` (offer to clean them with `brain-worktrees`).
 5. Ask which flow to run. Run nothing before the answer.
 
 ## Run a flow

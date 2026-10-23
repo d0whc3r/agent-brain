@@ -128,3 +128,18 @@ test("TestSetGuardsKeepsOtherRules", () => {
   assert.deepEqual(setGuards(added, false).permissions, { allow: ["Read"], ask: ["Bash(rm:*)"] });
   assert.equal(setGuards({}, false).permissions.ask, undefined);
 });
+
+test("TestSetBlockKeepsUserText", async () => {
+  const { setBlock } = await import("./setup-config.mjs");
+  const added = setBlock("# mine\n", "rules");
+  assert.equal(added, "# mine\n\n<!-- brain:start -->\nrules\n<!-- brain:end -->\n");
+  assert.equal(setBlock(added, "rules"), added);
+  assert.equal(setBlock(added, ""), "# mine\n");
+  assert.equal(setBlock("", ""), "");
+});
+
+test("TestOpencodeAgentTurnsOffMissingTools", async () => {
+  const { opencodeAgent } = await import("./setup-config.mjs");
+  const out = opencodeAgent("---\nname: brain-x\ndescription: \"Reads.\"\ntools: Read, Bash, Write\n---\nBody\n");
+  assert.equal(out, "---\ndescription: \"Reads.\"\nmode: subagent\ntools:\n  edit: false\n  write: true\n---\nBody\n");
+});

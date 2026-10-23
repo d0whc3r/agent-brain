@@ -1,10 +1,12 @@
 ---
 id: no-co-author-no-footer
-text: Add a Co-Authored-By trailer or a Generated with Claude Code footer to a commit or a PR.
+text: "Add a Co-Authored-By trailer, or a tool footer such as Generated with Claude Code, to a commit or a PR."
 strength: never
+scope: "*"
 repos:
   - "*"
 status: active
-source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-public-api/memory/no-co-author-trailer-no-pr-comments.md
-scope: "*"
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: Credit in a commit or a PR is the user's decision. The user corrected this in several repos.

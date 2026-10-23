@@ -60,7 +60,7 @@ To add a scope, add an entry with its owners and roots to `brain.config.json`, t
 1. **Open a chat in the repo.** The session hook prints the active premises for that repo and the three flows that match its state. A copy or a worktree uses the premises of the repo it was cloned from.
 2. **Ask what to do next.** Say "What should I do next here?" The `brain-next` skill reads the branch, the ticket, the changed files, and the PR, and suggests flows. Pick one.
 3. **Work.** The flow names the skills, agents, MCP servers, and model. The premises apply to every step.
-4. **Get a review.** Say "Review this diff." For an independent review, say "Use the brain-reviewer agent on this branch."
+4. **Get a review.** Say "Review this diff." The `brain-reviewer` skill runs the review agent in a fresh context.
 5. **Correct the brain.** When a finding is wrong or you state a rule, say "Remember this: ..." The `brain-learn` skill stores it, and the next review applies it.
 6. **Once a week, care for the brain.** In this repo, say "What should I do next?" The `brain-care` flow checks premise use, workspace drift, and new rules in memory.
 
@@ -71,7 +71,6 @@ These skills live in `skills/active/`. The install links them, and the third-par
 | Skill | What it does | Say this | What it changes |
 |---|---|---|---|
 | `brain-next` | Reads the repo state, suggests matching flows, and runs the one you pick | "What should I do next?" "¿Qué hago ahora?" | Nothing until you pick a flow. It writes a new flow file only after you agree. |
-| `brain-review` | Reviews the diff against the premises of the repo scope. Verifies each finding before it reports it. | "Review this diff." "Revisa este cambio." | A session note in `memory/sessions/`. Never the code. |
 | `brain-learn` | Stores a correction as a decision note and, for `always` or `never`, as a premise | "Remember this." "A partir de ahora..." | A decision note and a premise. |
 | `brain-harvest` | Reads Claude Code memories and Engram, and proposes premises for rules that are not premises yet | "Which of my corrections are not premises yet?" | Only the premises you approve, and one decision note. |
 | `brain-garden` | Drafts a skill when three premises share a repo and a rule | "Can these rules become a skill?" | A draft in `skills/drafts/`. |
@@ -79,7 +78,7 @@ These skills live in `skills/active/`. The install links them, and the third-par
 | `brain-worktrees` | Lists the worktrees with state and parent, plans a split of one branch into reviewable PRs, applies the plan you approve, and cleans merged worktrees | "Split this branch into PRs." "¿Qué worktrees tengo?" "Limpia los worktrees mergeados." | Worktrees and a plan in `memory/splits/`, only after you approve. No commit. |
 | `brain-workspace-audit` | Compares the agent config of the repos in each scope root with the brain: drift, broken links, version drift, name collisions, and rule contradictions. It compares a repo only with the premises of its own scope. | "Do the repo rules contradict the brain?" "Do the repo skills match the brain?" | An audit note, and brain changes you approve. Never a team repo. |
 
-### `brain-review` in detail
+### The review in detail
 
 1. It runs `brain scope` for the repo name and its scope.
 2. It calls `premise_list` for that repo and scope.
@@ -97,13 +96,12 @@ A flow can split the review into lenses, one agent each: `premises`, `security`,
 
 | Agent | What it does | Say this | Tools |
 |---|---|---|---|
-| `brain-reviewer` | Runs `brain-review` in a fresh context, without the assumptions of the session that wrote the code | "Use the brain-reviewer agent on this diff." | Read, Grep, Glob, Bash, Write (session notes only), and the read-only premise tools. No Edit. |
-
+| `brain-reviewer` | Reviews a diff against the premises of the repo scope in a fresh context, without the assumptions of the session that wrote the code. Verifies each finding. Takes a lens: `premises`, `security`, `tests`, or `simplify`. | "Review this diff." "Revisa este cambio." | Read, Grep, Glob, Bash, Write (session notes only), and the read-only premise tools. No Edit. |
 | `brain-split-planner` | Plans a split of one branch into worktrees: parts, files and hunks, dependencies, conflicts, and merge order | "Plan how to split this branch." | Read, Grep, Glob, Bash. Read-only. |
 
-The install links the agents into `~/.claude/agents`. It also writes an OpenCode copy of each one, with `mode: subagent`, and links it into `~/.config/opencode/agents`. In Codex, the skill tells the agent to follow the agent file in the same session.
+Every agent has a skill of the same name, so a skill is the one entry point. The install writes that skill from `templates/agent-skill.md`. It collects the repo, the branch, the scope, and your request, and runs the agent in a fresh context. A tool that cannot run a subagent, such as Codex, follows the agent file in the same session.
 
-Use `brain-reviewer` when the same chat wrote the code. Use `brain-review` in the chat when you want to talk about each finding as you go. Ask for the agent by name, because automatic delegation is not reliable for a required review.
+The install links the agents into `~/.claude/agents`. It also writes an OpenCode copy of each one, with `mode: subagent`, and links it into `~/.config/opencode/agents`.
 
 ## Flows
 
@@ -112,7 +110,7 @@ A flow is a file in `flows/`. Its frontmatter says when it matches and what it u
 | Flow | Matches when | Uses | Model | Done when |
 |---|---|---|---|---|
 | `start-ticket` | `qdrant` scope, on a clean `main` | Atlassian MCP, `brain-tp-grilling`, `brain-tp-planning-and-task-breakdown` | opus | The branch exists and the plan is in chat |
-| `self-review` | Your feature branch with no PR | `brain-reviewer` in a fresh context, `brain-review`, `brain-tp-requesting-code-review` | opus | Each finding has your answer. It edits code only when you ask |
+| `self-review` | Your feature branch with no PR | `brain-reviewer` in a fresh context, `brain-tp-requesting-code-review`, `brain-worktrees` | opus | Each finding has your answer. It edits code only when you ask |
 | `review-branch` | Any repo, when you ask to review the branch or PR of another author | `brain-reviewer` once per lens, `brain-tp-differential-review`, `brain-tp-doubt-driven-development` | opus, sonnet, haiku per lens | Each draft PR comment has your answer |
 | `ui-change-verify` | `qdrant` scope, in `qdrant-cloud-ui` with UI files changed | `chrome-devtools` MCP | sonnet | Checks pass and a screenshot shows the change |
 | `proto-change` | `qdrant` scope, `.proto` files changed | `brain-tp-api-and-interface-design`, `brain-tp-golang-grpc` | opus | `buf breaking` is clean and each consumer has a pin to update |
@@ -146,7 +144,7 @@ A flow is a file in `flows/`. Its frontmatter says when it matches and what it u
 
 ## Third-party skills
 
-The repo keeps every third-party skill once, in `.agents/skills/`, in the open Agent Skills format that Claude Code, Codex, and OpenCode all read. The install links them next to the brain skills. `brain-review` reads the ones whose kind matches the diff. A kind is a type of changed file, the same values that flows use. `brain skills check` confirms each one is present. `brain skills add` installs only into `.agents/skills/`, so no copy lands in another tool folder.
+The repo keeps every third-party skill once, in `.agents/skills/`, in the open Agent Skills format that Claude Code, Codex, and OpenCode all read. The install links them next to the brain skills. `brain-reviewer` reads the ones whose kind matches the diff. A kind is a type of changed file, the same values that flows use. `brain skills check` confirms each one is present. `brain skills add` installs only into `.agents/skills/`, so no copy lands in another tool folder.
 
 | Kind | Skills |
 |---|---|
@@ -159,7 +157,7 @@ The repo keeps every third-party skill once, in `.agents/skills/`, in the open A
 | `ui` | `brain-tp-vercel-react-best-practices`, `brain-tp-vercel-composition-patterns`, `brain-tp-accessibility`, `brain-tp-web-design-guidelines`, `brain-tp-tanstack-query`, `brain-tp-tanstack-router`, `brain-tp-vitest`, `brain-tp-zod-validation`, `brain-tp-typescript-advanced-types`, `brain-tp-react-hook-form`, `brain-tp-frontend-design` |
 | `workflow` | `brain-tp-grilling`, `brain-tp-planning-and-task-breakdown`, `brain-tp-receiving-code-review`, `brain-tp-verification-before-completion`, `brain-tp-git-workflow-and-versioning`, `brain-tp-writing-for-agents`, `brain-tp-differential-review`, `brain-tp-requesting-code-review` |
 
-`brain-review` loads every kind except `workflow`. A `workflow` skill belongs to the flows that name it, so a review does not pay its context cost.
+`brain-reviewer` loads every kind except `workflow`. A `workflow` skill belongs to the flows that name it, so a review does not pay its context cost.
 
 `brain-tp-web-design-guidelines` downloads its rules from GitHub each time it runs, so its rules can change between reviews.
 
@@ -247,7 +245,7 @@ The install registers `brain-premises` and `chrome-devtools` in Claude Code and 
 | `memory/dropped/` | Removed premises | `brain premise rm` |
 | `memory/decisions/` | Decision notes | `brain-learn`, `brain-harvest` |
 | `memory/patterns/` | Links from premises to a draft skill | `brain-garden` |
-| `memory/sessions/` | One note per review | `brain-review` |
+| `memory/sessions/` | One note per review | `brain-reviewer` |
 | `memory/workspace/` | Audit notes | `brain-workspace-audit` |
 | `templates/` | Shapes for each note | You and the skills |
 
@@ -255,7 +253,7 @@ Obsidian can open this repo as a vault. Add and remove premises with the CLI or 
 
 ## Overlaps to know
 
-- `brain-review` and `brain-reviewer` run the same review. The skill runs in your chat. The agent runs in a fresh context.
+- The skill `brain-reviewer` and the agent `brain-reviewer` are one review. The skill is the entry point, and the agent does the work.
 
 ## Learn it in a week
 
@@ -263,7 +261,7 @@ Obsidian can open this repo as a vault. Add and remove premises with the CLI or 
 |---|---|
 | 1 | Open a repo and read what the session hook prints. Say "What should I do next?" |
 | 2 | On a feature branch, say "Review this diff." Reject one finding and state the rule. |
-| 3 | Say "Use the brain-reviewer agent on this branch." Compare with day 2. |
+| 3 | Say "Split this branch into PRs." Read the plan before you approve it. |
 | 4 | Say "Which of my corrections are not premises yet?" Approve the useful rows. |
 | 5 | In this repo, say "What should I do next?" and run `brain-care`. |
 | Later | When you repeat a task twice, ask the `brain-next` skill to save it as a flow. |

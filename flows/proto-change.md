@@ -3,7 +3,7 @@ name: proto-change
 description: Check a proto change and the repos that consume it.
 scopes: [qdrant]
 kinds: [proto]
-skills: [api-and-interface-design, golang-grpc]
+skills: [brain-tp-api-and-interface-design, brain-tp-golang-grpc]
 model: opus
 ---
 

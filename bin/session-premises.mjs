@@ -20,7 +20,7 @@ export function formatContext(ctx, premises, flows) {
     out.push(...premises.map((p) => `- [${p.strength}] ${p.text} (${p.id}, scope ${p.scope})`));
   }
   if (flows.length > 0) {
-    out.push(`Flows that match this repo state: ${flows.map((f) => f.name).join(", ")}. The next skill runs them.`);
+    out.push(`Flows that match this repo state: ${flows.map((f) => f.name).join(", ")}. The brain-next skill runs them.`);
   }
   return `${out.join("\n")}\n`;
 }

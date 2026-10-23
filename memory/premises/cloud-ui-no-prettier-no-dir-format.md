@@ -1,10 +1,12 @@
 ---
 id: cloud-ui-no-prettier-no-dir-format
-text: Run prettier, or oxfmt --write on a directory. Format only the changed files with oxfmt.
+text: "Run prettier, or run oxfmt --write on a directory, in qdrant-cloud-ui. Format only the changed files with oxfmt."
 strength: never
+scope: qdrant
 repos:
   - qdrant-cloud-ui
 status: active
-source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-ui/memory/feedback_formatter_oxfmt.md
-scope: qdrant
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: The repo formats with oxfmt. Prettier gives a different result, and a directory run rewrites files that the branch does not touch.

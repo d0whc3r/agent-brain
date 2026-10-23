@@ -10,7 +10,8 @@ import { acceptSkill, linkSkills } from "../lib/skills.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { premiseStats } from "../lib/stats.mjs";
 import { formatWorktree, listWorktrees } from "../lib/worktrees.mjs";
-import { brainSkills, conflicts, drift, readInventory, scanScopes, writeInventory } from "../lib/workspace.mjs";
+import { readReceipt, receiptPath, removeReceipt, writeReceipt } from "../lib/receipt.mjs";
+import { brainSkills, conflicts, scanScopes } from "../lib/workspace.mjs";
 import { runSkills, skillsUsage } from "../lib/third-party.mjs";
 
 const strengths = new Set(["always", "never", "prefer"]);
@@ -24,6 +25,13 @@ export async function run(args, stdout, stderr) {
   }
   if (args.length > 0 && args[0] === "accept-skill") {
     return cmdAcceptSkill(args.slice(1), stderr);
+  }
+  if (args.length === 1 && args[0] === "root") {
+    stdout.write(`${brainRoot().replace(/\/$/, "")}\n`);
+    return 0;
+  }
+  if (args.length > 0 && args[0] === "installed") {
+    return cmdInstalled(args.slice(1), stdout, stderr);
   }
   if (args.length > 0 && args[0] === "scope") {
     return cmdScope(args.slice(1), stdout, stderr);
@@ -207,7 +215,7 @@ async function cmdStats(args, stdout, stderr) {
   }
 }
 
-// cmdScope prints the scope, repo, and origin owner of the repo at --cwd.
+// cmdScope prints the scope, repo, origin owner, and scope root of the repo at --cwd.
 // "-" as the scope means the repo is in no scope, so only global premises apply.
 function cmdScope(args, stdout, stderr) {
   let cwd = process.cwd();
@@ -217,8 +225,52 @@ function cmdScope(args, stdout, stderr) {
     usage(stderr);
     return 1;
   }
-  const found = resolveRepo(cwd, loadConfig(brainRoot()));
-  stdout.write(`${found.scope || "-"}\t${found.repo}\t${found.owner || "-"}\n`);
+  const config = loadConfig(brainRoot());
+  const found = resolveRepo(cwd, config);
+  const roots = config.scopes[found.scope]?.roots ?? [];
+  stdout.write(`${found.scope || "-"}\t${found.repo}\t${found.owner || "-"}\t${roots[0] ?? "-"}\n`);
+  return 0;
+}
+
+// cmdInstalled prints the install receipt: what install put on disk for this checkout.
+// install.sh runs "installed write" and uninstall.sh runs "installed remove".
+async function cmdInstalled(args, stdout, stderr) {
+  const root = brainRoot();
+  if (args[0] === "remove" && args.length === 1) {
+    await removeReceipt(root, {}, stdout);
+    return 0;
+  }
+  if (args[0] === "write") {
+    const opts = { targets: [], binDir: "", claude: false };
+    for (let i = 1; i < args.length; i++) {
+      if (args[i] === "--claude") {
+        opts.claude = true;
+      } else if (args[i] === "--target" && i + 1 < args.length) {
+        opts.targets.push(args[++i]);
+      } else if (args[i] === "--bin-dir" && i + 1 < args.length) {
+        opts.binDir = args[++i];
+      } else {
+        usage(stderr);
+        return 1;
+      }
+    }
+    const items = await writeReceipt(root, opts, stdout);
+    stdout.write(`${items.length} items in ${receiptPath()}\n`);
+    return 0;
+  }
+  if (args.length !== 0) {
+    usage(stderr);
+    return 1;
+  }
+  const receipt = await readReceipt();
+  if (!receipt) {
+    stderr.write("no receipt. Run scripts/install.sh\n");
+    return 1;
+  }
+  stdout.write(`root\t${receipt.root}\n`);
+  for (const i of receipt.items) {
+    stdout.write(`${i.type}\t${i.name}\t${i.where}\n`);
+  }
   return 0;
 }
 
@@ -301,13 +353,10 @@ async function cmdFlows(stdout) {
   return 0;
 }
 
-// workspace scan stores the agent config of every repo as the baseline.
-// workspace check prints drift since that baseline and new conflicts with the brain.
-// With --all it prints every current conflict.
+// workspace check prints each conflict between the repos in the scope roots and the brain:
+// broken links, version drift of a shared skill, and name collisions. Exit 1 when it prints a line.
 async function cmdWorkspace(args, stdout, stderr) {
-  const all = args[0] === "check" && args[1] === "--all";
-  const valid = (args.length === 1 && (args[0] === "scan" || args[0] === "check")) || (args.length === 2 && all);
-  if (!valid) {
+  if (args.length !== 1 || args[0] !== "check") {
     usage(stderr);
     return 1;
   }
@@ -315,23 +364,10 @@ async function cmdWorkspace(args, stdout, stderr) {
   try {
     const live = await scanScopes(loadConfig(brain));
     const found = conflicts(live, await brainSkills(brain));
-    if (args[0] === "scan") {
-      await writeInventory(brain, live, found);
-      stdout.write(`${live.repos.length} repos, ${found.length} conflicts. Wrote memory/workspace/inventory.md\n`);
-      return 0;
+    for (const line of found) {
+      stdout.write(`conflict\t${line}\n`);
     }
-    const baseline = await readInventory(brain);
-    if (!baseline) {
-      stderr.write("no baseline. Run brain workspace scan\n");
-      return 1;
-    }
-    // --all also prints the conflicts that the baseline already knows.
-    const known = new Set(all ? [] : baseline.conflicts ?? []);
-    const lines = [...drift(baseline, live), ...found.filter((c) => !known.has(c)).map((c) => `conflict\t${c}`)];
-    for (const line of lines) {
-      stdout.write(`${line}\n`);
-    }
-    return lines.length === 0 ? 0 : 1;
+    return found.length === 0 ? 0 : 1;
   } catch (err) {
     stderr.write(`${err.message}\n`);
     return 2;
@@ -536,9 +572,10 @@ function usage(stderr) {
   brain premise rm ID
   brain premise search QUERY
   brain premise stats
+  brain root
   brain scope [--cwd DIR]
-  brain workspace scan
-  brain workspace check [--all]
+  brain installed [write --bin-dir DIR [--target PATH ...] [--claude] | remove]
+  brain workspace check
   brain next [--cwd DIR] [--json] [--no-pr]
   brain flows
   brain worktree list [--cwd DIR] [--json]

@@ -82,15 +82,16 @@ reject_write_active() {
 }
 
 required=(
-  skills/active/next/SKILL.md
-  skills/active/harvest/SKILL.md
-  skills/active/workspace-audit/SKILL.md
-  skills/active/learn/SKILL.md
-  skills/active/garden/SKILL.md
-  skills/active/review-brain/SKILL.md
-  skills/active/accept-skill/SKILL.md
+  skills/active/brain-next/SKILL.md
+  skills/active/brain-harvest/SKILL.md
+  skills/active/brain-workspace-audit/SKILL.md
+  skills/active/brain-learn/SKILL.md
+  skills/active/brain-garden/SKILL.md
+  skills/active/brain-accept-skill/SKILL.md
+  agents/brain-reviewer.md
+  templates/agent-skill.md
+  skills/active/brain-worktrees/SKILL.md
   skills/drafts/example-draft/SKILL.md
-  memory/decisions/2026-10-23-example.md
   memory/dropped/example-new-rpc.md
 )
 
@@ -121,6 +122,11 @@ for dir in skills/active/*/; do
   if ! fm_name="$(front_name "$skill")"; then
     fail "bad frontmatter in $skill"
   fi
+  case "$name" in
+    brain-tp-*|brain) fail "$skill: a brain skill name starts with brain- and not brain-tp-" ;;
+    brain-*) ;;
+    *) fail "$skill: a brain skill name starts with brain-" ;;
+  esac
   if [ "$fm_name" != "$name" ]; then
     fail "name mismatch in $skill: frontmatter is ${fm_name:-empty}"
   fi
@@ -134,33 +140,43 @@ for dir in skills/active/*/; do
 done
 shopt -u nullglob
 
+for agent in agents/*.md; do
+  case "$(basename "$agent")" in
+    brain-*) ;;
+    *) fail "$agent: an agent name starts with brain-" ;;
+  esac
+  # The install writes a skill with the agent name, so no brain skill may take it.
+  if [ -e "skills/active/$(basename "$agent" .md)" ]; then
+    fail "skills/active/$(basename "$agent" .md) has the name of an agent"
+  fi
+done
+
 if [ "$found" -eq 0 ]; then
   fail "no active skills"
 fi
 
-need skills/active/review-brain/SKILL.md "brain scope"
-need skills/active/learn/SKILL.md "--scope"
-need skills/active/workspace-audit/SKILL.md "Do not edit them"
-need skills/active/garden/SKILL.md "skills/drafts"
-need skills/active/garden/SKILL.md "three similar premises"
-need skills/active/garden/SKILL.md "Do not edit skills/active"
-need skills/active/learn/SKILL.md "memory/decisions"
-need skills/active/learn/SKILL.md "do not create a skill"
-need skills/active/review-brain/SKILL.md "premise_list"
-need skills/active/review-brain/SKILL.md "skills/third-party.json"
-need skills/active/review-brain/SKILL.md "do not edit the diff"
-need skills/active/accept-skill/SKILL.md "brain accept-skill"
-need skills/active/accept-skill/SKILL.md "do not push"
+need agents/brain-reviewer.md "brain scope"
+need skills/active/brain-learn/SKILL.md "--scope"
+need skills/active/brain-workspace-audit/SKILL.md "Do not edit them"
+need skills/active/brain-garden/SKILL.md "skills/drafts"
+need skills/active/brain-garden/SKILL.md "three similar premises"
+need skills/active/brain-garden/SKILL.md "Do not edit skills/active"
+need skills/active/brain-learn/SKILL.md "memory/decisions"
+need skills/active/brain-learn/SKILL.md "do not create a skill"
+need agents/brain-reviewer.md "premise_list"
+need agents/brain-reviewer.md "skills/third-party.json"
+need agents/brain-reviewer.md "do not edit the diff"
+need skills/active/brain-accept-skill/SKILL.md "brain accept-skill"
+need skills/active/brain-accept-skill/SKILL.md "do not push"
 need memory/dropped/example-new-rpc.md "example: true"
 need memory/dropped/example-new-rpc.md "text: New RPC lands in cluster-service"
 need memory/dropped/example-new-rpc.md "strength: always"
 need memory/dropped/example-new-rpc.md "status: dropped"
-need memory/decisions/2026-10-23-example.md "example: true"
 
-for slash in learn garden review-brain accept-skill; do
+for slash in brain-learn brain-garden brain-accept-skill brain-worktrees; do
   need "skills/active/${slash}/SKILL.md" 'opencode/slash: "true"'
 done
 
-reject_write_active skills/active/garden/SKILL.md
+reject_write_active skills/active/brain-garden/SKILL.md
 
 exit 0

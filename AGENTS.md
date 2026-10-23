@@ -48,10 +48,10 @@ The test: every changed line traces to the request.
 
 **A commit in a Qdrant repo waits for an explicit ask. A push always waits.**
 
-- Never commit in `/Users/josep/projects/qdrant` unless the user asks in this turn.
+- Never commit in a repo of the `qdrant` scope root unless the user asks in this turn. `brain scope` prints that root.
 - Never push this repo unless the user asks.
 - Never add a co-author.
-- `/accept-skill <name>` is the ask to commit that one skill move in this repo. It is not a push.
+- `/brain-accept-skill <name>` is the ask to commit that one skill move in this repo. It is not a push.
 
 ## 6. Code style
 
@@ -77,7 +77,7 @@ The test: every changed line traces to the request.
 
 The user talks in natural language. You run `brain` and the review steps. Do not ask the user to type a slash command. Read `docs/use-cases.md` when the request matches a case there.
 
-- This repo is the user's. It is not a team repo. Do not edit `/Users/josep/projects/qdrant/AGENTS.md`.
+- This repo is the user's. It is not a team repo. Do not edit the `AGENTS.md` at the `qdrant` scope root.
 - Do not learn from the copy directories named in that workspace file. Do not modify the engine repo `qdrant/`.
 - Before a review, call `premise_list` for the repo and its scope. `brain scope` prints both. Apply every active `always` and `never` premise. Quote each one you applied.
 - Add a premise with `brain premise add` or `premise_add`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.

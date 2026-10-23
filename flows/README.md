@@ -1,6 +1,6 @@
 # Flows
 
-A flow is a task you do often, with the steps that finish it well. `brain next` reads the state of the repo you are in and lists the flows that match it. The `next` skill runs the flow you pick.
+A flow is a task you do often, with the steps that finish it well. `brain next` reads the state of the repo you are in and lists the flows that match it. The `brain-next` skill runs the flow you pick.
 
 ## Fields
 
@@ -27,4 +27,4 @@ The body lists the steps. Keep each step a command. Name the check that proves t
 
 ## Add a flow
 
-Copy the closest flow, change the fields, and run `brain next` in a repo where it should match. The `next` skill offers to write a new flow when you repeat a sequence that no flow covers.
+Copy the closest flow, change the fields, and run `brain next` in a repo where it should match. The `brain-next` skill offers to write a new flow when you repeat a sequence that no flow covers.

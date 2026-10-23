@@ -1,6 +1,6 @@
 ---
-name: accept-skill
-description: "Move one accepted draft skill from skills/drafts to skills/active in the brain repo, commit that move, and refresh the skill links. Use only when the user runs /accept-skill NAME or names the draft to accept."
+name: brain-accept-skill
+description: "Move one accepted draft skill from skills/drafts to skills/active in the brain repo, commit that move, and refresh the skill links. Use only when the user runs /brain-accept-skill NAME or names the draft to accept."
 metadata:
   opencode/slash: "true"
 ---
@@ -9,7 +9,7 @@ metadata:
 
 An active skill loads in every session, so only the user moves a draft to active.
 
-The user accepts in chat. "Accept the go-error-wrapping draft" is enough. You run `brain accept-skill`. Do not ask the user to type `/accept-skill`.
+The user accepts in chat. "Accept the go-error-wrapping draft" is enough. You run `brain accept-skill`. Do not ask the user to type `/brain-accept-skill`.
 
 ## Steps
 

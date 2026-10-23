@@ -1,6 +1,6 @@
 ---
-name: learn
-description: "Record a review correction from the user as a decision note in the brain repo and, when the rule is always or never, as an active premise that later reviews quote. Use when the user states a rule to keep, rejects a review finding, runs /learn, or says recuerda esto or a partir de ahora."
+name: brain-learn
+description: "Record a review correction from the user as a decision note in the brain repo and, when the rule is always or never, as an active premise that later reviews quote. Use when the user states a rule to keep, rejects a review finding, runs /brain-learn, or says recuerda esto or a partir de ahora."
 metadata:
   opencode/slash: "true"
 ---
@@ -9,7 +9,7 @@ metadata:
 
 A correction that stays in chat is lost after the session. This skill stores it as a note, and as a premise when the rule must hold every time.
 
-The user states the rule in chat. Phrases such as "remember this", "recuerda esto", or "a partir de ahora" are enough. You run `brain premise add`. Do not ask the user to type `/learn`.
+The user states the rule in chat. Phrases such as "remember this", "recuerda esto", or "a partir de ahora" are enough. You run `brain premise add`. Do not ask the user to type `/brain-learn`.
 
 ## Steps
 
@@ -36,4 +36,4 @@ brain premise add "Add a new RPC to qdrant-cloud-cluster-service, in Go." --stre
 
 Premise strength is `always`, `never`, or `prefer`. Use `prefer` only when the user asks for a soft rule.
 
-When the note is saved, do not create a skill. The `garden` skill drafts skills from repeated premises.
+When the note is saved, do not create a skill. The `brain-garden` skill drafts skills from repeated premises.

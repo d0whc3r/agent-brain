@@ -1,10 +1,12 @@
 ---
 id: engine-repo-read-only
-text: Edit the engine repo qdrant/. It is read-only.
+text: "Edit the engine repo qdrant/ in the qdrant scope root. Read it only."
 strength: never
 scope: qdrant
 repos:
   - "*"
 status: active
-source: "skills/active/qdrant-personal-review/SKILL.md@0b353e2"
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: The engine belongs to another team. The cloud repos read it as a reference, and a change there needs that team.

@@ -45,11 +45,26 @@ done < mcp/link-targets.txt
 node bin/brain.mjs link-skills --apply "${targets[@]}"
 
 step "Link agents"
-mkdir -p "$HOME/.claude/agents"
-for agent in agents/*.md; do
-  ln -sfn "$root/$agent" "$HOME/.claude/agents/$(basename "$agent")"
-  echo "$HOME/.claude/agents/$(basename "$agent") -> $root/$agent"
-done
+link_agents() {
+  local from="$1" to="$2"
+  mkdir -p "$to"
+  # A link into this checkout whose agent is gone came from an older version.
+  for link in "$to"/*.md; do
+    if [ -L "$link" ] && [[ "$(readlink "$link")" == "$from/"* ]] && [ ! -e "$link" ]; then
+      command rm -f "$link"
+      echo "removed $link"
+    fi
+  done
+  for agent in "$from"/*.md; do
+    ln -sfn "$agent" "$to/$(basename "$agent")"
+    echo "$to/$(basename "$agent") -> $agent"
+  done
+}
+link_agents "$root/agents" "$HOME/.claude/agents"
+if [ -d "$HOME/.config/opencode" ]; then
+  node scripts/setup-config.mjs opencode-agents >/dev/null
+  link_agents "$root/.agents/linked/opencode-agents" "$HOME/.config/opencode/agents"
+fi
 
 step "Create the Chrome profile directory"
 mkdir -p "$profile"
@@ -74,6 +89,16 @@ node scripts/setup-config.mjs guard-add
 step "Register MCP servers in Codex"
 node scripts/setup-config.mjs codex-add
 
+step "Add the brain instructions to Codex"
+node scripts/setup-config.mjs instructions-add "$HOME/.codex/AGENTS.md"
+
+step "Write the install receipt"
+receipt=(--bin-dir "$bin_dir" "${targets[@]}")
+if command -v claude >/dev/null 2>&1; then
+  receipt+=(--claude)
+fi
+node bin/brain.mjs installed write "${receipt[@]}"
+
 step "Verify"
 node bin/brain.mjs skills check
 node bin/brain.mjs premise list >/dev/null
@@ -82,6 +107,8 @@ echo "brain premise list works."
 cat <<MSG
 
 Done. Start a new Claude Code or Codex session to load the changes.
-OpenCode reads its MCP servers from dotfiles. Add brain-premises and chrome-devtools there from mcp/snippets/.
+OpenCode reads its MCP servers and AGENTS.md from dotfiles. Add brain-premises and chrome-devtools
+there from mcp/snippets/, and paste templates/agent-instructions.md into that AGENTS.md.
+Run "brain installed" to list what this install put on disk.
 Run this script again after a pull or a skill change. It is also the update.
 MSG

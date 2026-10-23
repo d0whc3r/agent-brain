@@ -19,7 +19,7 @@ This page gets you from "I cloned the repo" to "I asked for a review in chat".
 ## 2. Install once
 
 ```bash
-cd /Users/josep/projects/qdrant-review-brain
+cd <brain>
 scripts/install.sh
 ```
 
@@ -43,13 +43,13 @@ You stay in the code repo and write the way you would to a teammate.
 Review this diff. Do not edit files.
 ```
 
-The agent loads `review-brain`, calls `premise_list`, and writes findings. You do not type `/review-brain`.
+The agent loads `brain-reviewer`, calls `premise_list`, and writes findings. You do not type `/brain-reviewer`.
 
 ```text
 Remember this: new RPCs go in cluster-service, not cluster-api.
 ```
 
-The agent loads `learn` and runs `brain premise add`. You do not type `/learn`.
+The agent loads `brain-learn` and runs `brain premise add`. You do not type `/brain-learn`.
 
 The map of phrases to actions is `docs/use-cases.md`. The agent reads that file when your words match a case. The full list of skills, agents, flows, and commands is `docs/catalog.md`.
 
@@ -94,7 +94,7 @@ The new line is the proof.
 | "That draft is good. Make go-error-wrapping active." | Runs `brain accept-skill` and shows the commit. It does not push |
 | "Is there a skill for Go context cancellation?" | Loads `find-skills` and shows the add command. It does not install |
 | "Update the third-party skills." | Runs `pnpm skills:update` and shows the diff |
-| "Do the repo skills match the brain?" | Runs `brain workspace check --all` and quotes each conflict |
+| "Do the repo skills match the brain?" | Runs `brain workspace check` and quotes each conflict |
 
 Full phrases and the commands the agent must run are in [use-cases.md](use-cases.md).
 

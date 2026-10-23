@@ -1,10 +1,12 @@
 ---
 id: no-hard-wrapped-markdown
-text: Hard-wrap Markdown prose. Write one line per paragraph.
+text: "Hard-wrap Markdown prose. Write one line per paragraph."
 strength: never
+scope: "*"
 repos:
   - "*"
 status: active
-source: ~/.claude/projects/-Users-josep-projects-qdrant-qdrant-cloud-public-api/memory/no-hard-wrapped-markdown.md
-scope: "*"
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: Hard wraps make diffs noisy, because a one-word change moves every line after it.

@@ -1,7 +1,7 @@
 ---
 name: review-branch
 description: Review the branch or PR of another author with one agent per lens, then verify the findings.
-skills: [review-brain, differential-review, doubt-driven-development]
+skills: [brain-reviewer, brain-tp-differential-review, brain-tp-doubt-driven-development]
 agents: [brain-reviewer]
 mcp: [brain-premises]
 model: opus
@@ -15,7 +15,7 @@ model: opus
    - `tests` with sonnet.
    - `simplify` with haiku.
 4. In Claude Code, you can add `ecc:silent-failure-hunter` and `ecc:pr-test-analyzer` to the `tests` lens, and `ponytail-review` to the `simplify` lens, when the user wants more depth.
-5. Merge the results with opus. Drop duplicates. Run the adversarial check of `doubt-driven-development` on each finding, and drop each one that fails.
+5. Merge the results with opus. Drop duplicates. Run the adversarial check of `brain-tp-doubt-driven-development` on each finding, and drop each one that fails.
 6. Show the findings as draft PR comments, each with file, line, and the premise or lens that produced it. Post nothing unless the user asks.
 7. Remove the worktree with `git worktree remove` when the user is done.
 

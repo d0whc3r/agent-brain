@@ -1,8 +1,17 @@
 # Install receipt
 
 Date: 2026-10-23
-Status: accepted 2026-10-23, not built
+Status: accepted 2026-10-23, built 2026-10-23 with the amendment below
 Owner: Josep
+
+## Amendment, 2026-10-23
+
+The user chose name prefixes in addition to the receipt. This replaces the rejection of approach C and the out-of-scope rule on names:
+
+- Brain skills and agents start with `brain-`. Third-party skills install as `brain-tp-<name>`, from a copy in `.agents/linked/` whose frontmatter name has the prefix. A hyphen separates the prefix, so no file name has a colon.
+- The receipt adds the types `guard` (the git confirmation rules) and `instructions` (the brain block in `~/.codex/AGENTS.md`). `agents` lines also cover the OpenCode copies in `~/.config/opencode/agents`.
+- Install does not print `lost`. It links the whole tree before it writes the receipt, so a missing link is already repaired. A broken link into the checkout counts as removed.
+- `brain installed` prints the receipt. `brain installed write` and `brain installed remove` are the install and uninstall steps.
 
 ## Intent
 

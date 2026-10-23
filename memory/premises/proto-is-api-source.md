@@ -1,6 +1,6 @@
 ---
 id: proto-is-api-source
-text: Start an API change in the proto of qdrant-cloud-public-api. The services and the UI follow it.
+text: "Start an API change in the proto of qdrant-cloud-public-api. The services and the UI follow it."
 strength: always
 scope: qdrant
 repos:
@@ -9,5 +9,7 @@ repos:
   - qdrant-cloud-cluster-service
   - qdrant-cloud-ui
 status: active
-source: "skills/active/qdrant-personal-review/SKILL.md@0b353e2"
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: The proto defines the public contract. A service or UI change that comes first drifts from it.

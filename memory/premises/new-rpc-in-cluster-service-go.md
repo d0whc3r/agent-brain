@@ -1,11 +1,13 @@
 ---
 id: new-rpc-in-cluster-service-go
-text: Add a new RPC to qdrant-cloud-cluster-service, in Go. Leave qdrant-cloud-cluster-api on its Python path.
+text: "Add a new RPC to qdrant-cloud-cluster-service, in Go. Leave qdrant-cloud-cluster-api on its Python path."
 strength: always
 scope: qdrant
 repos:
   - qdrant-cloud-cluster-service
   - qdrant-cloud-cluster-api
 status: active
-source: "skills/active/qdrant-personal-review/SKILL.md@0b353e2"
+source: memory/decisions/2026-10-23-harvest.md
 ---
+
+Why: New backend work moves to the Go service. The Python API keeps its existing RPCs until they move.
