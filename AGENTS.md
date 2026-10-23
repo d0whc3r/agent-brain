@@ -48,8 +48,8 @@ The test: every changed line traces to the request.
 
 **A commit in a Qdrant repo waits for an explicit ask. A push always waits.**
 
-- Never commit in `/Users/josep/projects/qdrant` unless Josep asks in this turn.
-- Never push this repo unless Josep asks.
+- Never commit in `/Users/josep/projects/qdrant` unless the user asks in this turn.
+- Never push this repo unless the user asks.
 - Never add a co-author.
 - `/accept-skill <name>` is the ask to commit that one skill move in this repo. It is not a push.
 
@@ -69,20 +69,20 @@ The test: every changed line traces to the request.
 
 - Comments, commit messages, and replies: cut every word that does not change the meaning.
 - No praise, no superlatives.
-- Chat with Josep in Spanish when he writes in Spanish. Files in this repo stay in English.
+- Chat with the user in Spanish when the user writes in Spanish. Files in this repo stay in English.
 
 ## 8. This brain
 
 **Premises are rules. Skills are workflows. Engram is the session log.**
 
-- This repo is Josep's. It is not a team repo. Do not edit `/Users/josep/projects/qdrant/AGENTS.md`.
+- This repo is the user's. It is not a team repo. Do not edit `/Users/josep/projects/qdrant/AGENTS.md`.
 - Do not learn from the copy directories named in that workspace file. Do not modify the engine repo `qdrant/`.
 - Before a review, call `premise_list` for the repo. Apply every active `always` and `never` premise. Quote each one you applied.
 - Add a premise with `brain premise add` or `premise_add`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.
-- Do not edit `skills/active/` unless Josep accepted that skill in this turn.
+- Do not edit `skills/active/` unless the user accepted that skill in this turn.
 - Do not write tokens, `.env` values, or customer data into a note.
 - Do not read the Chrome profile directory into a note. Do not commit it.
 - Obsidian shows these files. When Obsidian is closed, use the premise CLI and `brain-premises`.
-- A UI check uses the Chrome DevTools profile for test logins. It does not use Josep's daily Chrome profile.
+- A UI check uses the Chrome DevTools profile for test logins. It does not use the user's daily Chrome profile.
 
-**Working if:** a correction becomes a premise Josep can list and delete, the next review quotes it, and no team repo changed unless he asked.
+**Working if:** a correction becomes a premise the user can list and delete, the next review quotes it, and no team repo changed unless the user asked.

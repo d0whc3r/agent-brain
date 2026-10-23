@@ -1,20 +1,49 @@
 ---
 name: review-brain
-description: "Review the current diff against active premises and qdrant-personal-review. Use when Josep asks for a brain review. Call premise_list first. Do not edit the diff."
+description: "Review the current diff in a Qdrant Cloud repo against the user's active premises and the qdrant-personal-review rules, and report findings without editing code. Use when the user asks for a brain review, asks to review a diff, a branch, or a PR in a qdrant-cloud repo, or says revisa este diff. Call premise_list first."
 metadata:
   opencode/slash: "true"
 ---
 
-Load qdrant-personal-review before the review.
+# Review brain
 
-Call premise_list for the repo Josep names. Apply every active always premise and every active never premise. Quote each premise you applied.
+This review checks a diff against the rules the user already stated. Premises hold those rules, so a review that skips them repeats old mistakes.
 
-A prefer premise is a note. Treat it as a failure only after Josep marks that premise always.
+## Steps
 
-Read skills/third-party.json. When a flow matches the diff, read `/Users/josep/projects/qdrant-review-brain/.agents/skills/<name>/SKILL.md`. Read `skills/internal.json` and load `find-skills` or `skill-creator` from that same tree when the task is finding or writing a skill. Do not install a skill in this turn.
+1. Load `qdrant-personal-review`.
+2. Find the repo name. Use the directory under `/Users/josep/projects/qdrant/` that holds the current directory, or the repo the user names.
+3. Call `premise_list` with that repo. The session context can already list the premises. Call the tool anyway, because the files can change during a session.
+4. Get the diff. Use `gh pr diff N` for a PR number. Otherwise use `git diff` for local changes and `git diff <default-branch>...HEAD` for the branch.
+5. Pick the flows from the changed files: `.go` is `go`, `.proto` is `proto`, `.py` is `python`, and `.ts`, `.tsx`, or `.jsx` is `ui`. Every review also uses `review`.
+6. Read `skills/third-party.json`. For each skill whose flows match, read `/Users/josep/projects/qdrant-review-brain/.agents/skills/<name>/SKILL.md`. Do not install a skill in this turn.
+7. Review the diff. Apply every active `always` and `never` premise. A `prefer` premise is a note. It becomes a failure only after the user marks it `always`.
+8. Write the session note (see below).
 
-Review the current diff. Put findings first, with file and line. Put simplify notes and performance notes next. Tie each of those notes to a measurement or to concrete duplication. End with a suggested /learn line when Josep rejects a finding.
+## Output
 
-Append memory/sessions/YYYY-MM-DD.md. Set date, tool, repo, finding_count, and decision_links. Omit file contents, secrets, and customer data.
+Use this structure:
 
-The review writes findings only. After the findings, do not edit the diff.
+```markdown
+## Premises applied
+- [always] <text> (<id>)
+
+## Findings
+- path/to/file.go:42: <problem>. <fix>.
+
+## Simplify and performance
+- path/to/file.go:80: <note tied to a measurement or to concrete duplication>.
+
+## Learn
+/learn "<rule>" (only when the user rejects a finding)
+```
+
+Quote each premise you applied. Put findings first, with file and line. Drop a simplify or performance note that has no measurement and no concrete duplication.
+
+## Session note
+
+Write `memory/sessions/YYYY-MM-DD-<repo>.md` from `templates/session.md`. Add `-2`, `-3`, and so on when the file exists. Set date, tool, repo, finding_count, and decision_links. Omit file contents, secrets, and customer data.
+
+## Limits
+
+The review writes findings only. After the findings, do not edit the diff. The user decides which findings to fix.

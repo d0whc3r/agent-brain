@@ -2,8 +2,12 @@
   "name": "qdrant-review-brain",
   "private": true,
   "type": "module",
+  "bin": {
+    "brain": "./bin/brain.mjs"
+  },
   "scripts": {
     "test": "node --test",
+    "check": "node --test && node bin/brain.mjs skills check && bash scripts/check-layout.sh && bash scripts/check-skills.sh && bash scripts/check-snippets.sh",
     "skills:check": "node bin/brain.mjs skills check",
     "skills:update": "node bin/brain.mjs skills sync"
   },

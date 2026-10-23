@@ -83,12 +83,10 @@ reject_write_active() {
 
 required=(
   skills/active/qdrant-personal-review/SKILL.md
-  skills/active/skill-gardener/SKILL.md
   skills/active/learn/SKILL.md
   skills/active/garden/SKILL.md
   skills/active/review-brain/SKILL.md
   skills/active/accept-skill/SKILL.md
-  skills/active/brain-probe/SKILL.md
   skills/drafts/example-draft/SKILL.md
   memory/decisions/2026-10-23-example.md
   memory/premises/example-new-rpc.md
@@ -141,9 +139,9 @@ fi
 need skills/active/qdrant-personal-review/SKILL.md "qdrant-cloud-cluster-service"
 need skills/active/qdrant-personal-review/SKILL.md "qdrant-cloud-ui-copy"
 need skills/active/qdrant-personal-review/SKILL.md "read-only"
-need skills/active/skill-gardener/SKILL.md "skills/drafts"
-need skills/active/skill-gardener/SKILL.md "three similar premises"
-need skills/active/skill-gardener/SKILL.md "Do not edit skills/active"
+need skills/active/garden/SKILL.md "skills/drafts"
+need skills/active/garden/SKILL.md "three similar premises"
+need skills/active/garden/SKILL.md "Do not edit skills/active"
 need skills/active/learn/SKILL.md "memory/decisions"
 need skills/active/learn/SKILL.md "do not create a skill"
 need skills/active/review-brain/SKILL.md "premise_list"
@@ -160,6 +158,6 @@ for slash in learn garden review-brain accept-skill; do
   need "skills/active/${slash}/SKILL.md" 'opencode/slash: "true"'
 done
 
-reject_write_active skills/active/skill-gardener/SKILL.md
+reject_write_active skills/active/garden/SKILL.md
 
 exit 0

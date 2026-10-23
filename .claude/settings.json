@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(brain premise list:*)",
+      "Bash(brain premise show:*)",
+      "Bash(brain premise search:*)",
+      "Bash(brain skills list)",
+      "Bash(brain skills check)",
+      "Bash(npm test)",
+      "Bash(npm run check)",
+      "Bash(node --test:*)",
+      "mcp__brain-premises__premise_list",
+      "mcp__brain-premises__premise_get",
+      "mcp__brain-premises__premise_search"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(brain premise rm:*)",
+      "mcp__brain-premises__premise_delete"
+    ]
+  }
+}

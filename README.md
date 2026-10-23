@@ -1,6 +1,6 @@
 # Qdrant review brain
 
-This repo is Josep's personal review brain.
+This repo is a personal review brain.
 
 Start with [docs/getting-started.md](docs/getting-started.md). That guide has the setup checks, the prompts, and the use cases.
 
@@ -17,6 +17,20 @@ brain premise show <id>
 brain premise rm <id>
 ```
 
+Run `npm run check` before a commit. It runs the tests, `brain skills check`, and the three scripts in `scripts/`.
+
+## Session premises
+
+`bin/session-premises.mjs` is a Claude Code `SessionStart` hook. It prints the active premises for the repo that holds the session directory, and Claude Code adds them to the session context. `BRAIN_WORKSPACE` is the directory that holds the repos. A directory outside it, or a `-copy` directory, prints nothing.
+
+The hook entry in `~/.claude/settings.json`:
+
+```bash
+BRAIN_WORKSPACE=/Users/josep/projects/qdrant node /Users/josep/projects/qdrant-review-brain/bin/session-premises.mjs 2>/dev/null || true
+```
+
+`.claude/settings.json` in this repo allows the read-only premise commands. It asks before `git commit`, `git push`, and a premise delete.
+
 ## Chrome profile
 
 Profile path: `$HOME/.local/share/qdrant-review-brain/chrome-profile`
@@ -27,11 +41,13 @@ Snippet files are in `mcp/snippets/`. Claude Code and Codex use the expanded pat
 
 `~/.config/opencode/opencode.json` is a symlink to `/Users/josep/dotfiles/agents/opencode.json`. This task did not edit that file or anything under `/Users/josep/dotfiles`. A later dotfiles install can add `chrome-devtools` and `brain-premises` from these snippets.
 
-Do not register Obsidian until `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key` exist. Josep creates both files. Both files are gitignored. See `mcp/snippets/obsidian.md`.
+Do not register Obsidian until `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key` exist. The user creates both files. Both files are gitignored. See `mcp/snippets/obsidian.md`.
 
 The agent adds and deletes premises only through `brain premise` or the premise MCP.
 
 ## Probe
+
+This section records the probe that picked the skill paths. Repeat its steps when a new agent tool is added: link one skill, ask the tool to list its skills, and keep only the path that shows it.
 
 The four directory tests on 2026-10-23 printed `claude`, `agents`, `codex`, and `opencode-config`. All four directories exist.
 
@@ -54,19 +70,15 @@ brain link-skills --target /Users/josep/.claude/skills --target /Users/josep/.ag
 
 ```
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.claude/skills/accept-skill
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/brain-probe /Users/josep/.claude/skills/brain-probe
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.claude/skills/garden
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.claude/skills/learn
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/qdrant-personal-review /Users/josep/.claude/skills/qdrant-personal-review
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.claude/skills/review-brain
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/skill-gardener /Users/josep/.claude/skills/skill-gardener
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.agents/skills/accept-skill
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/brain-probe /Users/josep/.agents/skills/brain-probe
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.agents/skills/garden
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.agents/skills/learn
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/qdrant-personal-review /Users/josep/.agents/skills/qdrant-personal-review
 ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.agents/skills/review-brain
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/skill-gardener /Users/josep/.agents/skills/skill-gardener
 ```
 
 No line contains `example-draft`.
@@ -88,6 +100,6 @@ OpenCode already had an Engram MCP entry. Claude Code already had the Engram plu
 
 A live "tool lists the skill" confirmation is one session per tool. This OpenCode session listed the seven active skills after the apply. It did not list `example-draft`. Claude Code and Codex each need one session.
 
-Obsidian registration waits for the two gitignored files, `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key`. Josep creates both files.
+Obsidian registration waits for the two gitignored files, `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key`. The user creates both files.
 
 UI checks use the user MCP server `chrome-devtools`, not `plugin:ecc:chrome-devtools`. The user server has the review profile flags. The plugin server does not.

@@ -40,33 +40,33 @@ test("cli", { concurrency: 1 }, async (t) => {
     let result = await invoke([
       "premise",
       "add",
-      "New RPC lands in cluster-service",
+      "New RPC lands in service-a",
       "--strength",
       "always",
       "--repo",
-      "qdrant-cloud-cluster-service",
+      "repo-a",
     ]);
     assert.equal(result.code, 0, result.stderr);
 
     result = await invoke(["premise", "list"]);
     assert.equal(result.code, 0, result.stderr);
-    const want = "new-rpc-lands-in-cluster-service\talways\tNew RPC lands in cluster-service\n";
+    const want = "new-rpc-lands-in-service-a\talways\tNew RPC lands in service-a\n";
     assert.equal(result.stdout, want);
 
-    result = await invoke(["premise", "list", "--repo", "qdrant-cloud-cluster-service"]);
+    result = await invoke(["premise", "list", "--repo", "repo-a"]);
     assert.equal(result.code, 0, result.stderr);
     assert.equal(result.stdout, want);
 
-    result = await invoke(["premise", "list", "--repo", "qdrant-cloud-ui"]);
+    result = await invoke(["premise", "list", "--repo", "repo-b"]);
     assert.equal(result.code, 0, result.stderr);
     assert.equal(result.stdout, "");
 
-    result = await invoke(["premise", "rm", "new-rpc-lands-in-cluster-service"]);
+    result = await invoke(["premise", "rm", "new-rpc-lands-in-service-a"]);
     assert.equal(result.code, 0, result.stderr);
 
     result = await invoke(["premise", "list"]);
     assert.equal(result.code, 0, result.stderr);
-    assert.equal(result.stdout.includes("New RPC lands in cluster-service"), false);
+    assert.equal(result.stdout.includes("New RPC lands in service-a"), false);
   });
 
   await t.test("TestCLISecretExitCode", async (t) => {

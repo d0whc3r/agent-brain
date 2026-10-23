@@ -1,20 +1,26 @@
 ---
 name: accept-skill
-description: "Move an accepted draft skill to skills/active and commit that move in the brain repo. Use only after Josep names the skill."
+description: "Move one accepted draft skill from skills/drafts to skills/active in the brain repo, commit that move, and refresh the skill links. Use only when the user runs /accept-skill NAME or names the draft to accept."
 metadata:
   opencode/slash: "true"
 ---
 
-Run this command only after Josep names the skill and has read the draft.
+# Accept skill
 
-Run brain accept-skill NAME in this repo.
+An active skill loads in every session, so only the user moves a draft to active.
 
-The command moves skills/drafts/NAME to skills/active/NAME and commits with the message skill: accept NAME.
+## Steps
 
-After that commit, the command reads mcp/link-targets.txt. It skips a blank line. It refreshes the active skill links for each path in that file.
+1. Confirm that the user named the skill and has read `skills/drafts/NAME/SKILL.md`. When the user did not name it, list `skills/drafts` and ask.
+2. Run `brain accept-skill NAME` in this repo.
+3. Run `git log -1 --oneline` and show the commit `skill: accept NAME`.
 
-A missing file creates no links. A failed commit creates no links.
+## What the command does
 
-Reject a name that is not a slug. Reject a missing draft. Reject a name that is already active.
+It moves `skills/drafts/NAME` to `skills/active/NAME` and commits only that move. After the commit, it links the active skills into each path in `mcp/link-targets.txt`.
+
+It rejects a name that is not a slug, a missing draft, and a name that is already active. When the commit fails, it puts the draft back and creates no links. Show the error to the user.
+
+## Limits
 
 After the commit, do not push.
