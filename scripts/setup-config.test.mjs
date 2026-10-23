@@ -6,7 +6,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { dropTables, setHook, tomlTable } from "./setup-config.mjs";
+import { dropTables, guardRules, setGuards, setHook, tomlTable } from "./setup-config.mjs";
 
 test("TestSetHookReplacesOnlyBrainHook", () => {
   const other = { type: "command", command: "other-hook" };
@@ -118,3 +118,13 @@ async function configHome(t) {
   });
   return { home, invoke };
 }
+
+test("TestSetGuardsKeepsOtherRules", () => {
+  const settings = { model: "opus", permissions: { allow: ["Read"], ask: ["Bash(rm:*)", "Bash(git push:*)"] } };
+  const added = setGuards(settings, true);
+  assert.deepEqual(added.permissions.ask, ["Bash(rm:*)", ...guardRules]);
+  assert.deepEqual(added.permissions.allow, ["Read"]);
+  assert.deepEqual(setGuards(added, true), added);
+  assert.deepEqual(setGuards(added, false).permissions, { allow: ["Read"], ask: ["Bash(rm:*)"] });
+  assert.equal(setGuards({}, false).permissions.ask, undefined);
+});

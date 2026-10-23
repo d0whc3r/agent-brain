@@ -12,6 +12,17 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const servers = ["brain-premises", "chrome-devtools"];
 const hookMarker = "session-premises.mjs";
 
+// Git commands that need a confirmation in Claude Code. They enforce the premises
+// no-commit-push-unasked and no-schema-or-deploy-unasked for git, so the rule does not
+// depend on the model reading it. After git-guardrails-claude-code in mattpocock/skills.
+export const guardRules = [
+  "Bash(git commit:*)",
+  "Bash(git push:*)",
+  "Bash(git reset --hard:*)",
+  "Bash(git clean:*)",
+  "Bash(git branch -D:*)",
+];
+
 // render fills ${HOME} and ${BRAIN_ROOT} in an MCP snippet.
 export function render(name, vars) {
   const text = readFileSync(join(vars.root, "mcp", "snippets", `${name}.json`), "utf8");
@@ -38,6 +49,21 @@ export function setHook(settings, command) {
     delete hooks.SessionStart;
   }
   return { ...settings, hooks };
+}
+
+// setGuards removes the guard rules from permissions.ask, then adds them back when add is true.
+// Other ask rules stay.
+export function setGuards(settings, add) {
+  const permissions = settings.permissions ?? {};
+  const ask = (permissions.ask ?? []).filter((rule) => !guardRules.includes(rule));
+  if (add) {
+    ask.push(...guardRules);
+  }
+  const next = { ...permissions, ask };
+  if (ask.length === 0) {
+    delete next.ask;
+  }
+  return { ...settings, permissions: next };
 }
 
 // dropTables removes each [mcp_servers.NAME] table and its subtables from TOML text.
@@ -111,6 +137,14 @@ function main(args) {
       process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
       return 0;
     }
+    case "guard-add":
+    case "guard-remove": {
+      const path = join(home, ".claude", "settings.json");
+      const changed = edit(path, (text) => `${JSON.stringify(setGuards(JSON.parse(text), cmd === "guard-add"), null, 2)}\n`,
+        cmd === "guard-add" ? "{}" : undefined);
+      process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
+      return 0;
+    }
     case "codex-add":
     case "codex-remove": {
       const path = join(home, ".codex", "config.toml");
@@ -125,7 +159,7 @@ function main(args) {
       return 0;
     }
     default:
-      process.stderr.write("usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | codex-add | codex-remove\n");
+      process.stderr.write("usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | guard-add | guard-remove | codex-add | codex-remove\n");
       return 1;
   }
 }
