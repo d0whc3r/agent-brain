@@ -16,12 +16,25 @@ The user asks in chat. Phrases such as "review this diff" or "revisa este diff" 
 1. Run `brain scope` in the repo. It prints the scope, the repo name, and the origin owner. A copy or a worktree uses the repo it was cloned from. A `-` scope means the repo is in no scope, so only global premises apply.
 2. Call `premise_list` with that repo and that scope (an empty string for `-`). The session context can already list the premises. Call the tool anyway, because the files can change during a session.
 3. In the `qdrant` scope, read `/Users/josep/projects/qdrant/AGENTS.md` for the repo map. Code in a copy directory is not a source of patterns.
-4. Get the diff. Use `gh pr diff N` for a PR number. Otherwise use `git diff` for local changes and `git diff <default-branch>...HEAD` for the branch.
-5. Pick the kinds from the changed files: `.go` is `go`, `.proto` is `proto`, `.py` is `python`, and `.ts`, `.tsx`, or `.jsx` is `ui`. Every review also uses `review`. Skills of kind `workflow` belong to flows, not to reviews, so skip them here.
+4. Get the diff. Use `gh pr diff N` for a PR number. Otherwise use `git diff` for local changes and `git diff <default-branch>...HEAD` for the branch. For a branch of another author, use `git diff origin/<default-branch>...origin/<branch>`, or read the worktree the flow made for it.
+5. Pick the kinds from the changed files: `.go` is `go`, `.proto` is `proto`, `.py` is `python`, and `.ts`, `.tsx`, or `.jsx` is `ui`. Every review also uses `review`. Skills of kind `workflow` belong to flows, not to reviews, so skip them here. When the caller names a lens, load only the skills of that lens (see below).
 6. Read `skills/third-party.json`. For each skill whose kinds match, read `/Users/josep/projects/qdrant-review-brain/.agents/skills/<name>/SKILL.md`. Do not install a skill in this turn.
 7. Review the diff. Apply every active `always` and `never` premise. A `prefer` premise is a note. It becomes a failure only after the user marks it `always`.
 8. Verify each draft finding (see below). Drop each finding that fails.
 9. Write the session note (see below).
+
+## Lenses
+
+A flow can split one review across agents, one lens each. A lens limits the findings to its focus and names the skills to read. With no lens, the review covers all four. Every lens quotes the premises it applied.
+
+| Lens | Focus | Skills |
+|---|---|---|
+| `premises` | Every active premise, correctness, and design | `code-review-and-quality` and the skills of the changed kinds |
+| `security` | Auth, input validation, secrets, external calls, and what else the change can break | `security-and-hardening`, `differential-review` |
+| `tests` | Changed code that no test covers, weak assertions, and swallowed errors | `test-driven-development` and the test skills of the changed kinds |
+| `simplify` | The smell baseline and duplication | `code-simplification` |
+
+`differential-review` is a `workflow` skill. Read it from `.agents/skills/` only in the `security` lens. Use its blast radius and git history steps. Skip its report file: the output format below wins.
 
 ## Verify
 
@@ -83,3 +96,5 @@ Write `memory/sessions/YYYY-MM-DD-<repo>.md` from `templates/session.md`. Add `-
 ## Limits
 
 The review writes findings only. After the findings, do not edit the diff. The user decides which findings to fix.
+
+On a branch of the user, the user can then ask to apply findings. Apply only the findings the user names, with `code-simplification` for a smell, and run the checks of the repo after. On a branch of another author, never edit: draft PR comments, and post nothing unless the user asks.

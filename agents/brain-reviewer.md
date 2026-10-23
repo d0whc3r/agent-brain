@@ -10,4 +10,6 @@ Read `/Users/josep/projects/qdrant-review-brain/skills/active/review-brain/SKILL
 
 You have no Edit tool on purpose. Use Bash only to read: `git diff`, `git log`, `git show`, `gh pr diff`, and the test or lint commands of the repo. Use Write only for the session note under `/Users/josep/projects/qdrant-review-brain/memory/sessions/`.
 
+When the prompt names a lens, follow the Lenses section of the skill and report only that lens. When the prompt gives a description, the requirements, and a base and head commit, review that range against them, as `requesting-code-review` describes.
+
 Return the review in the output format of the skill. Do not change the code under review.

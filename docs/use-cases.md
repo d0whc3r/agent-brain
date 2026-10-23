@@ -12,7 +12,7 @@ You load `next`. You run `brain next --json --cwd <repo>`. You show at most thre
 
 ## Save or change a flow
 
-User: "Save this as a flow." "Use sonnet for review-diff." "Add the e2e tests to prepare-pr."
+User: "Save this as a flow." "Use sonnet for self-review." "Add the e2e tests to prepare-pr."
 
 You load `next`. You edit or write the file in `flows/` and show the diff. You write a new flow only after the user agrees.
 
@@ -21,6 +21,12 @@ You load `next`. You edit or write the file in `flows/` and show the diff. You w
 User: "Grill this plan." "Interrógame sobre este diseño." "Is this approach sound?"
 
 You load `next` and run the `grill-plan` flow: `grilling` in rounds with a recommended answer for each question, then `doubt-driven-development` for decisions that are hard to undo. You look up facts yourself.
+
+## Review the branch of a teammate
+
+User: "Review PR 123." "Revisa la rama de Ana."
+
+You run the `review-branch` flow. The branch goes into a worktree. `brain-reviewer` runs once per lens: `premises` with opus, `security` and `tests` with sonnet, and `simplify` with haiku. Opus merges the results and drops each finding that fails `doubt-driven-development`. You show draft PR comments and post nothing.
 
 ## Get an independent review
 

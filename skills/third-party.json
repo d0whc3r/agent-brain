@@ -318,6 +318,20 @@
       "kinds": [
         "workflow"
       ]
+    },
+    {
+      "name": "differential-review",
+      "source": "trailofbits/skills",
+      "kinds": [
+        "workflow"
+      ]
+    },
+    {
+      "name": "requesting-code-review",
+      "source": "obra/superpowers",
+      "kinds": [
+        "workflow"
+      ]
     }
   ]
 }

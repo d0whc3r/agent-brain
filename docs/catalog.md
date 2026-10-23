@@ -76,6 +76,8 @@ These skills live in `skills/active/`. The install links them, and the third-par
 6. It reports code smells from a baseline of 12 (after Fowler, via mattpocock/skills) as "possible" notes, never as findings. `code-simplification` shapes the fix.
 7. It tags each finding with the premise that produced it, and writes `applied` and `rejected` in the session note.
 
+A flow can split the review into lenses, one agent each: `premises`, `security`, `tests`, and `simplify`. Each lens reads only its own skills. `review-branch` runs all four with a model per lens. The review edits no code. On your own branch, it applies the findings you name when you ask.
+
 `brain premise stats` reads those lists later.
 
 ## Agents
@@ -93,7 +95,8 @@ A flow is a file in `flows/`. Its frontmatter says when it matches and what it u
 | Flow | Matches when | Uses | Model | Done when |
 |---|---|---|---|---|
 | `start-ticket` | `qdrant` scope, on a clean `main` | Atlassian MCP, `grilling`, `planning-and-task-breakdown` | opus | The branch exists and the plan is in chat |
-| `review-diff` | On a feature branch | `brain-reviewer`, `review-brain`, `brain-premises` | opus | Each finding has your answer |
+| `self-review` | Your feature branch with no PR | `brain-reviewer` in a fresh context, `review-brain`, `requesting-code-review` | opus | Each finding has your answer. It edits code only when you ask |
+| `review-branch` | Any repo, when you ask to review the branch or PR of another author | `brain-reviewer` once per lens, `differential-review`, `doubt-driven-development` | opus, sonnet, haiku per lens | Each draft PR comment has your answer |
 | `ui-change-verify` | `qdrant` scope, in `qdrant-cloud-ui` with UI files changed | `chrome-devtools` MCP | sonnet | Checks pass and a screenshot shows the change |
 | `proto-change` | `qdrant` scope, `.proto` files changed | `api-and-interface-design`, `golang-grpc` | opus | `buf breaking` is clean and each consumer has a pin to update |
 | `db-migration` | Files in `alembic/versions` or `migrations` changed | | sonnet | One alembic head, DB tests pass |
@@ -117,7 +120,7 @@ A flow is a file in `flows/`. Its frontmatter says when it matches and what it u
 
 ### Change a flow
 
-- Say "Use sonnet for review-diff." The `next` skill edits the `model` field and shows the diff.
+- Say "Use sonnet for self-review." The `next` skill edits the `model` field and shows the diff.
 - Say "Add a step to prepare-pr: run the e2e tests." The skill edits the steps.
 - Do a task that no flow covers. At the end, the skill offers to save it as a new flow with the signals that would have matched.
 
@@ -136,7 +139,7 @@ The repo keeps every third-party skill once, in `.agents/skills/`, in the open A
 | `migration` | `sqlalchemy-alembic-expert-best-practices-code-review` |
 | `test` | `vitest`, `python-testing-patterns`, `test-driven-development` |
 | `ui` | `vercel-react-best-practices`, `vercel-composition-patterns`, `accessibility`, `web-design-guidelines`, `tanstack-query`, `tanstack-router`, `vitest`, `zod-validation`, `typescript-advanced-types`, `react-hook-form`, `frontend-design` |
-| `workflow` | `grilling`, `planning-and-task-breakdown`, `receiving-code-review`, `verification-before-completion`, `git-workflow-and-versioning`, `writing-for-agents` |
+| `workflow` | `grilling`, `planning-and-task-breakdown`, `receiving-code-review`, `verification-before-completion`, `git-workflow-and-versioning`, `writing-for-agents`, `differential-review`, `requesting-code-review` |
 
 `review-brain` loads every kind except `workflow`. A `workflow` skill belongs to the flows that name it, so a review does not pay its context cost.
 
