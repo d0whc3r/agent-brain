@@ -1,148 +1,38 @@
 # Qdrant review brain
 
-This repo is a personal review brain.
+A personal store of review rules and workflows for Claude Code, Codex, and OpenCode. Scopes keep work and personal practices apart.
 
-Start with [docs/getting-started.md](docs/getting-started.md). [docs/catalog.md](docs/catalog.md) lists every skill, agent, flow, command, and MCP server, with the words that start each one. That guide has the setup checks, the prompts, and the use cases.
+Premises are rules. Skills are workflows. Engram is the session log.
 
-Repo path: `/Users/josep/projects/qdrant-review-brain`
+## Start
 
-## Commands
-
-Run these commands from this repo:
+From this checkout, run:
 
 ```bash
-brain premise list [--repo qdrant-cloud-ui]
-brain premise add "New RPC lands in cluster-service" --strength always --scope qdrant --repo qdrant-cloud-cluster-service
-brain premise show <id>
-brain premise rm <id>
-brain premise stats
+scripts/install.sh
 ```
 
-Pass at least one `--repo` when you add a premise. Use `--repo "*"` for every repo in its scope.
+Open a new chat in a code repo and ask for a review, a rule to remember, or the next step. The agent runs the brain commands.
 
-Updates and deletes keep the Markdown body and additional Obsidian metadata. If you reuse an ID, deletion keeps both archived versions in `memory/dropped/`.
+[Getting started](docs/getting-started.md) covers requirements, updates, removal, and a worked example.
 
-`brain premise stats` prints each active premise with its applied count, rejected count, last applied date, and a flag. The counts come from the `applied` and `rejected` lists in `memory/sessions/`. The flag is `unused` (never applied), `stale` (not applied in 90 days), or `noisy` (rejected at least twice and at least as often as applied). Review a flagged premise, then keep it, change it, or drop it.
+## Documentation
 
-`/harvest` reads the Claude Code project memories and Engram, and proposes premises for rules that are not premises yet. It adds only the rows you approve.
+| Need | Read |
+|---|---|
+| Know what to say in chat | [Use cases](docs/use-cases.md) |
+| Find a skill, command, agent, or scope | [Brain catalog](docs/catalog.md) |
+| Add or change a workflow | [Flow format](flows/README.md) |
+| Compare repo skills with the brain | [Repo skills and audits](docs/repo-skills.md) |
+| Configure MCP, Chrome, or Obsidian | [Tool integrations](docs/integrations.md) |
+| Read the initial setup evidence | [Setup history](docs/setup-history.md) |
 
-Run `npm run check` before a commit. It runs the tests, `brain skills check`, and the three scripts in `scripts/`.
+## Checks
 
-## Next steps and flows
-
-`brain next` reads the state of the repo you are in: branch, ticket key, changed file kinds, dirty tree, PR state, and commits behind `origin/main`. It lists the flows in `flows/` that match, most specific first. The `next` skill shows them and runs the one you pick, with the skills, agents, MCP servers, and model that the flow names. The session hook prints the top three matches at session start.
+Before a commit, run:
 
 ```bash
-brain next [--cwd DIR] [--json] [--no-pr]
-brain flows
+npm run check
 ```
 
-[flows/README.md](flows/README.md) lists the flow fields. Edit a flow to change its steps or its model. Add a flow for a task you repeat.
-
-## Workspace config
-
-Many workspace repos carry their own `AGENTS.md`, `CLAUDE.md`, skills, agents, and commands. `brain workspace scan` lists them in [memory/workspace/inventory.md](memory/workspace/inventory.md) and stores a baseline. Copies of a repo are skipped.
-
-```bash
-brain workspace scan
-brain workspace check
-```
-
-`check` prints each file added, changed, or removed since the baseline, and each new conflict with the brain:
-
-- `broken`: a repo skill entry with no readable `SKILL.md`, such as a link to a skill that is not installed.
-- `version`: a third-party skill that the brain also vendors, with different content.
-- `collision`: a repo skill with the name of a brain skill.
-
-`/workspace-audit` reads the changes and compares the repo rules with the premises. It reports contradictions, duplicates, gaps, and stale premises, and changes the brain only after you approve.
-
-## Install
-
-Run `scripts/install.sh` to set up or update the brain, and `scripts/uninstall.sh` to remove it. [docs/getting-started.md](docs/getting-started.md) lists each step.
-
-The decision to record each installed item in a receipt is in [docs/superpowers/specs/2026-10-23-install-receipt-design.md](docs/superpowers/specs/2026-10-23-install-receipt-design.md). The scripts do not write that file yet.
-
-The installer creates missing Claude Code and Codex configuration files. Before changing an existing file, it saves a `.brain-bak` copy. Repeating the install produces the same configuration and preserves links to configuration files.
-
-`bin/session-premises.mjs` is the Claude Code `SessionStart` hook that the install adds. It prints the scope, the active premises for the repo of the session directory, and the matching flows. `brain.config.json` maps origin owners and roots to scopes. It names the repo from `git remote get-url origin`, so a copy or a worktree loads the premises of the repo it was cloned from.
-
-`agents/brain-reviewer.md` is a read-only review subagent. The install links it into `~/.claude/agents`. It has no Edit tool, and it follows `review-brain` in a fresh context. Ask for it by name, for example: "Use the brain-reviewer agent on this diff."
-
-`.claude/settings.json` in this repo allows the read-only premise commands. It asks before `git commit`, `git push`, and a premise delete.
-
-## Chrome profile
-
-Profile path: `$HOME/.local/share/qdrant-review-brain/chrome-profile`
-
-## MCP
-
-Snippet files are in `mcp/snippets/`. `${HOME}` and `${BRAIN_ROOT}` are placeholders. `scripts/setup-config.mjs` fills them when the install registers each server.
-
-`~/.config/opencode/opencode.json` is a symlink to `/Users/josep/dotfiles/agents/opencode.json`. This task did not edit that file or anything under `/Users/josep/dotfiles`. A later dotfiles install can add `chrome-devtools` and `brain-premises` from these snippets.
-
-Do not register Obsidian until `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key` exist. The user creates both files. Both files are gitignored. See `mcp/snippets/obsidian.md`.
-
-The agent adds and deletes premises only through `brain premise` or the premise MCP.
-
-## Probe
-
-This section records the probe that picked the skill paths. Repeat its steps when a new agent tool is added: link one skill, ask the tool to list its skills, and keep only the path that shows it.
-
-The four directory tests on 2026-10-23 printed `claude`, `agents`, `codex`, and `opencode-config`. All four directories exist.
-
-Claude Code reads `~/.claude/skills`. OpenCode reads `~/.agents/skills` when that directory exists. `mcp/link-targets.txt` stores one path per line. A leading `~/` is the home directory. `brain accept-skill` and `scripts/install.sh` expand it before they link.
-
-```
-~/.claude/skills
-~/.agents/skills
-```
-
-The file omits `~/.config/opencode/skills`. OpenCode already reads `~/.agents/skills`. A second link loads each skill twice.
-
-Codex reads `~/.codex/skills` and `~/.agents/skills`. `codex debug prompt-input` lists both paths as skill roots. It loaded `simple-english` from `~/.agents/skills`. That skill is absent from `~/.codex/skills`. A Codex link loads each skill twice. The file omits `~/.codex/skills` for that reason.
-
-The dry run used this command, without `--apply`:
-
-```bash
-brain link-skills --target /Users/josep/.claude/skills --target /Users/josep/.agents/skills
-```
-
-```
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.claude/skills/accept-skill
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.claude/skills/garden
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/harvest /Users/josep/.claude/skills/harvest
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.claude/skills/learn
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/next /Users/josep/.claude/skills/next
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.claude/skills/review-brain
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/workspace-audit /Users/josep/.claude/skills/workspace-audit
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.agents/skills/accept-skill
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.agents/skills/garden
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/harvest /Users/josep/.agents/skills/harvest
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.agents/skills/learn
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/next /Users/josep/.agents/skills/next
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.agents/skills/review-brain
-ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/workspace-audit /Users/josep/.agents/skills/workspace-audit
-```
-
-No line contains `example-draft`.
-
-The same command with `--apply` created the links. These tests exited 0:
-
-```bash
-test -L ~/.claude/skills/qdrant-personal-review
-test ! -e ~/.claude/skills/example-draft
-test ! -e ~/.agents/skills/example-draft
-test ! -e ~/.codex/skills/example-draft
-```
-
-This task skipped `test -L ~/.codex/skills/qdrant-personal-review`. Step 1 omitted that path. `qdrant-personal-review` is absent under `~/.codex/skills` and under `~/.config/opencode/skills`.
-
-`engram setup codex` ran. The invocation was `engram setup codex --help`, and that command installed the plugin. `rg -q 'mcp_servers.engram' ~/.codex/config.toml` exited 1 before the command. After the command, `[mcp_servers.engram]` is in that file.
-
-OpenCode already had an Engram MCP entry. Claude Code already had the Engram plugin. This task did not run the setup command again.
-
-A live "tool lists the skill" confirmation is one session per tool. This OpenCode session listed the seven active skills after the apply. It did not list `example-draft`. Claude Code and Codex each need one session.
-
-Obsidian registration waits for the two gitignored files, `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key`. The user creates both files.
-
-UI checks use the user MCP server `chrome-devtools`, not `plugin:ecc:chrome-devtools`. The user server has the review profile flags. The plugin server does not.
+This runs the tests, the skill check, and the layout and MCP snippet checks. [AGENTS.md](AGENTS.md) holds the repo rules.
