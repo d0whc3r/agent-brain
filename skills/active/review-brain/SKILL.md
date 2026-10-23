@@ -11,7 +11,7 @@ Call premise_list for the repo Josep names. Apply every active always premise an
 
 A prefer premise is a note. Treat it as a failure only after Josep marks that premise always.
 
-Read skills/third-party.json. Use a catalog entry only when its flow matches the diff and that skill is already installed. Do not install a catalog skill in this turn.
+Read skills/third-party.json. When a flow matches the diff, read `/Users/josep/projects/qdrant-review-brain/.agents/skills/<name>/SKILL.md`. Read `skills/internal.json` and load `find-skills` or `skill-creator` from that same tree when the task is finding or writing a skill. Do not install a skill in this turn.
 
 Review the current diff. Put findings first, with file and line. Put simplify notes and performance notes next. Tie each of those notes to a measurement or to concrete duplication. End with a suggested /learn line when Josep rejects a finding.
 

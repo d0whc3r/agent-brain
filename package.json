@@ -2,6 +2,11 @@
   "name": "qdrant-review-brain",
   "private": true,
   "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "skills:check": "node bin/brain.mjs skills check",
+    "skills:update": "node bin/brain.mjs skills sync"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1"
   }

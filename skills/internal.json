@@ -1,0 +1,12 @@
+{
+  "skills": [
+    {
+      "name": "find-skills",
+      "source": "vercel-labs/skills"
+    },
+    {
+      "name": "skill-creator",
+      "source": "anthropics/skills"
+    }
+  ]
+}
