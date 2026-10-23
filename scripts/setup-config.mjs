@@ -3,9 +3,9 @@
 // Edit the user config files that install.sh and uninstall.sh manage.
 // Each command is safe to run twice. A file write keeps a .brain-bak copy.
 
-import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -46,9 +46,10 @@ export function dropTables(text, names) {
   const out = [];
   let skip = false;
   for (const line of text.split("\n")) {
-    const header = line.match(/^\s*\[([^\]]+)\]\s*$/);
+    const header = line.match(/^\s*\[{1,2}([^\]]+)\]{1,2}\s*(?:#.*)?$/);
     if (header) {
-      skip = headers.some((h) => header[1] === h || header[1].startsWith(`${h}.`));
+      const name = header[1].trim();
+      skip = headers.some((h) => name === h || name.startsWith(`${h}.`));
     }
     if (!skip) {
       out.push(line);
@@ -74,18 +75,22 @@ export function tomlTable(name, server) {
   return lines.join("\n");
 }
 
-function edit(path, change) {
-  if (!existsSync(path)) {
+function edit(path, change, initial) {
+  const exists = existsSync(path);
+  if (!exists && initial === undefined) {
     return false;
   }
-  const before = readFileSync(path, "utf8");
+  const before = exists ? readFileSync(path, "utf8") : initial;
   const after = change(before);
   if (after === before) {
     return false;
   }
-  copyFileSync(path, `${path}.brain-bak`);
+  mkdirSync(dirname(path), { recursive: true });
+  if (exists) {
+    copyFileSync(path, `${path}.brain-bak`);
+  }
   // Write in place so a symlinked config file stays a symlink.
-  writeFileSync(path, after);
+  writeFileSync(path, after, { mode: 0o600 });
   return true;
 }
 
@@ -101,7 +106,8 @@ function main(args) {
     case "hook-remove": {
       const path = join(home, ".claude", "settings.json");
       const command = cmd === "hook-add" ? arg : "";
-      const changed = edit(path, (text) => `${JSON.stringify(setHook(JSON.parse(text), command), null, 2)}\n`);
+      const changed = edit(path, (text) => `${JSON.stringify(setHook(JSON.parse(text), command), null, 2)}\n`,
+        cmd === "hook-add" ? "{}" : undefined);
       process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
       return 0;
     }
@@ -109,12 +115,12 @@ function main(args) {
     case "codex-remove": {
       const path = join(home, ".codex", "config.toml");
       const changed = edit(path, (text) => {
-        let out = dropTables(text, servers);
+        let out = dropTables(text, servers).trimEnd();
         if (cmd === "codex-add") {
-          out += `\n${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}\n`;
+          out += `${out ? "\n\n" : ""}${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}`;
         }
-        return out;
-      });
+        return out ? `${out}\n` : "";
+      }, cmd === "codex-add" ? "" : undefined);
       process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
       return 0;
     }

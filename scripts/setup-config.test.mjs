@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdir, mkdtemp, readFile, readdir, readlink, rm, symlink, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { dropTables, setHook, tomlTable } from "./setup-config.mjs";
 
@@ -50,3 +55,66 @@ test("TestCodexTables", () => {
   const table = tomlTable("demo", { command: "cmd", args: ["-y", "x"], env: { K: "v" } });
   assert.equal(table, '[mcp_servers.demo]\ntype = "stdio"\ncommand = "cmd"\nargs = ["-y", "x"]\n\n[mcp_servers.demo.env]\nK = "v"');
 });
+
+test("TestDropKeepsOtherTomlTables", () => {
+  const removed = '[mcp_servers.brain-premises] # old server\ncommand = "old"\n';
+  const kept = '[features] # user settings\nx = true\n\n[[agents]]\nname = "kept"\n';
+  assert.equal(dropTables(removed + kept, ["brain-premises"]), kept);
+  assert.equal(dropTables(removed.replace(" # old server", "") + kept.slice(kept.indexOf("[[agents]]")), ["brain-premises"]),
+    '[[agents]]\nname = "kept"\n');
+});
+
+test("TestInstallCreatesConfig", async (t) => {
+  const { home, invoke } = await configHome(t);
+  const settings = join(home, ".claude", "settings.json");
+  const codex = join(home, ".codex", "config.toml");
+  invoke("hook-add", "node /brain/bin/session-premises.mjs");
+  invoke("codex-add");
+  const hookText = await readFile(settings, "utf8");
+  const codexText = await readFile(codex, "utf8");
+  assert.equal(JSON.parse(hookText).hooks.SessionStart[0].hooks[0].command, "node /brain/bin/session-premises.mjs");
+  assert.match(codexText, /\[mcp_servers\.brain-premises\]/);
+  assert.match(codexText, /\[mcp_servers\.chrome-devtools\]/);
+
+  invoke("hook-add", "node /brain/bin/session-premises.mjs");
+  invoke("codex-add");
+  assert.equal(await readFile(settings, "utf8"), hookText);
+  assert.equal(await readFile(codex, "utf8"), codexText);
+  assert.deepEqual(await readdir(join(home, ".claude")), ["settings.json"]);
+  assert.deepEqual(await readdir(join(home, ".codex")), ["config.toml"]);
+});
+
+test("TestRemoveSkipsMissingConfig", async (t) => {
+  const { home, invoke } = await configHome(t);
+  invoke("hook-remove");
+  invoke("codex-remove");
+  assert.deepEqual(await readdir(home), []);
+});
+
+test("TestInstallKeepsConfigSymlink", async (t) => {
+  const { home, invoke } = await configHome(t);
+  await mkdir(join(home, ".codex"));
+  const target = join(home, "shared.toml");
+  const path = join(home, ".codex", "config.toml");
+  const original = '[features] # keep this\nx = true\n';
+  await writeFile(target, original);
+  await symlink(target, path);
+
+  invoke("codex-add");
+  assert.equal(await readlink(path), target);
+  assert.match(await readFile(target, "utf8"), /\[features\] # keep this\nx = true/);
+  assert.equal(await readFile(`${path}.brain-bak`, "utf8"), original);
+  invoke("codex-remove");
+  assert.equal(await readFile(target, "utf8"), original);
+});
+
+async function configHome(t) {
+  const home = await mkdtemp(join(tmpdir(), "brain-config-"));
+  t.after(() => rm(home, { recursive: true, force: true }));
+  const script = fileURLToPath(new URL("./setup-config.mjs", import.meta.url));
+  const invoke = (...args) => execFileSync(process.execPath, [script, ...args], {
+    env: { ...process.env, HOME: home },
+    encoding: "utf8",
+  });
+  return { home, invoke };
+}

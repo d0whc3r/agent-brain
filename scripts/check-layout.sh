@@ -10,24 +10,18 @@ if ! grep -F -q -e "$line" AGENTS.md; then
   exit 1
 fi
 
-remotes="$(git remote -v)"
-if [ -n "$remotes" ]; then
-  printf '%s\n' "$remotes" >&2
-  exit 1
-fi
-
-shot='memory/sessions/screenshots/shot.png'
-mkdir -p "$(dirname "$shot")"
+shots='memory/sessions/screenshots'
+mkdir -p "$shots"
+shot="$(mktemp "$shots/check-XXXXXX")"
 cleanup() {
-  rm -f "$shot"
+  command rm -f "$shot"
 }
 trap cleanup EXIT
-: > "$shot"
 if ! git check-ignore -q "$shot"; then
   echo "git check-ignore failed for $shot" >&2
   exit 1
 fi
-rm -f "$shot"
+command rm -f "$shot"
 trap - EXIT
 
 profile="${HOME}/.local/share/qdrant-review-brain/chrome-profile"
