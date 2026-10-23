@@ -1,226 +1,118 @@
-# Start here
+# Getting started
 
-Use this brain when you review, simplify, or correct code in a Qdrant Cloud repo. The brain stores your rules. The next session loads those rules.
+You talk to the agent in the code repo. The agent runs the brain commands. You do not type slash commands, and you do not paste a workflow.
 
-The repo path is `/Users/josep/projects/qdrant-review-brain`.
+This page gets you from "I cloned the repo" to "I asked for a review in chat".
 
-`brain` is the command. If your shell cannot find it, run:
+## 1. What you need
 
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
+| Requirement | Why | Detail |
+|---|---|---|
+| Node 20 or later | Runs `brain` | `node --version` |
+| pnpm or npm | Installs the one dependency | The install script picks pnpm when it is present |
+| Claude Code, OpenCode, or Codex | The chat | Open a new session after install |
+| `~/.local/bin` on `PATH` | The agent finds `brain` | The install script prints the export line when it is missing |
+| A Qdrant Cloud repo | The code you talk about | Default workspace: `~/projects/qdrant` |
 
-The file at `~/.local/bin/brain` is a link to `bin/brain.mjs`.
+Set `BRAIN_WORKSPACE` when the repos are not in `~/projects/qdrant`.
 
-## Install, update, and remove
-
-Run the install once on a new machine:
+## 2. Install once
 
 ```bash
 cd /Users/josep/projects/qdrant-review-brain
 scripts/install.sh
 ```
 
-The script does these steps:
+Run it again after a pull or a skill change. That is also the update.
 
-1. It installs the Node dependencies with `pnpm`.
-2. It links `~/.local/bin/brain` to `bin/brain.mjs`.
-3. It links each active skill into each path in `mcp/link-targets.txt`, and it removes links to skills that are gone.
-4. It creates the Chrome profile directory.
-5. It registers the `brain-premises` and `chrome-devtools` MCP servers in Claude Code and Codex from `mcp/snippets/`.
-6. It adds the `SessionStart` hook that loads the premises for the current repo.
-7. It runs `brain skills check` and `brain premise list`.
+The script links `brain`, links the skills, registers the MCP servers, and adds the session hook. The hook prints the active premises when you open a repo under `BRAIN_WORKSPACE`. A copy directory prints nothing.
 
-Set `BRAIN_WORKSPACE` when the repos are not in `~/projects/qdrant`.
+Start a new chat after install. The old chat does not see the new skills.
 
-To update, pull or change the repo, then run `scripts/install.sh` again. Each step replaces what the last run made.
+OpenCode reads MCP servers from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`. The skills still load, because OpenCode reads `~/.agents/skills`.
 
-To remove the setup, run `scripts/uninstall.sh`. It removes the links, the MCP servers, and the hook. It keeps the repo, the memory notes, and the Chrome profile.
+To remove the setup, run `scripts/uninstall.sh`. It keeps the repo, the notes, and the Chrome profile.
 
-Each config file that a script changes keeps a copy with the `.brain-bak` suffix.
+## 3. How a chat works
 
-OpenCode reads its MCP servers from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`.
-
-After the install, open a new session in Claude Code, OpenCode, or Codex. Ask the tool to list skills. You should see `qdrant-personal-review`, `learn`, `review-brain`, `garden`, and `accept-skill`. You should not see `example-draft`.
-
-Codex and OpenCode read `~/.agents/skills`. Claude Code reads `~/.claude/skills`. Do not add a second link for the same skill.
-
-## Start work in a code project
-
-Open the tool in the repo you will change. Do not open a copy directory. The workspace file `/Users/josep/projects/qdrant/AGENTS.md` names the copies. `qdrant-cloud-ui-copy` is one of them.
-
-Say which repo you mean. A short prompt is enough.
+You stay in the code repo and write the way you would to a teammate.
 
 ```text
-Review the current diff in qdrant-cloud-cluster-service.
-Use review-brain. Do not edit the diff.
+Review this diff. Do not edit files.
 ```
 
-The agent must call `premise_list` for that repo before it writes findings. It must quote each `always` and `never` premise it applied.
-
-## Record a rule
-
-Say the rule in one sentence. Name the strength and the repo.
+The agent loads `review-brain`, calls `premise_list`, and writes findings. You do not type `/review-brain`.
 
 ```text
-/learn
-New RPC lands in cluster-service.
-Strength: always.
-Repo: qdrant-cloud-cluster-service.
+Remember this: new RPCs go in cluster-service, not cluster-api.
 ```
 
-`always` and `never` become a premise at once. The next review loads that premise. A `once` note stays a decision. It does not become a premise.
+The agent loads `learn` and runs `brain premise add`. You do not type `/learn`.
 
-You can also write the premise yourself:
+The map of phrases to actions is `docs/use-cases.md`. The agent reads that file when your words match a case.
 
-```bash
-brain premise add "New RPC lands in cluster-service" \
-  --strength always \
-  --repo qdrant-cloud-cluster-service
+## 4. Worked example
+
+Open `qdrant-cloud-cluster-service`. The diff adds an RPC. In the new chat, write:
+
+```text
+Review this diff. Do not change any files.
 ```
 
-List, show, and remove:
+### What the agent does
+
+1. The session hook has already printed the premises for that repo.
+2. The agent loads `qdrant-personal-review`.
+3. The agent calls `premise_list` and quotes each `always` and `never` premise.
+4. The agent reads the diff and the Go skills under `.agents/skills/` because the files are `.go`.
+5. The agent writes findings with file and line. It does not edit the diff.
+6. The agent writes a short note under `memory/sessions/`.
+
+### What you say next
+
+```text
+No. Keep new RPCs in cluster-service. Do not add them to cluster-api. Remember that.
+```
+
+The agent stores the rule. Ask it to show the list, or run this yourself:
 
 ```bash
 brain premise list --repo qdrant-cloud-cluster-service
-brain premise show new-rpc-lands-in-cluster-service
-brain premise rm new-rpc-lands-in-cluster-service
 ```
 
-`rm` moves the file to `memory/dropped/`. The active list no longer returns it.
+The new line is the proof.
 
-## Use cases
+## 5. More things you can say
 
-### Review a Go change
+| You say | The agent does |
+|---|---|
+| "Check localhost:3000." | Opens the page in `chrome-devtools`, takes one screenshot, reads the console |
+| "Confirm the proto is the source. Do not touch qdrant/." | Reviews the proto diff and leaves the engine repo alone |
+| "These three rules keep coming up. Make a skill." | Writes a draft under `skills/drafts/` and stops |
+| "That draft is good. Make go-error-wrapping active." | Runs `brain accept-skill` and shows the commit. It does not push |
+| "Is there a skill for Go context cancellation?" | Loads `find-skills` and shows the add command. It does not install |
+| "Update the third-party skills." | Runs `pnpm skills:update` and shows the diff |
+| "Do the repo skills match the brain?" | Runs `pnpm skills:drift` and quotes each drifted file |
 
-You are in `qdrant-cloud-cluster-service`. The diff adds an RPC.
+Full phrases and the commands the agent must run are in [use-cases.md](use-cases.md).
 
-```text
-Review this diff with review-brain.
-Repo: qdrant-cloud-cluster-service.
-Flow: go.
-Do not edit files.
-```
+## 6. Tips
 
-The agent loads `qdrant-personal-review`. It loads premises for that repo. It reads the Go skills under `.agents/skills/` when the catalog flow is `go`. Those skills include `golang-testing`, `golang-error-handling`, and `golang-grpc`.
+- Say the outcome. "Review this" and "remember this" are enough.
+- Name the repo only when the chat is not already inside it.
+- A missing premise is a missing rule. The agent must not invent one.
+- Do not open a copy directory. The session hook ignores names that contain `-copy`.
+- Run `scripts/install.sh` again after the agent accepts a skill. That refreshes the links.
 
-A finding should name the file and the line. A style note without a premise stays out.
-
-### Review a UI change
-
-You are in `qdrant-cloud-ui`. A local server is already running.
-
-```text
-Review this diff with review-brain.
-Repo: qdrant-cloud-ui.
-Flow: ui.
-Open http://localhost:3000 in the chrome-devtools server.
-Take one screenshot. Read the console. Do not edit the diff.
-```
-
-Use the user MCP server named `chrome-devtools`. Do not use `plugin:ecc:chrome-devtools`. The user server keeps test logins in `$HOME/.local/share/qdrant-review-brain/chrome-profile`.
-
-Sign in once in that Chrome window. Later reviews reuse the cookies. If a second tool reports a profile lock, close the first window and retry.
-
-### Review a proto change
-
-You are in `qdrant-cloud-public-api`.
-
-```text
-Review this proto diff with review-brain.
-Repo: qdrant-cloud-public-api.
-Flow: proto.
-Confirm the proto is the source for the API change.
-Do not edit the engine repo qdrant/.
-```
-
-The agent should read `api-and-interface-design` from `.agents/skills/api-and-interface-design/SKILL.md`.
-
-### Reject a finding and keep the correction
-
-The agent flags a name you want to keep.
-
-```text
-Reject that finding.
-/learn
-Keep the existing handler name. Do not rename it to match a new style guide.
-Strength: never.
-Repo: qdrant-cloud-ui.
-```
-
-The next review in that repo must quote this premise.
-
-### Turn three similar rules into a skill
-
-You have three premises about the same Go error pattern.
-
-```text
-/garden
-Cluster premises about Go error wrapping.
-Write the draft under skills/drafts only.
-Do not edit skills/active.
-```
-
-Read the draft. If you want it active:
-
-```text
-/accept-skill go-error-wrapping
-```
-
-That command moves the draft to `skills/active/` and commits that move in the brain repo. It does not push. It refreshes links when `mcp/link-targets.txt` exists.
-
-### Find or write a skill
-
-```text
-Load find-skills from /Users/josep/projects/qdrant-review-brain/.agents/skills/find-skills/SKILL.md.
-Search for a skill that reviews Go context cancellation.
-Do not install it in this turn. Show me the add command.
-```
-
-```text
-Load skill-creator from /Users/josep/projects/qdrant-review-brain/.agents/skills/skill-creator/SKILL.md.
-Draft a skill for our proto field numbering rule.
-Write it under skills/drafts. Do not edit skills/active.
-```
-
-## Third-party skills
-
-The copies live in `.agents/skills/`. `skills/third-party.json` names the review set and the flow for each skill. `skills/internal.json` names `find-skills` and `skill-creator`.
+## 7. When you want the file, not the chat
 
 ```bash
+brain premise list --repo qdrant-cloud-cluster-service
+brain premise rm PREMISE_ID
 pnpm skills:check
 pnpm skills:update
 ```
 
-`pnpm skills:update` runs `brain skills sync`. Sync adds any missing skill with `npx skills add --copy`, then runs `npx skills update -p -y`.
+`rm` moves the file to `memory/dropped/`. The active list no longer returns it.
 
-GitHub runs the same update every Monday at 06:00 UTC. The workflow file is `.github/workflows/update-skills.yml`. You can also start it by hand from the Actions tab. The job runs `npx skills update -p -y`, then `brain skills check`. When the skill files change, it pushes branch `bot/update-skills` and opens a pull request. Review that diff before you merge. The workflow does not push to `master`.
-
-Add one skill to the catalog without installing it:
-
-```bash
-brain skills add owner/repo --skill my-skill --flow review
-```
-
-Add `--apply` when you want the files in this repo.
-
-## What the agent must not do
-
-- Do not edit a Qdrant repo unless you ask in that turn.
-- Do not commit or push a Qdrant repo unless you ask.
-- Do not learn rules from copy directories.
-- Do not modify the engine repo `qdrant/`.
-- Do not edit `skills/active/` unless you accepted that skill in this turn.
-- Do not write tokens, `.env` values, or customer data into a note.
-- Do not read the Chrome profile directory into a note.
-
-## A short session
-
-```text
-1. Open qdrant-cloud-cluster-service.
-2. Review the diff with review-brain. Do not edit.
-3. Reject one finding and /learn it as never.
-4. brain premise list --repo qdrant-cloud-cluster-service
-```
-
-The list in step 4 is the proof. The new premise is there, or the learn step did not finish.
+GitHub refreshes third-party skills every Monday at 06:00 UTC. The workflow is `.github/workflows/update-skills.yml`. It opens a pull request on `bot/update-skills`. Review that diff before you merge.

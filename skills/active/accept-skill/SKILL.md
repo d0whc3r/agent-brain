@@ -9,6 +9,8 @@ metadata:
 
 An active skill loads in every session, so only the user moves a draft to active.
 
+The user accepts in chat. "Accept the go-error-wrapping draft" is enough. You run `brain accept-skill`. Do not ask the user to type `/accept-skill`.
+
 ## Steps
 
 1. Confirm that the user named the skill and has read `skills/drafts/NAME/SKILL.md`. When the user did not name it, list `skills/drafts` and ask.

@@ -9,6 +9,8 @@ metadata:
 
 A premise holds one rule. When three premises share a repo and a rule, a skill can hold the workflow behind them. The user reads each draft before it becomes active.
 
+The user asks in chat. "What can become a skill?" is enough. You write the draft. Do not ask the user to type `/garden`.
+
 ## Steps
 
 1. Read the open notes in `memory/decisions` and call `premise_list` with an empty repo.

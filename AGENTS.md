@@ -75,6 +75,8 @@ The test: every changed line traces to the request.
 
 **Premises are rules. Skills are workflows. Engram is the session log.**
 
+The user talks in natural language. You run `brain` and the review steps. Do not ask the user to type a slash command. Read `docs/use-cases.md` when the request matches a case there.
+
 - This repo is the user's. It is not a team repo. Do not edit `/Users/josep/projects/qdrant/AGENTS.md`.
 - Do not learn from the copy directories named in that workspace file. Do not modify the engine repo `qdrant/`.
 - Before a review, call `premise_list` for the repo. Apply every active `always` and `never` premise. Quote each one you applied.

@@ -12,7 +12,7 @@ Apply these rules before a review or a change in a Qdrant Cloud repo.
 - Protobuf in qdrant-cloud-public-api is the source for an API change. Check the proto first, because the services and the UI follow it.
 - A new RPC lands in qdrant-cloud-cluster-service. Keep that RPC in Go. Leave qdrant-cloud-cluster-api on the Python path.
 - The engine repo qdrant/ is read-only.
-- Copy directories named in the workspace AGENTS.md are out of scope. That set includes qdrant-cloud-ui-copy.
+- Copy directories named in the workspace AGENTS.md, such as qdrant-cloud-ui-copy, are not a source of code patterns. A review in a copy or a worktree uses the premises of its origin repo.
 
 ## Scope
 
