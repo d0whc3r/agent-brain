@@ -1,0 +1,2 @@
+/Users/josep/.claude/skills
+/Users/josep/.agents/skills

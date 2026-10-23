@@ -30,3 +30,62 @@ Do not register Obsidian until `mcp/snippets/obsidian.url` and `mcp/snippets/obs
 The agent adds and deletes premises only through `brain premise` or the premise MCP.
 
 ## Probe
+
+The four directory tests on 2026-10-23 printed `claude`, `agents`, `codex`, and `opencode-config`. All four directories exist.
+
+Claude Code reads `~/.claude/skills`. OpenCode reads `~/.agents/skills` when that directory exists. `brain link-skills` passes each `--target` value to Node as written. `mcp/link-targets.txt` stores the absolute paths so the links land in the home directories.
+
+```
+/Users/josep/.claude/skills
+/Users/josep/.agents/skills
+```
+
+The file omits `~/.config/opencode/skills`. OpenCode already reads `~/.agents/skills`. A second link loads each skill twice.
+
+Codex reads `~/.codex/skills` and `~/.agents/skills`. `codex debug prompt-input` lists both paths as skill roots. It loaded `simple-english` from `~/.agents/skills`. That skill is absent from `~/.codex/skills`. A Codex link loads each skill twice. The file omits `~/.codex/skills` for that reason.
+
+The dry run used this command, without `--apply`:
+
+```bash
+brain link-skills --target /Users/josep/.claude/skills --target /Users/josep/.agents/skills
+```
+
+```
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.claude/skills/accept-skill
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/brain-probe /Users/josep/.claude/skills/brain-probe
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.claude/skills/garden
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.claude/skills/learn
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/qdrant-personal-review /Users/josep/.claude/skills/qdrant-personal-review
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.claude/skills/review-brain
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/skill-gardener /Users/josep/.claude/skills/skill-gardener
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/accept-skill /Users/josep/.agents/skills/accept-skill
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/brain-probe /Users/josep/.agents/skills/brain-probe
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/garden /Users/josep/.agents/skills/garden
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/learn /Users/josep/.agents/skills/learn
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/qdrant-personal-review /Users/josep/.agents/skills/qdrant-personal-review
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/review-brain /Users/josep/.agents/skills/review-brain
+ln -sfn /Users/josep/projects/qdrant-review-brain/skills/active/skill-gardener /Users/josep/.agents/skills/skill-gardener
+```
+
+No line contains `example-draft`.
+
+The same command with `--apply` created the links. These tests exited 0:
+
+```bash
+test -L ~/.claude/skills/qdrant-personal-review
+test ! -e ~/.claude/skills/example-draft
+test ! -e ~/.agents/skills/example-draft
+test ! -e ~/.codex/skills/example-draft
+```
+
+This task skipped `test -L ~/.codex/skills/qdrant-personal-review`. Step 1 omitted that path. `qdrant-personal-review` is absent under `~/.codex/skills` and under `~/.config/opencode/skills`.
+
+`engram setup codex` ran. The invocation was `engram setup codex --help`, and that command installed the plugin. `rg -q 'mcp_servers.engram' ~/.codex/config.toml` exited 1 before the command. After the command, `[mcp_servers.engram]` is in that file.
+
+OpenCode already had an Engram MCP entry. Claude Code already had the Engram plugin. This task did not run the setup command again.
+
+A live "tool lists the skill" confirmation is one session per tool. This OpenCode session listed the seven active skills after the apply. It did not list `example-draft`. Claude Code and Codex each need one session.
+
+Obsidian registration waits for the two gitignored files, `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key`. Josep creates both files.
+
+UI checks use the user MCP server `chrome-devtools`, not `plugin:ecc:chrome-devtools`. The user server has the review profile flags. The plugin server does not.
