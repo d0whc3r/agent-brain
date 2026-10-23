@@ -1,0 +1,90 @@
+{
+  "agents": ["claude-code", "opencode", "codex"],
+  "skills": [
+    {
+      "name": "using-agent-skills",
+      "source": "addyosmani/agent-skills",
+      "flows": ["review"]
+    },
+    {
+      "name": "api-and-interface-design",
+      "source": "addyosmani/agent-skills",
+      "flows": ["proto", "review"]
+    },
+    {
+      "name": "deprecation-and-migration",
+      "source": "addyosmani/agent-skills",
+      "flows": ["go", "python"]
+    },
+    {
+      "name": "observability-and-instrumentation",
+      "source": "addyosmani/agent-skills",
+      "flows": ["go"]
+    },
+    {
+      "name": "doubt-driven-development",
+      "source": "addyosmani/agent-skills",
+      "flows": ["review"]
+    },
+    {
+      "name": "golang-code-style",
+      "source": "samber/cc-skills-golang",
+      "flows": ["go"]
+    },
+    {
+      "name": "golang-error-handling",
+      "source": "samber/cc-skills-golang",
+      "flows": ["go"]
+    },
+    {
+      "name": "golang-testing",
+      "source": "samber/cc-skills-golang",
+      "flows": ["go"]
+    },
+    {
+      "name": "golang-safety",
+      "source": "samber/cc-skills-golang",
+      "flows": ["go"]
+    },
+    {
+      "name": "golang-grpc",
+      "source": "samber/cc-skills-golang",
+      "flows": ["go", "proto"]
+    },
+    {
+      "name": "golang-performance",
+      "source": "samber/cc-skills-golang",
+      "flows": ["go"]
+    },
+    {
+      "name": "golang-observability",
+      "source": "samber/cc-skills-golang",
+      "flows": ["go"]
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "source": "vercel-labs/agent-skills",
+      "flows": ["ui"]
+    },
+    {
+      "name": "vercel-composition-patterns",
+      "source": "vercel-labs/agent-skills",
+      "flows": ["ui"]
+    },
+    {
+      "name": "retro",
+      "source": "mattpocock/skills",
+      "flows": ["review"]
+    },
+    {
+      "name": "diagnosing-bugs",
+      "source": "mattpocock/skills",
+      "flows": ["review"]
+    },
+    {
+      "name": "handoff",
+      "source": "mattpocock/skills",
+      "flows": ["review"]
+    }
+  ]
+}

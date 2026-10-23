@@ -5,12 +5,16 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { serveMCP } from "../lib/mcp.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
+import { runSkills, skillsUsage } from "../lib/third-party.mjs";
 
 const strengths = new Set(["always", "never", "prefer"]);
 
 export async function run(args, stdout, stderr) {
   if (args.length > 0 && args[0] === "mcp") {
     return cmdMCP(args.slice(1), stderr);
+  }
+  if (args.length > 0 && args[0] === "skills") {
+    return runSkills(args.slice(1), stdout, stderr);
   }
   if (args.length === 0 || args[0] !== "premise") {
     usage(stderr);
@@ -261,7 +265,7 @@ function usage(stderr) {
   brain premise rm ID
   brain premise search QUERY
   brain mcp
-`);
+${skillsUsage}`);
 }
 
 // orderFlags puts valued flags before positionals.
