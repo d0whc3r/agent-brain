@@ -1,8 +1,11 @@
 {
-  "root": "~/projects/qdrant",
+  "roots": [
+    "qdrant: ~/projects/qdrant",
+    "personal: ~/projects/github"
+  ],
   "repos": [
     {
-      "dir": ".",
+      "dir": "qdrant/.",
       "origin": "(workspace)",
       "files": [
         {
@@ -441,10 +444,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "cloud-rc-docs",
+      "dir": "qdrant/cloud-rc-docs",
       "origin": "cloud-rc-docs",
       "files": [
         {
@@ -581,10 +585,11 @@
           "path": ".claude/commands/docs-sync-auditor.md",
           "hash": "8157c17ccbb5"
         }
-      ]
+      ],
+      "scope": "qdrant"
     },
     {
-      "dir": "cloud-test",
+      "dir": "qdrant/cloud-test",
       "origin": "cloud-test",
       "files": [
         {
@@ -594,10 +599,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "design-figma",
+      "dir": "qdrant/design-figma",
       "origin": "design-figma",
       "files": [
         {
@@ -712,10 +718,11 @@
           "hash": "98a3fa303a7b"
         }
       ],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "nats-locking-sidecar",
+      "dir": "qdrant/nats-locking-sidecar",
       "origin": "nats-locking-sidecar",
       "files": [
         {
@@ -725,10 +732,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qcloud-cli",
+      "dir": "qdrant/qcloud-cli",
       "origin": "qcloud-cli",
       "files": [
         {
@@ -748,10 +756,11 @@
           "path": ".claude/commands/review-api-coverage.md",
           "hash": "411ef4c0302b"
         }
-      ]
+      ],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant",
+      "dir": "qdrant/qdrant",
       "origin": "qdrant",
       "files": [
         {
@@ -761,10 +770,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-admin-v2",
+      "dir": "qdrant/qdrant-cloud-admin-v2",
       "origin": "qdrant-cloud-admin-v2",
       "files": [
         {
@@ -881,10 +891,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-cluster-api",
+      "dir": "qdrant/qdrant-cloud-cluster-api",
       "origin": "qdrant-cloud-cluster-api",
       "files": [
         {
@@ -1003,10 +1014,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-cluster-service",
+      "dir": "qdrant/qdrant-cloud-cluster-service",
       "origin": "qdrant-cloud-cluster-service",
       "files": [
         {
@@ -1137,10 +1149,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-iam-service",
+      "dir": "qdrant/qdrant-cloud-iam-service",
       "origin": "qdrant-cloud-iam-service",
       "files": [],
       "skills": [
@@ -1158,10 +1171,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-platform-api",
+      "dir": "qdrant/qdrant-cloud-platform-api",
       "origin": "qdrant-cloud-platform-api",
       "files": [
         {
@@ -1171,10 +1185,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-public-api",
+      "dir": "qdrant/qdrant-cloud-public-api",
       "origin": "qdrant-cloud-public-api",
       "files": [],
       "skills": [
@@ -1198,10 +1213,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-ui",
+      "dir": "qdrant/qdrant-cloud-ui",
       "origin": "qdrant-cloud-ui",
       "files": [
         {
@@ -1462,10 +1478,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "qdrant-cloud-ui-buf-plugins",
+      "dir": "qdrant/qdrant-cloud-ui-buf-plugins",
       "origin": "qdrant-cloud-ui-buf-plugins",
       "files": [
         {
@@ -1479,10 +1496,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "serverless-backend",
+      "dir": "qdrant/serverless-backend",
       "origin": "serverless-backend",
       "files": [
         {
@@ -1492,10 +1510,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "serverless-metering",
+      "dir": "qdrant/serverless-metering",
       "origin": "serverless-metering",
       "files": [
         {
@@ -1505,10 +1524,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "serverless-operator",
+      "dir": "qdrant/serverless-operator",
       "origin": "serverless-operator",
       "files": [
         {
@@ -1518,10 +1538,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "serverless-search-distributer",
+      "dir": "qdrant/serverless-search-distributer",
       "origin": "serverless-search-distributer",
       "files": [
         {
@@ -1531,10 +1552,11 @@
       ],
       "skills": [],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "skills-internal",
+      "dir": "qdrant/skills-internal",
       "origin": "skills-internal",
       "files": [],
       "skills": [
@@ -1594,10 +1616,11 @@
         }
       ],
       "agents": [],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
     },
     {
-      "dir": "skills-team-cloud-ui",
+      "dir": "qdrant/skills-team-cloud-ui",
       "origin": "skills-team-cloud-ui",
       "files": [
         {
@@ -1845,49 +1868,3010 @@
           "hash": "f9947a5fb10a"
         }
       ],
-      "commands": []
+      "commands": [],
+      "scope": "qdrant"
+    },
+    {
+      "dir": "personal/.",
+      "origin": "(workspace)",
+      "files": [],
+      "skills": [],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/autoskills",
+      "origin": "autoskills",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "e0065ae68fc2"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "65021e9ccab7",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "astro",
+          "path": ".claude/skills/astro",
+          "hash": "64b0cfb9774b",
+          "source": "astrolicious/agent-skills"
+        },
+        {
+          "name": "frontend-design",
+          "path": ".claude/skills/frontend-design",
+          "hash": "b81e2ff87ed8",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "nodejs-backend-patterns",
+          "path": ".claude/skills/nodejs-backend-patterns",
+          "hash": "bfa843d97934",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "nodejs-best-practices",
+          "path": ".claude/skills/nodejs-best-practices",
+          "hash": "40638a7f66d4",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "oxlint",
+          "path": ".claude/skills/oxlint",
+          "hash": "2bb36d27249b",
+          "source": "delexw/claude-code-misc"
+        },
+        {
+          "name": "seo",
+          "path": ".claude/skills/seo",
+          "hash": "f3e546112a31",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "tailwind-css-patterns",
+          "path": ".claude/skills/tailwind-css-patterns",
+          "hash": "63984406824e",
+          "source": "giuseppe-trisciuoglio/developer-kit"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c142f64de35a",
+          "source": "wshobson/agents"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/claude-warmup",
+      "origin": "agent-warmup",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "ef7c48db9531"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "ink",
+          "path": ".claude/skills/ink",
+          "hash": "94d8395e58fa",
+          "source": "georg-unterholzner/ink-skill"
+        },
+        {
+          "name": "node",
+          "path": ".claude/skills/node",
+          "hash": "fa2888f4a220",
+          "source": "mcollina/skills"
+        },
+        {
+          "name": "scheduler",
+          "path": ".claude/skills/scheduler",
+          "hash": "c5940b79686b",
+          "source": "jshchnz/claude-code-scheduler"
+        },
+        {
+          "name": "terminal-ui",
+          "path": ".claude/skills/terminal-ui",
+          "hash": "c5bfcea2e74e",
+          "source": "pproenca/dot-skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/cursor-rules-template",
+      "origin": "cursor-template",
+      "files": [
+        {
+          "path": ".cursor/rules/concise.mdc",
+          "hash": "831c39e37194"
+        },
+        {
+          "path": ".cursor/rules/core.mdc",
+          "hash": "8e4d51b2fbca"
+        },
+        {
+          "path": ".cursor/rules/no-absolute-right.mdc",
+          "hash": "34272ee9ab6f"
+        },
+        {
+          "path": ".cursor/rules/refresh.mdc",
+          "hash": "59968012b148"
+        },
+        {
+          "path": ".cursor/rules/request.mdc",
+          "hash": "1aacd175a274"
+        },
+        {
+          "path": ".cursor/rules/retro.mdc",
+          "hash": "1329d21b44e8"
+        },
+        {
+          "path": ".cursor/rules/testing.mdc",
+          "hash": "52b1b889ac5e"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/daily-workout",
+      "origin": "daily-workout",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "7cd81c50c146"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "7cd81c50c146"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "267fb2a0707d",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "best-practices",
+          "path": ".claude/skills/best-practices",
+          "hash": "9d1f10a08cd7",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "nodejs-backend-patterns",
+          "path": ".claude/skills/nodejs-backend-patterns",
+          "hash": "d52e1150accd",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "scrape-videos",
+          "path": ".claude/skills/scrape-videos",
+          "hash": "39e1350067ca",
+          "source": ""
+        },
+        {
+          "name": "seo",
+          "path": ".claude/skills/seo",
+          "hash": "57cd16566c2c",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "server-side-rendering",
+          "path": ".claude/skills/server-side-rendering",
+          "hash": "1806bc617146",
+          "source": "patternsdev/skills"
+        },
+        {
+          "name": "shadcn",
+          "path": ".claude/skills/shadcn",
+          "hash": "deba6c5152d9",
+          "source": "shadcn/ui"
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "fecd4bf113c3",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "946c6bc80889",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "c1c2098756ca",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "ee3972318415",
+          "source": ""
+        },
+        {
+          "name": "speckit-converge",
+          "path": ".claude/skills/speckit-converge",
+          "hash": "04226b844379",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "823049e49aa9",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "96cff48c304d",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "9324dd55d12d",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "cb29fb8247a3",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "dfe23aaca349",
+          "source": ""
+        },
+        {
+          "name": "tailwindcss",
+          "path": ".claude/skills/tailwindcss",
+          "hash": "c2fa19b05594",
+          "source": "hairyf/skills"
+        },
+        {
+          "name": "tanstack-devtools",
+          "path": ".claude/skills/tanstack-devtools",
+          "hash": "1e70693ddba7",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-query",
+          "path": ".claude/skills/tanstack-query",
+          "hash": "813406a8fa59",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-table",
+          "path": ".claude/skills/tanstack-table",
+          "hash": "ffd4c5988fd8",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-virtual",
+          "path": ".claude/skills/tanstack-virtual",
+          "hash": "a65058c92fbd",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "web-design-guidelines",
+          "path": ".claude/skills/web-design-guidelines",
+          "hash": "f4647ca866a3",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "workers-best-practices",
+          "path": ".claude/skills/workers-best-practices",
+          "hash": "099432ff265f",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "wrangler",
+          "path": ".claude/skills/wrangler",
+          "hash": "42abe11ba6c0",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "writing-guidelines",
+          "path": ".claude/skills/writing-guidelines",
+          "hash": "89a5f5811932",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "yt-dlp",
+          "path": ".claude/skills/yt-dlp",
+          "hash": "678319341ac2",
+          "source": "lwmxiaobei/yt-dlp-skill"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/find-unused-exports",
+      "origin": "find-unused-exports",
+      "files": [
+        {
+          "path": ".cursor/rules/concise.mdc",
+          "hash": "831c39e37194"
+        },
+        {
+          "path": ".cursor/rules/core.mdc",
+          "hash": "8e4d51b2fbca"
+        },
+        {
+          "path": ".cursor/rules/no-absolute-right.mdc",
+          "hash": "34272ee9ab6f"
+        },
+        {
+          "path": ".cursor/rules/refresh.mdc",
+          "hash": "59968012b148"
+        },
+        {
+          "path": ".cursor/rules/request.mdc",
+          "hash": "1aacd175a274"
+        },
+        {
+          "path": ".cursor/rules/retro.mdc",
+          "hash": "1329d21b44e8"
+        },
+        {
+          "path": ".cursor/rules/testing.md",
+          "hash": "2a81c36fc218"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/git-manager",
+      "origin": "git-manager",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "2a7f7ea7ce42"
+        }
+      ],
+      "skills": [
+        {
+          "name": "ruff",
+          "path": ".claude/skills/ruff",
+          "hash": "b4224a813678",
+          "source": "astral-sh/claude-code-plugins"
+        },
+        {
+          "name": "tui-design",
+          "path": ".claude/skills/tui-design",
+          "hash": "885b2c5afc5d",
+          "source": "gfargo/skills"
+        },
+        {
+          "name": "ty",
+          "path": ".claude/skills/ty",
+          "hash": "980f9844dd9b",
+          "source": "astral-sh/claude-code-plugins"
+        },
+        {
+          "name": "uv",
+          "path": ".claude/skills/uv",
+          "hash": "6553a22dbe42",
+          "source": "astral-sh/claude-code-plugins"
+        },
+        {
+          "name": "vhs-cli-demos",
+          "path": ".claude/skills/vhs-cli-demos",
+          "hash": "1025d25f8645",
+          "source": "gfargo/skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/github-copilot-template",
+      "origin": "github-copilot-template",
+      "files": [
+        {
+          "path": ".github/copilot-instructions.md",
+          "hash": "199c17f0c2d4"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/hackaton-cubepath",
+      "origin": "hackaton-cubepath",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "0bfb127f91c1"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "65021e9ccab7",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "architecture-patterns",
+          "path": ".claude/skills/architecture-patterns",
+          "hash": "e6aafd4d9559",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "astro",
+          "path": ".claude/skills/astro",
+          "hash": "0e97aaaff0d7",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "audit-skills",
+          "path": ".claude/skills/audit-skills",
+          "hash": "6c07c1e2d43a",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "best-practices",
+          "path": ".claude/skills/best-practices",
+          "hash": "f32182e2cd74",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "clean-code",
+          "path": ".claude/skills/clean-code",
+          "hash": "c985eeda1596",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "cloudflare",
+          "path": ".claude/skills/cloudflare",
+          "hash": "a8a819801165",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "code-reviewer",
+          "path": ".claude/skills/code-reviewer",
+          "hash": "092968108ca6",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "code-simplifier",
+          "path": ".claude/skills/code-simplifier",
+          "hash": "acd8ec631853",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "core-web-vitals",
+          "path": ".claude/skills/core-web-vitals",
+          "hash": "b03396c9bd7a",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "error-detective",
+          "path": ".claude/skills/error-detective",
+          "hash": "225388b8fbc7",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "frontend-design",
+          "path": ".claude/skills/frontend-design",
+          "hash": "0c78c78ca5af",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "frontend-dev-guidelines",
+          "path": ".claude/skills/frontend-dev-guidelines",
+          "hash": "38b174e0def6",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "frontend-developer",
+          "path": ".claude/skills/frontend-developer",
+          "hash": "d2c0b7f734f9",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "frontend-security-coder",
+          "path": ".claude/skills/frontend-security-coder",
+          "hash": "6fb966a7d4fb",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "github-actions-templates",
+          "path": ".claude/skills/github-actions-templates",
+          "hash": "38c7373ba162",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "github-automation",
+          "path": ".claude/skills/github-automation",
+          "hash": "e81fd83a106f",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "github-workflow-automation",
+          "path": ".claude/skills/github-workflow-automation",
+          "hash": "527c00a4b078",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "javascript-mastery",
+          "path": ".claude/skills/javascript-mastery",
+          "hash": "fa224ce81f9a",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "javascript-pro",
+          "path": ".claude/skills/javascript-pro",
+          "hash": "0f28a23458b3",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "javascript-testing-patterns",
+          "path": ".claude/skills/javascript-testing-patterns",
+          "hash": "10b0e3eacc39",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "javascript-typescript-typescript-scaffold",
+          "path": ".claude/skills/javascript-typescript-typescript-scaffold",
+          "hash": "3e3c4ff0b7d1",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "llm-prompt-optimizer",
+          "path": ".claude/skills/llm-prompt-optimizer",
+          "hash": "876ad6bf19aa",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "performance",
+          "path": ".claude/skills/performance",
+          "hash": "4a480aded500",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "seo",
+          "path": ".claude/skills/seo",
+          "hash": "f3e546112a31",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "d7b0ec66ea66",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "web-design-guidelines",
+          "path": ".claude/skills/web-design-guidelines",
+          "hash": "f4647ca866a3",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "web-perf",
+          "path": ".claude/skills/web-perf",
+          "hash": "746b3490d401",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "web-quality-audit",
+          "path": ".claude/skills/web-quality-audit",
+          "hash": "aaada64b636b",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "workers-best-practices",
+          "path": ".claude/skills/workers-best-practices",
+          "hash": "099432ff265f",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "wrangler",
+          "path": ".claude/skills/wrangler",
+          "hash": "cf7427585e31",
+          "source": "cloudflare/skills"
+        }
+      ],
+      "agents": [],
+      "commands": [
+        {
+          "name": "speckit.analyze.md",
+          "path": ".claude/commands/speckit.analyze.md",
+          "hash": "914952d3b174"
+        },
+        {
+          "name": "speckit.checklist.md",
+          "path": ".claude/commands/speckit.checklist.md",
+          "hash": "3bfb97f32862"
+        },
+        {
+          "name": "speckit.clarify.md",
+          "path": ".claude/commands/speckit.clarify.md",
+          "hash": "02df95961ca9"
+        },
+        {
+          "name": "speckit.constitution.md",
+          "path": ".claude/commands/speckit.constitution.md",
+          "hash": "89e14df67db5"
+        },
+        {
+          "name": "speckit.implement.md",
+          "path": ".claude/commands/speckit.implement.md",
+          "hash": "83628415c86b"
+        },
+        {
+          "name": "speckit.plan.md",
+          "path": ".claude/commands/speckit.plan.md",
+          "hash": "0efc533f16a8"
+        },
+        {
+          "name": "speckit.specify.md",
+          "path": ".claude/commands/speckit.specify.md",
+          "hash": "70c8ddb8f58d"
+        },
+        {
+          "name": "speckit.tasks.md",
+          "path": ".claude/commands/speckit.tasks.md",
+          "hash": "a58886f29f75"
+        },
+        {
+          "name": "speckit.taskstoissues.md",
+          "path": ".claude/commands/speckit.taskstoissues.md",
+          "hash": "23f5098f197d"
+        }
+      ],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/mcp-specgen",
+      "origin": "mcp-specgen",
+      "files": [
+        {
+          "path": ".cursor/rules/concise.mdc",
+          "hash": "831c39e37194"
+        },
+        {
+          "path": ".cursor/rules/core.mdc",
+          "hash": "8e4d51b2fbca"
+        },
+        {
+          "path": ".cursor/rules/no-absolute-right.mdc",
+          "hash": "34272ee9ab6f"
+        },
+        {
+          "path": ".cursor/rules/refresh.mdc",
+          "hash": "59968012b148"
+        },
+        {
+          "path": ".cursor/rules/request.mdc",
+          "hash": "1aacd175a274"
+        },
+        {
+          "path": ".cursor/rules/retro.mdc",
+          "hash": "1329d21b44e8"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/minecraft-servers",
+      "origin": "minecraft-servers",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "68f8f9b4fdc3"
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "hash": "f84a7c6afb65"
+        }
+      ],
+      "skills": [
+        {
+          "name": "speckit-agent-context-update",
+          "path": ".claude/skills/speckit-agent-context-update",
+          "hash": "00b639f74ccb",
+          "source": ""
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "54abd3ff3598",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "64e4036655d7",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "cbd9a1a72b99",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "0375ad8ea58f",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-commit",
+          "path": ".claude/skills/speckit-git-commit",
+          "hash": "2bdb85b684e2",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-feature",
+          "path": ".claude/skills/speckit-git-feature",
+          "hash": "7aa86c26b145",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-initialize",
+          "path": ".claude/skills/speckit-git-initialize",
+          "hash": "b40fd3db639c",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-remote",
+          "path": ".claude/skills/speckit-git-remote",
+          "hash": "ba0e9305eef4",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-validate",
+          "path": ".claude/skills/speckit-git-validate",
+          "hash": "e18df9149b0d",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "33ac93e549de",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "273436b462f7",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "0a74e83188a0",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "1a2ac53f59c1",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "3f047889dee9",
+          "source": ""
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/monedix",
+      "origin": "monedix",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "86e69d96cf77"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "267fb2a0707d",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "astro",
+          "path": ".claude/skills/astro",
+          "hash": "64b0cfb9774b",
+          "source": "astrolicious/agent-skills"
+        },
+        {
+          "name": "banner-design",
+          "path": ".claude/skills/banner-design",
+          "hash": "913d9c4b2a3b",
+          "source": ""
+        },
+        {
+          "name": "best-practices",
+          "path": ".claude/skills/best-practices",
+          "hash": "9d1f10a08cd7",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "brand",
+          "path": ".claude/skills/brand",
+          "hash": "6a450ee1a83a",
+          "source": ""
+        },
+        {
+          "name": "clerk",
+          "path": ".claude/skills/clerk",
+          "hash": "10b6e56b5470",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "clerk-astro-patterns",
+          "path": ".claude/skills/clerk-astro-patterns",
+          "hash": "483df69ccaa6",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "clerk-orgs",
+          "path": ".claude/skills/clerk-orgs",
+          "hash": "7c4be3c28d9b",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "clerk-setup",
+          "path": ".claude/skills/clerk-setup",
+          "hash": "b89390f75cd8",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "clerk-testing",
+          "path": ".claude/skills/clerk-testing",
+          "hash": "c1e6dfdf617f",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "cloudflare",
+          "path": ".claude/skills/cloudflare",
+          "hash": "75cff3ebad35",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "cloudflare-d1",
+          "path": ".claude/skills/cloudflare-d1",
+          "hash": "5adfa227eabe",
+          "source": "secondsky/claude-skills"
+        },
+        {
+          "name": "core-web-vitals",
+          "path": ".claude/skills/core-web-vitals",
+          "hash": "731aa78c0347",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "d1-drizzle-schema",
+          "path": ".claude/skills/d1-drizzle-schema",
+          "hash": "23bd31f1e12f",
+          "source": "jezweb/claude-skills"
+        },
+        {
+          "name": "d1-migration",
+          "path": ".claude/skills/d1-migration",
+          "hash": "903cc484885d",
+          "source": "jezweb/claude-skills"
+        },
+        {
+          "name": "design",
+          "path": ".claude/skills/design",
+          "hash": "413f4ab913d0",
+          "source": ""
+        },
+        {
+          "name": "design-system",
+          "path": ".claude/skills/design-system",
+          "hash": "655468bb723a",
+          "source": ""
+        },
+        {
+          "name": "drizzle",
+          "path": ".claude/skills/drizzle",
+          "hash": "5b54e7f4d365",
+          "source": "lobehub/lobehub"
+        },
+        {
+          "name": "drizzle-best-practices",
+          "path": ".claude/skills/drizzle-best-practices",
+          "hash": "0c774e02b1ee",
+          "source": "honra-io/drizzle-best-practices"
+        },
+        {
+          "name": "drizzle-migrations",
+          "path": ".claude/skills/drizzle-migrations",
+          "hash": "8621b5b993b0",
+          "source": "bobmatnyc/claude-mpm-skills"
+        },
+        {
+          "name": "drizzle-orm-patterns",
+          "path": ".claude/skills/drizzle-orm-patterns",
+          "hash": "a5c9399c4b82",
+          "source": "giuseppe-trisciuoglio/developer-kit"
+        },
+        {
+          "name": "durable-objects",
+          "path": ".claude/skills/durable-objects",
+          "hash": "2468c1795f43",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "e2e-testing-patterns",
+          "path": ".claude/skills/e2e-testing-patterns",
+          "hash": "1653690dde9e",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "frontend-design",
+          "path": ".claude/skills/frontend-design",
+          "hash": "d91970639e9f",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "frontend-testing-best-practices",
+          "path": ".claude/skills/frontend-testing-best-practices",
+          "hash": "22a9d05432d4",
+          "source": "sergiodxa/agent-skills"
+        },
+        {
+          "name": "javascript-testing-patterns",
+          "path": ".claude/skills/javascript-testing-patterns",
+          "hash": "d99e1d7344ca",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "monedix-db",
+          "path": ".claude/skills/monedix-db",
+          "hash": "cbec304bc6ec",
+          "source": ""
+        },
+        {
+          "name": "monedix-design",
+          "path": ".claude/skills/monedix-design",
+          "hash": "d6be30b2ea29",
+          "source": ""
+        },
+        {
+          "name": "monedix-i18n",
+          "path": ".claude/skills/monedix-i18n",
+          "hash": "131cd9d77cfe",
+          "source": ""
+        },
+        {
+          "name": "monedix-testing",
+          "path": ".claude/skills/monedix-testing",
+          "hash": "5b7e838ef4a3",
+          "source": ""
+        },
+        {
+          "name": "monedix-testing-workspace",
+          "path": ".agents/skills/monedix-testing-workspace",
+          "hash": "",
+          "source": ""
+        },
+        {
+          "name": "msw",
+          "path": ".claude/skills/msw",
+          "hash": "99cdfcdcfc68",
+          "source": "pproenca/dot-skills"
+        },
+        {
+          "name": "msw-v2",
+          "path": ".claude/skills/msw-v2",
+          "hash": "4171e7055bf3",
+          "source": "anivar/msw-skill"
+        },
+        {
+          "name": "paraglide-js",
+          "path": ".claude/skills/paraglide-js",
+          "hash": "e5227f5d9374",
+          "source": "zhuojg/agent-skills"
+        },
+        {
+          "name": "playwright-best-practices",
+          "path": ".claude/skills/playwright-best-practices",
+          "hash": "42684b93abd5",
+          "source": "currents-dev/playwright-best-practices-skill"
+        },
+        {
+          "name": "react-testing",
+          "path": ".claude/skills/react-testing",
+          "hash": "51c18b4e2828",
+          "source": "affaan-m/ecc"
+        },
+        {
+          "name": "react-testing-library",
+          "path": ".claude/skills/react-testing-library",
+          "hash": "ed43a296b516",
+          "source": "pproenca/dot-skills"
+        },
+        {
+          "name": "seo",
+          "path": ".claude/skills/seo",
+          "hash": "57cd16566c2c",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "shadcn",
+          "path": ".claude/skills/shadcn",
+          "hash": "deba6c5152d9",
+          "source": "shadcn/ui"
+        },
+        {
+          "name": "slides",
+          "path": ".claude/skills/slides",
+          "hash": "2b90bdaf63f2",
+          "source": ""
+        },
+        {
+          "name": "tailwind-4-docs",
+          "path": ".claude/skills/tailwind-4-docs",
+          "hash": "72304ac07761",
+          "source": "lombiq/tailwind-agent-skills"
+        },
+        {
+          "name": "tailwind-design-system",
+          "path": ".claude/skills/tailwind-design-system",
+          "hash": "b6577edb7b7f",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "tailwind-theme-builder",
+          "path": ".claude/skills/tailwind-theme-builder",
+          "hash": "2cac96e01201",
+          "source": "jezweb/claude-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "ui-styling",
+          "path": ".claude/skills/ui-styling",
+          "hash": "f8b6c3832d2a",
+          "source": ""
+        },
+        {
+          "name": "ui-ux-pro-max",
+          "path": ".claude/skills/ui-ux-pro-max",
+          "hash": "e5baf9400d43",
+          "source": ""
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vitest",
+          "path": ".claude/skills/vitest",
+          "hash": "d0c470a07b90",
+          "source": "antfu/skills"
+        },
+        {
+          "name": "web-design-guidelines",
+          "path": ".claude/skills/web-design-guidelines",
+          "hash": "f4647ca866a3",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "web-perf",
+          "path": ".claude/skills/web-perf",
+          "hash": "79c531e95ca4",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "workers-best-practices",
+          "path": ".claude/skills/workers-best-practices",
+          "hash": "8ae8c6e73591",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "wrangler",
+          "path": ".claude/skills/wrangler",
+          "hash": "9d9bd78c7982",
+          "source": "cloudflare/skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/pake-generator",
+      "origin": "pake-generator",
+      "files": [],
+      "skills": [
+        {
+          "name": "pake",
+          "path": ".claude/skills/pake",
+          "hash": "e0290624b2a8",
+          "source": "tw93/Pake"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/popmundo-bot",
+      "origin": "popmundo-bot",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "6e8b6fdec9a8"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "browser-testing-with-devtools",
+          "path": ".claude/skills/browser-testing-with-devtools",
+          "hash": "4e3aacd6a380",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "chrome-devtools",
+          "path": ".claude/skills/chrome-devtools",
+          "hash": "b27f4b6d68f7",
+          "source": "chromedevtools/chrome-devtools-mcp"
+        },
+        {
+          "name": "chrome-devtools-cli",
+          "path": ".claude/skills/chrome-devtools-cli",
+          "hash": "46be445e0fcf",
+          "source": "chromedevtools/chrome-devtools-mcp"
+        },
+        {
+          "name": "find-skills",
+          "path": ".claude/skills/find-skills",
+          "hash": "c00eeea0e13e",
+          "source": "vercel-labs/skills"
+        },
+        {
+          "name": "mcp-builder",
+          "path": ".claude/skills/mcp-builder",
+          "hash": "0f4592dcb53c",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "playwright-best-practices",
+          "path": ".claude/skills/playwright-best-practices",
+          "hash": "42684b93abd5",
+          "source": "currents-dev/playwright-best-practices-skill"
+        },
+        {
+          "name": "playwright-cli",
+          "path": ".claude/skills/playwright-cli",
+          "hash": "29c0b669a524",
+          "source": "microsoft/playwright-cli"
+        },
+        {
+          "name": "skill-creator",
+          "path": ".claude/skills/skill-creator",
+          "hash": "dcd4803e61e9",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "e1f8323285ed",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "34c8c681f547",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "f4b3f2c95087",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "a93047917a5f",
+          "source": ""
+        },
+        {
+          "name": "speckit-converge",
+          "path": ".claude/skills/speckit-converge",
+          "hash": "65ea8b863835",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "51bd89322e02",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "2fe3f96886e9",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "42fe016b9183",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "597853362a0a",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "76a6ec1fcc2d",
+          "source": ""
+        },
+        {
+          "name": "troubleshooting",
+          "path": ".claude/skills/troubleshooting",
+          "hash": "e534a7845f71",
+          "source": "chromedevtools/chrome-devtools-mcp"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "typescript-best-practices",
+          "path": ".claude/skills/typescript-best-practices",
+          "hash": "df0ecd7518b3",
+          "source": "cursor/plugins"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/popmundo-script",
+      "origin": "popmundo-script",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "bd94f5efd90c"
+        }
+      ],
+      "skills": [
+        {
+          "name": "built-in-ai",
+          "path": ".claude/skills/built-in-ai",
+          "hash": "f2489ece7527",
+          "source": "GoogleChromeLabs/web-ai-demos"
+        },
+        {
+          "name": "find-skills",
+          "path": ".claude/skills/find-skills",
+          "hash": "c00eeea0e13e",
+          "source": "vercel-labs/skills"
+        },
+        {
+          "name": "i-have-adhd",
+          "path": ".claude/skills/i-have-adhd",
+          "hash": "3170b16ace00",
+          "source": "ayghri/i-have-adhd"
+        },
+        {
+          "name": "migrate-oxfmt",
+          "path": ".claude/skills/migrate-oxfmt",
+          "hash": "86afdda5fafc",
+          "source": "oxc-project/oxc"
+        },
+        {
+          "name": "migrate-oxlint",
+          "path": ".claude/skills/migrate-oxlint",
+          "hash": "3d2d8a2e3b57",
+          "source": "oxc-project/oxc"
+        },
+        {
+          "name": "performance-lint-rules",
+          "path": ".claude/skills/performance-lint-rules",
+          "hash": "9fb9eb72ad7a",
+          "source": "oxc-project/oxc"
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "e1f8323285ed",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "34c8c681f547",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "f4b3f2c95087",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "a93047917a5f",
+          "source": ""
+        },
+        {
+          "name": "speckit-converge",
+          "path": ".claude/skills/speckit-converge",
+          "hash": "65ea8b863835",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "51bd89322e02",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "2fe3f96886e9",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "42fe016b9183",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "597853362a0a",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "76a6ec1fcc2d",
+          "source": ""
+        },
+        {
+          "name": "tampermonkey",
+          "path": ".claude/skills/tampermonkey",
+          "hash": "5ab0beef1547",
+          "source": "henkisdabro/wookstar-claude-plugins"
+        },
+        {
+          "name": "tanstack-devtools",
+          "path": ".claude/skills/tanstack-devtools",
+          "hash": "1e70693ddba7",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-query",
+          "path": ".claude/skills/tanstack-query",
+          "hash": "813406a8fa59",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-store",
+          "path": ".claude/skills/tanstack-store",
+          "hash": "ba13f20d85be",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-table",
+          "path": ".claude/skills/tanstack-table",
+          "hash": "ffd4c5988fd8",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "tanstack-virtual",
+          "path": ".claude/skills/tanstack-virtual",
+          "hash": "a65058c92fbd",
+          "source": "tanstack-skills/tanstack-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/protoc-gen-strict",
+      "origin": "protoc-gen-strict",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "39e65a069d44"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "golang-cli",
+          "path": ".claude/skills/golang-cli",
+          "hash": "da9eef3871a9",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-code-style",
+          "path": ".claude/skills/golang-code-style",
+          "hash": "1c53d6b8405f",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-data-structures",
+          "path": ".claude/skills/golang-data-structures",
+          "hash": "36d804754152",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-design-patterns",
+          "path": ".claude/skills/golang-design-patterns",
+          "hash": "49bfe0170e71",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-documentation",
+          "path": ".claude/skills/golang-documentation",
+          "hash": "a313e2a00377",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-error-handling",
+          "path": ".claude/skills/golang-error-handling",
+          "hash": "536c25e624c3",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-lint",
+          "path": ".claude/skills/golang-lint",
+          "hash": "45e510222626",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-modernize",
+          "path": ".claude/skills/golang-modernize",
+          "hash": "4690bd30545e",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-naming",
+          "path": ".claude/skills/golang-naming",
+          "hash": "ff6e9b3d1ba6",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-project-layout",
+          "path": ".claude/skills/golang-project-layout",
+          "hash": "d23c793c974a",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-safety",
+          "path": ".claude/skills/golang-safety",
+          "hash": "a9bce4568ba9",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-structs-interfaces",
+          "path": ".claude/skills/golang-structs-interfaces",
+          "hash": "0bc93e1e86c3",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-testing",
+          "path": ".claude/skills/golang-testing",
+          "hash": "55eea3ed4536",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "protobuf",
+          "path": ".claude/skills/protobuf",
+          "hash": "8b09f409f34a",
+          "source": "bufbuild/claude-plugins"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/spec-kit-axi",
+      "origin": "spec-kit-axi",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "8699ce121c8d"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "8699ce121c8d"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "65021e9ccab7",
+          "source": ""
+        },
+        {
+          "name": "add-community-extension",
+          "path": ".claude/skills/add-community-extension",
+          "hash": "3061dc39dfd4",
+          "source": "github/spec-kit"
+        },
+        {
+          "name": "astro-framework",
+          "path": ".claude/skills/astro-framework",
+          "hash": "4918d51156e8",
+          "source": ""
+        },
+        {
+          "name": "axi",
+          "path": ".claude/skills/axi",
+          "hash": "af5673bea262",
+          "source": "kunchenguid/axi"
+        },
+        {
+          "name": "maintain-docs",
+          "path": ".claude/skills/maintain-docs",
+          "hash": "2c013c1f6e7e",
+          "source": ""
+        },
+        {
+          "name": "shadcn-astro",
+          "path": ".claude/skills/shadcn-astro",
+          "hash": "e0039375a5ff",
+          "source": ""
+        },
+        {
+          "name": "skill-creator",
+          "path": ".claude/skills/skill-creator",
+          "hash": "dcd4803e61e9",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "speckit-agent-context-update",
+          "path": ".claude/skills/speckit-agent-context-update",
+          "hash": "4bebe9b02a5a",
+          "source": ""
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "fecd4bf113c3",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "946c6bc80889",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "c1c2098756ca",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "ee3972318415",
+          "source": ""
+        },
+        {
+          "name": "speckit-converge",
+          "path": ".claude/skills/speckit-converge",
+          "hash": "04226b844379",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "823049e49aa9",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "53733c8a4f4f",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "9324dd55d12d",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "cb29fb8247a3",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "dfe23aaca349",
+          "source": ""
+        },
+        {
+          "name": "tailwind-v4-shadcn",
+          "path": ".claude/skills/tailwind-v4-shadcn",
+          "hash": "5588607ba08b",
+          "source": ""
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/spec-kit-improve",
+      "origin": "spec-kit-improve",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "e5ec262d7c79"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "e5ec262d7c79"
+        }
+      ],
+      "skills": [
+        {
+          "name": "add-community-extension",
+          "path": ".claude/skills/add-community-extension",
+          "hash": "807a86033a7c",
+          "source": "github/spec-kit"
+        },
+        {
+          "name": "maintain-docs",
+          "path": ".claude/skills/maintain-docs",
+          "hash": "583659fc5f84",
+          "source": ""
+        },
+        {
+          "name": "skill-creator",
+          "path": ".claude/skills/skill-creator",
+          "hash": "dcd4803e61e9",
+          "source": "anthropics/skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/spec-kit-product",
+      "origin": "spec-kit-product",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "b46ef165a413"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "b46ef165a413"
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "hash": "68f8f9b4fdc3"
+        }
+      ],
+      "skills": [
+        {
+          "name": "add-community-extension",
+          "path": ".claude/skills/add-community-extension",
+          "hash": "3061dc39dfd4",
+          "source": "github/spec-kit"
+        },
+        {
+          "name": "humanize-product",
+          "path": ".claude/skills/humanize-product",
+          "hash": "1019f13fc13d",
+          "source": ""
+        },
+        {
+          "name": "maintain-docs",
+          "path": ".claude/skills/maintain-docs",
+          "hash": "941a173f91cc",
+          "source": ""
+        },
+        {
+          "name": "skill-creator",
+          "path": ".claude/skills/skill-creator",
+          "hash": "dcd4803e61e9",
+          "source": "anthropics/skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/spec-kit-tdd",
+      "origin": "spec-kit-tdd",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "d7b40a5e3811"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "d7b40a5e3811"
+        }
+      ],
+      "skills": [
+        {
+          "name": "add-community-extension",
+          "path": ".claude/skills/add-community-extension",
+          "hash": "807a86033a7c",
+          "source": "github/spec-kit"
+        },
+        {
+          "name": "maintain-docs",
+          "path": ".claude/skills/maintain-docs",
+          "hash": "8a088de12c8f",
+          "source": ""
+        },
+        {
+          "name": "skill-creator",
+          "path": ".claude/skills/skill-creator",
+          "hash": "dcd4803e61e9",
+          "source": "anthropics/skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/statsig-browser-extension",
+      "origin": "statsig-browser-extension",
+      "files": [
+        {
+          "path": "CLAUDE.md",
+          "hash": "b28a3110e688"
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "hash": "e2989d234434"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "267fb2a0707d",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "api-and-interface-design",
+          "path": ".claude/skills/api-and-interface-design",
+          "hash": "5dafd0c44a3a",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "browser-testing-with-devtools",
+          "path": ".claude/skills/browser-testing-with-devtools",
+          "hash": "4e3aacd6a380",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "ci-cd-and-automation",
+          "path": ".claude/skills/ci-cd-and-automation",
+          "hash": "a6ed8ed56456",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "code-review-and-quality",
+          "path": ".claude/skills/code-review-and-quality",
+          "hash": "8f3cabca581b",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "code-simplification",
+          "path": ".claude/skills/code-simplification",
+          "hash": "f0c5ed754057",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "composition-patterns",
+          "path": ".claude/skills/composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "context-engineering",
+          "path": ".claude/skills/context-engineering",
+          "hash": "ff9d4e5706bd",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "debugging-and-error-recovery",
+          "path": ".claude/skills/debugging-and-error-recovery",
+          "hash": "67ce2c9442da",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "deprecation-and-migration",
+          "path": ".claude/skills/deprecation-and-migration",
+          "hash": "6a624f942e09",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "documentation-and-adrs",
+          "path": ".claude/skills/documentation-and-adrs",
+          "hash": "b867bb80fb68",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "frontend-design",
+          "path": ".claude/skills/frontend-design",
+          "hash": "1608ea77fbb6",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "frontend-ui-engineering",
+          "path": ".claude/skills/frontend-ui-engineering",
+          "hash": "2b74ac4862be",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "idea-refine",
+          "path": ".claude/skills/idea-refine",
+          "hash": "79e773058963",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "incremental-implementation",
+          "path": ".claude/skills/incremental-implementation",
+          "hash": "3a3581e7084a",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "nodejs-backend-patterns",
+          "path": ".claude/skills/nodejs-backend-patterns",
+          "hash": "d52e1150accd",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "nodejs-best-practices",
+          "path": ".claude/skills/nodejs-best-practices",
+          "hash": "bbe124438b07",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "orchestrate",
+          "path": ".claude/skills/orchestrate",
+          "hash": "bbe93a0c25a9",
+          "source": ""
+        },
+        {
+          "name": "oxlint",
+          "path": ".claude/skills/oxlint",
+          "hash": "2bb36d27249b",
+          "source": "delexw/claude-code-misc"
+        },
+        {
+          "name": "performance-optimization",
+          "path": ".claude/skills/performance-optimization",
+          "hash": "00694d0c69bb",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "planning-and-task-breakdown",
+          "path": ".claude/skills/planning-and-task-breakdown",
+          "hash": "ed0f90cc5951",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "playwright-best-practices",
+          "path": ".claude/skills/playwright-best-practices",
+          "hash": "d54f14eb2da3",
+          "source": "currents-dev/playwright-best-practices-skill"
+        },
+        {
+          "name": "react-best-practices",
+          "path": ".claude/skills/react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "react-hook-form",
+          "path": ".claude/skills/react-hook-form",
+          "hash": "075337d6070c",
+          "source": "pproenca/dot-skills"
+        },
+        {
+          "name": "security-and-hardening",
+          "path": ".claude/skills/security-and-hardening",
+          "hash": "e66bfe143df3",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "seo",
+          "path": ".claude/skills/seo",
+          "hash": "57cd16566c2c",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "shadcn",
+          "path": ".claude/skills/shadcn",
+          "hash": "deba6c5152d9",
+          "source": "shadcn/ui"
+        },
+        {
+          "name": "source-driven-development",
+          "path": ".claude/skills/source-driven-development",
+          "hash": "719d4e54083c",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "spec-driven-development",
+          "path": ".claude/skills/spec-driven-development",
+          "hash": "615ff006266a",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "54abd3ff3598",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "e8036925d7a2",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "3a135a3276ac",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "0375ad8ea58f",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-commit",
+          "path": ".claude/skills/speckit-git-commit",
+          "hash": "2bdb85b684e2",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-feature",
+          "path": ".claude/skills/speckit-git-feature",
+          "hash": "33446834c144",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-initialize",
+          "path": ".claude/skills/speckit-git-initialize",
+          "hash": "0f5dd7516523",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-remote",
+          "path": ".claude/skills/speckit-git-remote",
+          "hash": "ba0e9305eef4",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-validate",
+          "path": ".claude/skills/speckit-git-validate",
+          "hash": "e18df9149b0d",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "25dee22c3d98",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "20be133d32a1",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "ae524fef1dda",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "6233aa8f43f1",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "f1ae299452f1",
+          "source": ""
+        },
+        {
+          "name": "tailwind-css-patterns",
+          "path": ".claude/skills/tailwind-css-patterns",
+          "hash": "63984406824e",
+          "source": "giuseppe-trisciuoglio/developer-kit"
+        },
+        {
+          "name": "tailwind-v4-shadcn",
+          "path": ".claude/skills/tailwind-v4-shadcn",
+          "hash": "39d77c20c339",
+          "source": "secondsky/claude-skills"
+        },
+        {
+          "name": "test-driven-development",
+          "path": ".claude/skills/test-driven-development",
+          "hash": "440fb3c9b76f",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "using-agent-skills",
+          "path": ".claude/skills/using-agent-skills",
+          "hash": "8bdbecb2f98c",
+          "source": "addyosmani/agent-skills"
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vitest",
+          "path": ".claude/skills/vitest",
+          "hash": "2da9b15c28b9",
+          "source": "antfu/skills"
+        },
+        {
+          "name": "zod",
+          "path": ".claude/skills/zod",
+          "hash": "245fc4ab7341",
+          "source": "pproenca/dot-skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/tailscale-socks",
+      "origin": "tailscale-socks",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "07da0ddb1303"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "bash-defensive-patterns",
+          "path": ".claude/skills/bash-defensive-patterns",
+          "hash": "741b42d1fa31",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "bats-testing-patterns",
+          "path": ".claude/skills/bats-testing-patterns",
+          "hash": "d7992dbf5897",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "find-skills",
+          "path": ".claude/skills/find-skills",
+          "hash": "c00eeea0e13e",
+          "source": "vercel-labs/skills"
+        },
+        {
+          "name": "golang-cli",
+          "path": ".claude/skills/golang-cli",
+          "hash": "da9eef3871a9",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-code-style",
+          "path": ".claude/skills/golang-code-style",
+          "hash": "1c53d6b8405f",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-concurrency",
+          "path": ".claude/skills/golang-concurrency",
+          "hash": "5e09cb5757bd",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-context",
+          "path": ".claude/skills/golang-context",
+          "hash": "257a3e5a07d6",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-dependency-management",
+          "path": ".claude/skills/golang-dependency-management",
+          "hash": "80a52feb9a26",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-design-patterns",
+          "path": ".claude/skills/golang-design-patterns",
+          "hash": "49bfe0170e71",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-error-handling",
+          "path": ".claude/skills/golang-error-handling",
+          "hash": "536c25e624c3",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-how-to",
+          "path": ".claude/skills/golang-how-to",
+          "hash": "3ab7e9a5d9bf",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-lint",
+          "path": ".claude/skills/golang-lint",
+          "hash": "45e510222626",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-naming",
+          "path": ".claude/skills/golang-naming",
+          "hash": "ff6e9b3d1ba6",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-performance",
+          "path": ".claude/skills/golang-performance",
+          "hash": "52630c1ab074",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-project-layout",
+          "path": ".claude/skills/golang-project-layout",
+          "hash": "7a9627c2ba07",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-security",
+          "path": ".claude/skills/golang-security",
+          "hash": "8db304b21cc0",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-structs-interfaces",
+          "path": ".claude/skills/golang-structs-interfaces",
+          "hash": "0bc93e1e86c3",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "golang-testing",
+          "path": ".claude/skills/golang-testing",
+          "hash": "a8df4edea728",
+          "source": "samber/cc-skills-golang"
+        },
+        {
+          "name": "technical-writing",
+          "path": ".claude/skills/technical-writing",
+          "hash": "bd0cb21034f4",
+          "source": "cursor/plugins"
+        },
+        {
+          "name": "unslop",
+          "path": ".claude/skills/unslop",
+          "hash": "2789ab80477b",
+          "source": "cursor/plugins"
+        },
+        {
+          "name": "zsh-harness",
+          "path": ".claude/skills/zsh-harness",
+          "hash": "4d0916558d2e",
+          "source": ""
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/voting",
+      "origin": "aplec-votes",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "68f8f9b4fdc3"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "68f8f9b4fdc3"
+        },
+        {
+          "path": ".github/copilot-instructions.md",
+          "hash": "e2989d234434"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "e7193cfa7082",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "astro",
+          "path": ".claude/skills/astro",
+          "hash": "64b0cfb9774b",
+          "source": "astrolicious/agent-skills"
+        },
+        {
+          "name": "bash-defensive-patterns",
+          "path": ".claude/skills/bash-defensive-patterns",
+          "hash": "741b42d1fa31",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "cloudflare",
+          "path": ".claude/skills/cloudflare",
+          "hash": "99be50a67ea1",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "cloudflare-deploy",
+          "path": ".claude/skills/cloudflare-deploy",
+          "hash": "d7632537cf19",
+          "source": "openai/skills"
+        },
+        {
+          "name": "composition-patterns",
+          "path": ".claude/skills/composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "drizzle",
+          "path": ".claude/skills/drizzle",
+          "hash": "365b41833a89",
+          "source": "bobmatnyc/claude-mpm-skills"
+        },
+        {
+          "name": "frontend-design",
+          "path": ".claude/skills/frontend-design",
+          "hash": "b81e2ff87ed8",
+          "source": "anthropics/skills"
+        },
+        {
+          "name": "nodejs-backend-patterns",
+          "path": ".claude/skills/nodejs-backend-patterns",
+          "hash": "d52e1150accd",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "nodejs-best-practices",
+          "path": ".claude/skills/nodejs-best-practices",
+          "hash": "555466f9a685",
+          "source": "sickn33/antigravity-awesome-skills"
+        },
+        {
+          "name": "oxlint",
+          "path": ".claude/skills/oxlint",
+          "hash": "2bb36d27249b",
+          "source": "delexw/claude-code-misc"
+        },
+        {
+          "name": "playwright-best-practices",
+          "path": ".claude/skills/playwright-best-practices",
+          "hash": "d54f14eb2da3",
+          "source": "currents-dev/playwright-best-practices-skill"
+        },
+        {
+          "name": "react-best-practices",
+          "path": ".claude/skills/react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "react-hook-form",
+          "path": ".claude/skills/react-hook-form",
+          "hash": "075337d6070c",
+          "source": "pproenca/dot-skills"
+        },
+        {
+          "name": "seo",
+          "path": ".claude/skills/seo",
+          "hash": "a06ca86d0b0c",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "shadcn",
+          "path": ".claude/skills/shadcn",
+          "hash": "c5a5c3a8e380",
+          "source": "shadcn/ui"
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "54abd3ff3598",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "e8036925d7a2",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "97378694d269",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "0375ad8ea58f",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-commit",
+          "path": ".claude/skills/speckit-git-commit",
+          "hash": "2bdb85b684e2",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-feature",
+          "path": ".claude/skills/speckit-git-feature",
+          "hash": "7aa86c26b145",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-initialize",
+          "path": ".claude/skills/speckit-git-initialize",
+          "hash": "0f5dd7516523",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-remote",
+          "path": ".claude/skills/speckit-git-remote",
+          "hash": "ba0e9305eef4",
+          "source": ""
+        },
+        {
+          "name": "speckit-git-validate",
+          "path": ".claude/skills/speckit-git-validate",
+          "hash": "e18df9149b0d",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "1f04471563cb",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "e078693571cb",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "a73ca6814a75",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "d81fb352697f",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "f1ae299452f1",
+          "source": ""
+        },
+        {
+          "name": "tailwind-css-patterns",
+          "path": ".claude/skills/tailwind-css-patterns",
+          "hash": "63984406824e",
+          "source": "giuseppe-trisciuoglio/developer-kit"
+        },
+        {
+          "name": "tailwind-v4-shadcn",
+          "path": ".claude/skills/tailwind-v4-shadcn",
+          "hash": "7197cbbf6535",
+          "source": "secondsky/claude-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "vitest",
+          "path": ".claude/skills/vitest",
+          "hash": "87c8cf025987",
+          "source": "antfu/skills"
+        },
+        {
+          "name": "web-perf",
+          "path": ".claude/skills/web-perf",
+          "hash": "94c5cb377666",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "workers-best-practices",
+          "path": ".claude/skills/workers-best-practices",
+          "hash": "099432ff265f",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "wrangler",
+          "path": ".claude/skills/wrangler",
+          "hash": "42abe11ba6c0",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "zod",
+          "path": ".claude/skills/zod",
+          "hash": "245fc4ab7341",
+          "source": "pproenca/dot-skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
+    },
+    {
+      "dir": "personal/web-games",
+      "origin": "web-games",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "hash": "6a2bf53fe8de"
+        },
+        {
+          "path": "CLAUDE.md",
+          "hash": "336cc4fbf19b"
+        }
+      ],
+      "skills": [
+        {
+          "name": "accessibility",
+          "path": ".claude/skills/accessibility",
+          "hash": "267fb2a0707d",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "astro",
+          "path": ".claude/skills/astro",
+          "hash": "64b0cfb9774b",
+          "source": "astrolicious/agent-skills"
+        },
+        {
+          "name": "banner-design",
+          "path": ".claude/skills/banner-design",
+          "hash": "913d9c4b2a3b",
+          "source": ""
+        },
+        {
+          "name": "brand",
+          "path": ".claude/skills/brand",
+          "hash": "6a450ee1a83a",
+          "source": ""
+        },
+        {
+          "name": "clerk-astro-patterns",
+          "path": ".claude/skills/clerk-astro-patterns",
+          "hash": "483df69ccaa6",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "clerk-custom-ui",
+          "path": ".claude/skills/clerk-custom-ui",
+          "hash": "115c71b0b884",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "clerk-react-patterns",
+          "path": ".claude/skills/clerk-react-patterns",
+          "hash": "ab22780dd324",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "clerk-setup",
+          "path": ".claude/skills/clerk-setup",
+          "hash": "16e7adef8a31",
+          "source": "clerk/skills"
+        },
+        {
+          "name": "cloudflare",
+          "path": ".claude/skills/cloudflare",
+          "hash": "e40dcff732ef",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "d1-drizzle-schema",
+          "path": ".claude/skills/d1-drizzle-schema",
+          "hash": "23bd31f1e12f",
+          "source": "jezweb/claude-skills"
+        },
+        {
+          "name": "d1-migration",
+          "path": ".claude/skills/d1-migration",
+          "hash": "903cc484885d",
+          "source": "jezweb/claude-skills"
+        },
+        {
+          "name": "design",
+          "path": ".claude/skills/design",
+          "hash": "413f4ab913d0",
+          "source": ""
+        },
+        {
+          "name": "design-system",
+          "path": ".claude/skills/design-system",
+          "hash": "655468bb723a",
+          "source": ""
+        },
+        {
+          "name": "game-binary-balance",
+          "path": ".claude/skills/game-binary-balance",
+          "hash": "e2af4fbce84f",
+          "source": ""
+        },
+        {
+          "name": "game-bridges",
+          "path": ".claude/skills/game-bridges",
+          "hash": "53ff26748a2b",
+          "source": ""
+        },
+        {
+          "name": "game-circuit",
+          "path": ".claude/skills/game-circuit",
+          "hash": "66412197fb57",
+          "source": ""
+        },
+        {
+          "name": "game-color-flood",
+          "path": ".claude/skills/game-color-flood",
+          "hash": "cea4963eedf6",
+          "source": ""
+        },
+        {
+          "name": "game-engine",
+          "path": ".claude/skills/game-engine",
+          "hash": "e9088f2cf2be",
+          "source": ""
+        },
+        {
+          "name": "game-hitori",
+          "path": ".claude/skills/game-hitori",
+          "hash": "b3cdd12ef6cc",
+          "source": ""
+        },
+        {
+          "name": "game-islands",
+          "path": ".claude/skills/game-islands",
+          "hash": "026611e6a877",
+          "source": ""
+        },
+        {
+          "name": "game-light-up",
+          "path": ".claude/skills/game-light-up",
+          "hash": "159b7431f3c1",
+          "source": ""
+        },
+        {
+          "name": "game-loop",
+          "path": ".claude/skills/game-loop",
+          "hash": "2724e10a66b6",
+          "source": ""
+        },
+        {
+          "name": "game-mini-sudoku",
+          "path": ".claude/skills/game-mini-sudoku",
+          "hash": "f5829520efcb",
+          "source": ""
+        },
+        {
+          "name": "game-patches",
+          "path": ".claude/skills/game-patches",
+          "hash": "19e4ae26cc84",
+          "source": ""
+        },
+        {
+          "name": "game-star-battle",
+          "path": ".claude/skills/game-star-battle",
+          "hash": "73d470021fd8",
+          "source": ""
+        },
+        {
+          "name": "game-tango",
+          "path": ".claude/skills/game-tango",
+          "hash": "c2ef87b7657e",
+          "source": ""
+        },
+        {
+          "name": "game-unequal",
+          "path": ".claude/skills/game-unequal",
+          "hash": "035972d8cfc0",
+          "source": ""
+        },
+        {
+          "name": "game-zip",
+          "path": ".claude/skills/game-zip",
+          "hash": "4133961821ef",
+          "source": ""
+        },
+        {
+          "name": "knip",
+          "path": ".claude/skills/knip",
+          "hash": "6684a4b26148",
+          "source": "brianlovin/agent-config"
+        },
+        {
+          "name": "performance",
+          "path": ".claude/skills/performance",
+          "hash": "b0c220185d88",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "react-testing-library",
+          "path": ".claude/skills/react-testing-library",
+          "hash": "ed43a296b516",
+          "source": "pproenca/dot-skills"
+        },
+        {
+          "name": "security-audit",
+          "path": ".claude/skills/security-audit",
+          "hash": "5e3e96a1e438",
+          "source": "cloudflare/security-audit-skill"
+        },
+        {
+          "name": "seo",
+          "path": ".claude/skills/seo",
+          "hash": "57cd16566c2c",
+          "source": "addyosmani/web-quality-skills"
+        },
+        {
+          "name": "shadcn",
+          "path": ".claude/skills/shadcn",
+          "hash": "deba6c5152d9",
+          "source": "shadcn/ui"
+        },
+        {
+          "name": "slides",
+          "path": ".claude/skills/slides",
+          "hash": "2b90bdaf63f2",
+          "source": ""
+        },
+        {
+          "name": "speckit-analyze",
+          "path": ".claude/skills/speckit-analyze",
+          "hash": "3237cd827194",
+          "source": ""
+        },
+        {
+          "name": "speckit-checklist",
+          "path": ".claude/skills/speckit-checklist",
+          "hash": "5dc436df0c72",
+          "source": ""
+        },
+        {
+          "name": "speckit-clarify",
+          "path": ".claude/skills/speckit-clarify",
+          "hash": "164f49ef87cb",
+          "source": ""
+        },
+        {
+          "name": "speckit-constitution",
+          "path": ".claude/skills/speckit-constitution",
+          "hash": "60c27f3962e7",
+          "source": ""
+        },
+        {
+          "name": "speckit-converge",
+          "path": ".claude/skills/speckit-converge",
+          "hash": "fac66428c93e",
+          "source": ""
+        },
+        {
+          "name": "speckit-implement",
+          "path": ".claude/skills/speckit-implement",
+          "hash": "7186d59488f8",
+          "source": ""
+        },
+        {
+          "name": "speckit-plan",
+          "path": ".claude/skills/speckit-plan",
+          "hash": "9e97fc0b4ce8",
+          "source": ""
+        },
+        {
+          "name": "speckit-specify",
+          "path": ".claude/skills/speckit-specify",
+          "hash": "d4d93f244435",
+          "source": ""
+        },
+        {
+          "name": "speckit-tasks",
+          "path": ".claude/skills/speckit-tasks",
+          "hash": "d148aeda1011",
+          "source": ""
+        },
+        {
+          "name": "speckit-taskstoissues",
+          "path": ".claude/skills/speckit-taskstoissues",
+          "hash": "464bbaf464a2",
+          "source": ""
+        },
+        {
+          "name": "tailwind-design-system",
+          "path": ".claude/skills/tailwind-design-system",
+          "hash": "b6577edb7b7f",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "tailwind-v4-shadcn",
+          "path": ".claude/skills/tailwind-v4-shadcn",
+          "hash": "39d77c20c339",
+          "source": "secondsky/claude-skills"
+        },
+        {
+          "name": "typescript-advanced-types",
+          "path": ".claude/skills/typescript-advanced-types",
+          "hash": "c32101c65134",
+          "source": "wshobson/agents"
+        },
+        {
+          "name": "ui-styling",
+          "path": ".claude/skills/ui-styling",
+          "hash": "f8b6c3832d2a",
+          "source": ""
+        },
+        {
+          "name": "ui-ux-pro-max",
+          "path": ".claude/skills/ui-ux-pro-max",
+          "hash": "40a576d468bd",
+          "source": ""
+        },
+        {
+          "name": "vercel-composition-patterns",
+          "path": ".claude/skills/vercel-composition-patterns",
+          "hash": "e38e0eaa6093",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vercel-react-best-practices",
+          "path": ".claude/skills/vercel-react-best-practices",
+          "hash": "71ed7794962f",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "vitest",
+          "path": ".claude/skills/vitest",
+          "hash": "2da9b15c28b9",
+          "source": "antfu/skills"
+        },
+        {
+          "name": "web-design-guidelines",
+          "path": ".claude/skills/web-design-guidelines",
+          "hash": "f4647ca866a3",
+          "source": "vercel-labs/agent-skills"
+        },
+        {
+          "name": "web-perf",
+          "path": ".claude/skills/web-perf",
+          "hash": "79c531e95ca4",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "workers-best-practices",
+          "path": ".claude/skills/workers-best-practices",
+          "hash": "8406eabf6375",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "wrangler",
+          "path": ".claude/skills/wrangler",
+          "hash": "bb0cbafd6083",
+          "source": "cloudflare/skills"
+        },
+        {
+          "name": "zustand",
+          "path": ".claude/skills/zustand",
+          "hash": "5d6c01a222f7",
+          "source": "pproenca/dot-skills"
+        }
+      ],
+      "agents": [],
+      "commands": [],
+      "scope": "personal"
     }
   ],
   "copies": [
-    "qdrant-cloud-ui-copy (copy of qdrant-cloud-ui)",
-    "qdrant-cloud-ui-copy2 (copy of qdrant-cloud-ui)"
+    "qdrant/qdrant-cloud-ui-copy (copy of qdrant-cloud-ui)",
+    "qdrant/qdrant-cloud-ui-copy2 (copy of qdrant-cloud-ui)",
+    "personal/ai-job-search (not in scope personal)",
+    "personal/copywriter (not in scope personal)",
+    "personal/dark-world (not in scope personal)",
+    "personal/music-generator (not in scope personal)",
+    "personal/openvid (not in scope personal)",
+    "personal/find-unused-exports-original (copy of find-unused-exports)",
+    "personal/mcp-specgen-backup (copy of mcp-specgen)"
   ],
   "conflicts": [
-    "version\t./.claude/skills/golang-error-handling\tca442131bb40 differs from brain .agents/skills/golang-error-handling 536c25e624c3",
-    "version\t./.claude/skills/golang-grpc\ta080ffbaf5b4 differs from brain .agents/skills/golang-grpc d8732f076189",
-    "version\t./.claude/skills/golang-observability\tc314b828e2a4 differs from brain .agents/skills/golang-observability 539f7fc73370",
-    "version\t./.claude/skills/golang-testing\t6056559e12e9 differs from brain .agents/skills/golang-testing 55eea3ed4536",
-    "version\tdesign-figma/.claude/skills/find-skills\tdeddc03b4b5f differs from brain .agents/skills/find-skills c00eeea0e13e",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/bash-defensive-patterns\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/fastapi-python\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/fastapi-templates\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/pydantic\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/python-executor\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/python-patterns\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/python-testing-patterns\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/sqlalchemy\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-api/.claude/skills/sqlalchemy-alembic-expert-best-practices-code-review\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/architecture-patterns\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/find-skills\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-cli\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-concurrency\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-context\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-continuous-integration\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-database\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-dependency-management\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-error-handling\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-grpc\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-lint\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-observability\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-pro\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-project-layout\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-security\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-spf13-cobra\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-spf13-viper\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-stretchr-testify\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/golang-testing\tno readable SKILL.md",
-    "broken\tqdrant-cloud-cluster-service/.claude/skills/protobuf\tno readable SKILL.md",
-    "broken\tqdrant-cloud-iam-service/.claude/skills/golang-patterns\tno readable SKILL.md",
-    "broken\tqdrant-cloud-iam-service/.claude/skills/golang-testing\tno readable SKILL.md"
+    "version\tqdrant/./.claude/skills/golang-error-handling\tca442131bb40 differs from brain .agents/skills/golang-error-handling 536c25e624c3",
+    "version\tqdrant/./.claude/skills/golang-grpc\ta080ffbaf5b4 differs from brain .agents/skills/golang-grpc d8732f076189",
+    "version\tqdrant/./.claude/skills/golang-observability\tc314b828e2a4 differs from brain .agents/skills/golang-observability 539f7fc73370",
+    "version\tqdrant/./.claude/skills/golang-testing\t6056559e12e9 differs from brain .agents/skills/golang-testing 55eea3ed4536",
+    "version\tqdrant/design-figma/.claude/skills/find-skills\tdeddc03b4b5f differs from brain .agents/skills/find-skills c00eeea0e13e",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/bash-defensive-patterns\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/fastapi-python\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/fastapi-templates\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/pydantic\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/python-executor\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/python-patterns\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/python-testing-patterns\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/sqlalchemy\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-api/.claude/skills/sqlalchemy-alembic-expert-best-practices-code-review\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/architecture-patterns\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/find-skills\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-cli\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-concurrency\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-context\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-continuous-integration\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-database\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-dependency-management\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-error-handling\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-grpc\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-lint\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-observability\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-pro\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-project-layout\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-security\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-spf13-cobra\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-spf13-viper\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-stretchr-testify\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/golang-testing\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-cluster-service/.claude/skills/protobuf\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-iam-service/.claude/skills/golang-patterns\tno readable SKILL.md",
+    "broken\tqdrant/qdrant-cloud-iam-service/.claude/skills/golang-testing\tno readable SKILL.md",
+    "version\tpersonal/hackaton-cubepath/.claude/skills/vercel-react-best-practices\td7b0ec66ea66 differs from brain .agents/skills/vercel-react-best-practices 71ed7794962f",
+    "broken\tpersonal/monedix/.agents/skills/monedix-testing-workspace\tno readable SKILL.md",
+    "version\tpersonal/statsig-browser-extension/.claude/skills/api-and-interface-design\t5dafd0c44a3a differs from brain .agents/skills/api-and-interface-design e83d34f52ff1",
+    "version\tpersonal/statsig-browser-extension/.claude/skills/using-agent-skills\t8bdbecb2f98c differs from brain .agents/skills/using-agent-skills 30787ef2c77b",
+    "version\tpersonal/tailscale-socks/.claude/skills/golang-performance\t52630c1ab074 differs from brain .agents/skills/golang-performance 80a4e7aa3b34",
+    "version\tpersonal/tailscale-socks/.claude/skills/golang-testing\ta8df4edea728 differs from brain .agents/skills/golang-testing 55eea3ed4536"
   ]
 }
