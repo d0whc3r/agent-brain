@@ -1,4 +1,9 @@
-memory/sessions/screenshots/*
+# Keep premises and directory scaffolds. Captures and working notes stay local.
+memory/**
+!memory/*/
+!memory/premises/**
+!memory/*/.gitkeep
+!memory/sessions/screenshots/
 !memory/sessions/screenshots/.gitkeep
 mcp/snippets/obsidian.url
 mcp/snippets/obsidian.key

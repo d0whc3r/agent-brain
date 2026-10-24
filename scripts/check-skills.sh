@@ -92,7 +92,7 @@ required=(
   templates/agent-skill.md
   skills/active/brain-worktrees/SKILL.md
   skills/drafts/example-draft/SKILL.md
-  memory/dropped/example-new-rpc.md
+  scripts/fixtures/dropped-premise.md
 )
 
 missing=0
@@ -168,10 +168,10 @@ need agents/brain-reviewer.md "skills/third-party.json"
 need agents/brain-reviewer.md "do not edit the diff"
 need skills/active/brain-accept-skill/SKILL.md "brain accept-skill"
 need skills/active/brain-accept-skill/SKILL.md "do not push"
-need memory/dropped/example-new-rpc.md "example: true"
-need memory/dropped/example-new-rpc.md "text: New RPC lands in cluster-service"
-need memory/dropped/example-new-rpc.md "strength: always"
-need memory/dropped/example-new-rpc.md "status: dropped"
+need scripts/fixtures/dropped-premise.md "example: true"
+need scripts/fixtures/dropped-premise.md "text: New RPC lands in cluster-service"
+need scripts/fixtures/dropped-premise.md "strength: always"
+need scripts/fixtures/dropped-premise.md "status: dropped"
 
 for slash in brain-learn brain-garden brain-accept-skill brain-worktrees; do
   need "skills/active/${slash}/SKILL.md" 'opencode/slash: "true"'

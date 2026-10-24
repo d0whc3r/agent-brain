@@ -10,4 +10,4 @@ example: true
 scope: qdrant
 ---
 
-Example premise. A review of qdrant-cloud-cluster-service quotes this rule.
+Example of a dropped premise. Reviews do not apply it.
