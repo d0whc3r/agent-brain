@@ -229,3 +229,35 @@ function waitExit(child) {
     });
   });
 }
+
+test("TestCLICandidate", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "brain-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const previous = process.env.BRAIN_ROOT;
+  process.env.BRAIN_ROOT = root;
+  t.after(() => {
+    if (previous === undefined) {
+      delete process.env.BRAIN_ROOT;
+      return;
+    }
+    process.env.BRAIN_ROOT = previous;
+  });
+
+  let result = await invoke(["premise", "add", "Maybe rule", "--strength", "never", "--scope", "*", "--repo", "*", "--status", "candidate"]);
+  assert.equal(result.code, 0, result.stderr);
+  assert.equal((await invoke(["premise", "list"])).stdout, "");
+  assert.equal((await invoke(["premise", "list", "--status", "candidate"])).stdout, "maybe-rule\t*\tnever\tMaybe rule\n");
+
+  result = await invoke(["premise", "seen", "maybe-rule", "--repo", "repo-a", "--origin", "guess"]);
+  assert.equal(result.code, 1);
+  for (const date of ["2026-10-20", "2026-10-22"]) {
+    result = await invoke(["premise", "seen", "maybe-rule", "--repo", "repo-a", "--origin", "correction", "--date", date]);
+    assert.equal(result.code, 0, result.stderr);
+  }
+  result = await invoke(["premise", "stats"]);
+  assert.match(result.stdout, /^maybe-rule\tcandidate\t-\t-\t-\t2\t2026-10-22\t(ready|expired)\n$/);
+
+  result = await invoke(["premise", "promote", "maybe-rule"]);
+  assert.equal(result.code, 0, result.stderr);
+  assert.equal((await invoke(["premise", "list"])).stdout, "maybe-rule\t*\tnever\tMaybe rule\n");
+});

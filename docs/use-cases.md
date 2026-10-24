@@ -26,7 +26,7 @@ You load `brain-next` and run the `grill-plan` flow: `brain-tp-grilling` in roun
 
 User: "Review PR 123." "Revisa la rama de Ana."
 
-You run the `review-branch` flow. The branch goes into a worktree. `brain-reviewer` runs once per lens: `premises` with opus, `security` and `tests` with sonnet, and `simplify` with haiku. Opus merges the results and drops each finding that fails `brain-tp-doubt-driven-development`. You show draft PR comments and post nothing.
+You run the `review-branch` flow. The branch goes into a worktree. `brain-reviewer` runs once per lens: `premises` with opus, and `security`, `tests`, and `simplify` with sonnet. Opus merges the results and drops each finding that fails `brain-tp-doubt-driven-development`. You show draft PR comments and post nothing.
 
 ## Split a branch into PRs
 
@@ -54,6 +54,12 @@ You load the `brain-reviewer` skill. It runs the agent, which calls `premise_lis
 
 With more than one active worktree, `self-review` asks whether to review only the current one, all of them, or the ones the user names. A stacked worktree is reviewed against its parent.
 
+## Define when a task is done
+
+User: "Define the DoD." "¿Cuándo está terminado esto?" "Is this done?"
+
+You run `brain dod path`. When the file does not exist, you run `brain dod init` and write one criterion per requirement, as `templates/dod.md` describes. You ask the user for a missing check or pass condition, with a recommended answer. To close the task, you run `brain dod run` and `brain dod lint --done`. You say that the task is done only when the lint prints `ok`.
+
 ## Review a page in the browser
 
 User: "Check the page on localhost:3000." "The layout looks wrong. Look at it."
@@ -70,13 +76,20 @@ You run `brain scope`. You store the rule with the scope of the repo, or with `"
 
 User: "Remember this." "Recuerda esto." "From now on, do it this way." "A partir de ahora." "No, keep it in cluster-service."
 
-You load `brain-learn` and follow it. You write the decision note. When the rule is `always` or `never`, you run:
+You load `brain-learn` and follow it. An explicit ask ("recuerda esto", "a partir de ahora") gets a decision note and an active premise:
 
 ```bash
-brain premise add "RULE" --strength always --repo REPO --source memory/decisions/DATE-slug.md
+brain premise add "RULE" --strength always --scope SCOPE --repo REPO --source memory/decisions/DATE-slug.md
 ```
 
-You show `brain premise list --repo REPO` so the user sees the new line.
+A correction without an explicit ask ("No, keep it in cluster-service") becomes a candidate, or a repeat of one:
+
+```bash
+brain premise add "RULE" --strength always --scope SCOPE --repo REPO --status candidate
+brain premise seen ID --repo REPO --origin correction
+```
+
+You show the new line with `brain premise list`, with `--status candidate` for a candidate.
 
 Ask only when the repo or the strength is unclear.
 
@@ -120,7 +133,7 @@ You load `brain-harvest`. You show a table of proposed premises with their sourc
 
 User: "Which rules never apply?" "Are any rules noisy?"
 
-You run `brain premise stats`. You show each `unused`, `stale`, and `noisy` premise. You ask whether to keep, change, or drop each one.
+You run `brain premise stats`. You show each `unused`, `stale`, `noisy`, and `idle` premise, and each `ready` and `expired` candidate. You ask whether to keep, change, promote, or drop each one.
 
 ## Audit the workspace config
 

@@ -42,6 +42,7 @@ The test: every changed line traces to the request.
 - A premise change: `brain premise list` shows the new state, and the file is in `memory/premises/` or `memory/dropped/`.
 - A skill draft: the directory is under `skills/drafts/`, and no tool lists that skill name.
 - A review: the output quotes each active `always` and `never` premise for that repo.
+- A task: `brain dod lint --done` prints `ok` for the DoD of the branch.
 - "Looks right" is not a result. Run the check and paste the output.
 
 ## 5. Git
@@ -81,10 +82,11 @@ The user talks in natural language. You run `brain` and the review steps. Do not
 - Do not learn from the copy directories named in that workspace file. Do not modify the engine repo `qdrant/`.
 - Before a review, call `premise_list` for the repo and its scope. `brain scope` prints both. Apply every active `always` and `never` premise. Quote each one you applied.
 - Add a premise with `brain premise add` or `premise_add`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.
+- Store a rule only when it is important. An explicit ask becomes an active premise. Any other correction or defect class becomes a candidate, and `brain premise seen` counts each repeat. Ephemeral facts go nowhere. The `brain-learn` skill has the table and the thresholds.
 - Do not edit `skills/active/` unless the user accepted that skill in this turn.
 - Do not write tokens, `.env` values, or customer data into a note.
 - Do not read the Chrome profile directory into a note. Do not commit it.
 - Obsidian shows these files. When Obsidian is closed, use the premise CLI and `brain-premises`.
 - A UI check uses the Chrome DevTools profile for test logins. It does not use the user's daily Chrome profile.
 
-**Working if:** a correction becomes a premise the user can list and delete, the next review quotes it, and no team repo changed unless the user asked.
+**Working if:** an explicit rule becomes a premise the user can list and delete, a repeated correction becomes a candidate the user can promote, the next review quotes each active premise, and no team repo changed unless the user asked.

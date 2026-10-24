@@ -34,6 +34,14 @@ Follow [the Obsidian MCP instructions](../mcp/snippets/obsidian.md) to enable th
 
 Agents add and delete premises through `brain premise` or the premise MCP. This keeps validation and archived deletions in the shared store.
 
+## Check MCP drift
+
+Run `brain mcp check` after an update. The installer and `npm run check` also run it. It starts a fresh stdio server, compares its code version and tool schemas with this checkout, and checks that its premise list matches the shared store. It writes no premise.
+
+The server version includes a hash of its source files and dependency lock at startup. If those files change, an existing server rejects tool calls with a reconnect message. Reconnect `brain-premises`, or start a new app session, to load the current code and tool schemas. The check command does not restart connections that an app already holds.
+
+Older servers have no drift guard. If `premise_list` exposes no `scope` parameter, reconnect it. Until then, use `brain premise list --repo REPO --scope SCOPE` to keep scope filtering. An empty scope (`--scope ""`) returns only global rules.
+
 ## Setup record
 
 The [setup history](setup-history.md) records the skill discovery probe and Engram registration. The [install receipt decision](superpowers/specs/2026-10-23-install-receipt-design.md) defines the requirements for tracking installed items.

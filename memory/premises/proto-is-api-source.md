@@ -10,6 +10,8 @@ repos:
   - qdrant-cloud-ui
 status: active
 source: memory/decisions/2026-10-23-harvest.md
+seen:
+  - 2026-10-23 qdrant-review-brain correction
 ---
 
 Why: The proto defines the public contract. A service or UI change that comes first drifts from it.

@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
 import { realpathSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { serveMCP } from "../lib/mcp.mjs";
+import { dodPath, lintDod, newDod, parseDod, readStanding, runDod, treeFingerprint } from "../lib/dod.mjs";
 import { brainRoot, open } from "../lib/premise.mjs";
-import { anyScope, loadConfig, resolveRepo } from "../lib/scope.mjs";
+import { loadConfig, resolveRepo, validScope } from "../lib/scope.mjs";
 import { acceptSkill, linkSkills } from "../lib/skills.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { premiseStats } from "../lib/stats.mjs";
@@ -15,10 +17,12 @@ import { brainSkills, conflicts, scanScopes } from "../lib/workspace.mjs";
 import { runSkills, skillsUsage } from "../lib/third-party.mjs";
 
 const strengths = new Set(["always", "never", "prefer"]);
+const statuses = new Set(["active", "candidate"]);
+const origins = new Set(["correction", "defect"]);
 
 export async function run(args, stdout, stderr) {
   if (args.length > 0 && args[0] === "mcp") {
-    return cmdMCP(args.slice(1), stderr);
+    return cmdMCP(args.slice(1), stdout, stderr);
   }
   if (args.length > 0 && args[0] === "skills") {
     return runSkills(args.slice(1), stdout, stderr);
@@ -51,6 +55,9 @@ export async function run(args, stdout, stderr) {
   if (args.length > 0 && args[0] === "link-skills") {
     return cmdLinkSkills(args.slice(1), stdout, stderr);
   }
+  if (args.length > 0 && args[0] === "dod") {
+    return cmdDod(args.slice(1), stdout, stderr);
+  }
   if (args.length === 0 || args[0] !== "premise") {
     usage(stderr);
     return 1;
@@ -76,6 +83,10 @@ async function runPremise(args, stdout, stderr) {
       return cmdSearch(args.slice(1), stdout, stderr);
     case "stats":
       return cmdStats(args.slice(1), stdout, stderr);
+    case "seen":
+      return cmdSeen(args.slice(1), stderr);
+    case "promote":
+      return cmdPromote(args.slice(1), stderr);
     default:
       usage(stderr);
       return 1;
@@ -83,12 +94,17 @@ async function runPremise(args, stdout, stderr) {
 }
 
 async function cmdList(args, stdout, stderr) {
-  const parsed = parseNamed(args, ["repo", "scope"], stderr);
+  const parsed = parseNamed(args, ["repo", "scope", "status"], stderr);
   if (parsed.code !== 0) {
     return parsed.code;
   }
   if (parsed.pos.length !== 0) {
     stderr.write("list takes no text\n");
+    return 1;
+  }
+  const status = last(parsed.flags.status) || "active";
+  if (!statuses.has(status)) {
+    stderr.write("list needs --status active or candidate\n");
     return 1;
   }
   const opened = await openStore(stderr);
@@ -97,7 +113,7 @@ async function cmdList(args, stdout, stderr) {
   }
   try {
     const scope = parsed.flags.scope.length > 0 ? last(parsed.flags.scope) : null;
-    const items = await opened.store.list(last(parsed.flags.repo), scope);
+    const items = await opened.store.list(last(parsed.flags.repo), scope, status);
     writePremises(stdout, items);
     return 0;
   } catch (err) {
@@ -106,7 +122,7 @@ async function cmdList(args, stdout, stderr) {
 }
 
 async function cmdAdd(args, stdout, stderr) {
-  const parsed = parseNamed(args, ["strength", "scope", "id", "source", "repo"], stderr);
+  const parsed = parseNamed(args, ["strength", "scope", "id", "source", "repo", "status"], stderr);
   if (parsed.code !== 0) {
     return parsed.code;
   }
@@ -119,9 +135,15 @@ async function cmdAdd(args, stdout, stderr) {
     stderr.write("add needs --strength always, never, or prefer\n");
     return 1;
   }
+  const status = last(parsed.flags.status) || "active";
+  if (!statuses.has(status)) {
+    stderr.write("add needs --status active or candidate\n");
+    return 1;
+  }
   const scope = last(parsed.flags.scope);
-  const scopes = Object.keys(loadConfig(brainRoot()).scopes);
-  if (scope !== anyScope && !scopes.includes(scope)) {
+  const config = loadConfig(brainRoot());
+  const scopes = Object.keys(config.scopes);
+  if (!validScope(scope, config)) {
     stderr.write(`add needs --scope ${[...scopes, '"*"'].join(", ")}\n`);
     return 1;
   }
@@ -137,6 +159,7 @@ async function cmdAdd(args, stdout, stderr) {
       scope,
       repos: parsed.flags.repo,
       source: last(parsed.flags.source),
+      status,
     });
     stdout.write(`${added.id}\n`);
     return 0;
@@ -198,8 +221,9 @@ async function cmdSearch(args, stdout, stderr) {
   }
 }
 
-// cmdStats prints id, applied, rejected, last applied date, and a flag:
-// unused (never applied), stale (not applied in 90 days), or noisy (often rejected).
+// cmdStats prints id, status, applied, hits, rejected, seen, last date, and a flag.
+// Active: unused (never applied), stale (not applied in 90 days), noisy (often rejected),
+// or idle (applied 10 times or more with no hit). Candidate: ready (enough repeats) or expired.
 async function cmdStats(args, stdout, stderr) {
   if (args.length !== 0) {
     stderr.write("stats takes no arguments\n");
@@ -207,8 +231,53 @@ async function cmdStats(args, stdout, stderr) {
   }
   try {
     for (const row of await premiseStats(brainRoot())) {
-      stdout.write(`${row.id}\t${row.applied}\t${row.rejected}\t${row.last || "-"}\t${row.flag || "-"}\n`);
+      const cells = row.status === "active"
+        ? [row.applied, row.hits, row.rejected, "-"]
+        : ["-", "-", "-", row.seen];
+      stdout.write(`${[row.id, row.status, ...cells, row.last || "-", row.flag || "-"].join("\t")}\n`);
     }
+    return 0;
+  } catch (err) {
+    return failStore(stderr, err);
+  }
+}
+
+// cmdSeen records one repeat of a rule: today or --date, the repo, and the origin.
+async function cmdSeen(args, stderr) {
+  const parsed = parseNamed(args, ["repo", "origin", "date"], stderr);
+  if (parsed.code !== 0) {
+    return parsed.code;
+  }
+  const origin = last(parsed.flags.origin);
+  if (parsed.pos.length !== 1 || last(parsed.flags.repo) === "" || !origins.has(origin)) {
+    stderr.write("seen needs ID --repo name --origin correction|defect\n");
+    return 1;
+  }
+  const date = last(parsed.flags.date) || new Date().toISOString().slice(0, 10);
+  const opened = await openStore(stderr);
+  if (opened.code !== 0) {
+    return opened.code;
+  }
+  try {
+    await opened.store.see(parsed.pos[0], `${date} ${last(parsed.flags.repo)} ${origin}`);
+    return 0;
+  } catch (err) {
+    return failStore(stderr, err);
+  }
+}
+
+// cmdPromote makes a candidate active, so reviews apply it.
+async function cmdPromote(args, stderr) {
+  const id = oneArg(args, "promote", stderr);
+  if (id.code !== 0) {
+    return id.code;
+  }
+  const opened = await openStore(stderr);
+  if (opened.code !== 0) {
+    return opened.code;
+  }
+  try {
+    await opened.store.update(id.value, { status: "active" });
     return 0;
   } catch (err) {
     return failStore(stderr, err);
@@ -230,6 +299,113 @@ function cmdScope(args, stdout, stderr) {
   const roots = config.scopes[found.scope]?.roots ?? [];
   stdout.write(`${found.scope || "-"}\t${found.repo}\t${found.owner || "-"}\t${roots[0] ?? "-"}\n`);
   return 0;
+}
+
+// cmdDod handles the Definition of Done of the branch at --cwd: path, init, lint, and run.
+async function cmdDod(args, stdout, stderr) {
+  const sub = args[0];
+  const done = args.includes("--done");
+  const replace = args.includes("--replace");
+  const parsed = parseNamed(args.slice(1).filter((arg) => arg !== "--done" && arg !== "--replace"), ["cwd", "title"], stderr);
+  if (parsed.code !== 0) {
+    return parsed.code;
+  }
+  // The DoD always belongs to the branch at --cwd, so lint and run measure the tree of that repo.
+  if (parsed.pos.length > 0) {
+    usage(stderr);
+    return 1;
+  }
+  const cwd = last(parsed.flags.cwd) || process.cwd();
+  const path = dodPath(cwd);
+  if (path === "") {
+    stderr.write(`not a git repo: ${cwd}\n`);
+    return 1;
+  }
+  const { repo } = resolveRepo(cwd, loadConfig(brainRoot()));
+  const standing = readStanding(brainRoot(), repo);
+  switch (sub) {
+    case "path":
+      stdout.write(`${path}\n`);
+      return 0;
+    case "init":
+      return dodInit(path, last(parsed.flags.title) || basename(path, ".md"), { repo, standing, replace }, stdout, stderr);
+    case "lint":
+      return dodLint(path, cwd, standing, done, stdout, stderr);
+    case "run":
+      return dodRun(path, cwd, stdout, stderr);
+    default:
+      usage(stderr);
+      return 1;
+  }
+}
+
+// dodInit writes a new DoD. --replace overwrites the DoD of an earlier task on the same branch.
+async function dodInit(path, title, { repo, standing, replace }, stdout, stderr) {
+  const template = await readFile(join(brainRoot(), "templates", "dod.md"), "utf8");
+  await mkdir(dirname(path), { recursive: true });
+  try {
+    await writeFile(path, newDod(template, title, standing), { flag: replace ? "w" : "wx" });
+  } catch (err) {
+    if (err.code === "EEXIST") {
+      stderr.write(`a DoD exists: ${path}. Check its title, and use --replace only for a DoD of another task\n`);
+      return 1;
+    }
+    throw err;
+  }
+  if (standing === "") {
+    stderr.write(`no dod/${repo}.md in the brain: write the check of this repo in the DoD\n`);
+  }
+  stdout.write(`${path}\n`);
+  return 0;
+}
+
+async function readDod(path, stderr) {
+  try {
+    return await readFile(path, "utf8");
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      stderr.write(`no DoD at ${path}: run brain dod init\n`);
+      return null;
+    }
+    throw err;
+  }
+}
+
+async function dodLint(path, cwd, standing, done, stdout, stderr) {
+  const text = await readDod(path, stderr);
+  if (text === null) {
+    return 1;
+  }
+  const tree = done ? treeFingerprint(cwd) : "";
+  const problems = lintDod(text, { standing: parseDod(standing), done, tree });
+  for (const problem of problems) {
+    stdout.write(`${problem}\n`);
+  }
+  if (problems.length > 0) {
+    return 1;
+  }
+  stdout.write(`ok: ${parseDod(text).length} criteria${done ? `, each with evidence for tree ${tree}` : ""}\n`);
+  return 0;
+}
+
+async function dodRun(path, cwd, stdout, stderr) {
+  const text = await readDod(path, stderr);
+  if (text === null) {
+    return 1;
+  }
+  const result = runDod(text, cwd);
+  await writeFile(path, result.text);
+  stdout.write(`tree ${result.tree}\n`);
+  for (const r of result.results) {
+    stdout.write(`${r.ok ? "pass" : "fail"}\texit ${r.status}\t${r.criterion.outcome}\n`);
+    if (!r.ok) {
+      stdout.write(`${r.tail}\n`);
+    }
+  }
+  if (!result.stable) {
+    stdout.write("the checks changed files: run brain dod run again\n");
+  }
+  return result.stable && result.results.every((r) => r.ok) ? 0 : 1;
 }
 
 // cmdInstalled prints the install receipt: what install put on disk for this checkout.
@@ -460,12 +636,19 @@ function failSkill(stderr, err) {
   return 2;
 }
 
-async function cmdMCP(args, stderr) {
-  if (args.length !== 0) {
+async function cmdMCP(args, stdout, stderr) {
+  if (args.length > 1 || (args.length === 1 && args[0] !== "check")) {
     usage(stderr);
     return 1;
   }
   try {
+    if (args[0] === "check") {
+      const { checkMCP } = await import("../lib/mcp-check.mjs");
+      const result = await checkMCP();
+      stdout.write(`brain-premises ${result.version}: ${result.tools.length} tools and shared store match\n`);
+      return 0;
+    }
+    const { serveMCP } = await import("../lib/mcp.mjs");
     await serveMCP();
     return 0;
   } catch (err) {
@@ -566,8 +749,10 @@ function writePremise(stdout, item) {
 
 function usage(stderr) {
   stderr.write(`usage:
-  brain premise list [--repo name] [--scope name]
-  brain premise add TEXT --strength always|never|prefer --scope name|"*" --repo name [--repo name ...] [--id slug] [--source path]
+  brain premise list [--repo name] [--scope name] [--status active|candidate]
+  brain premise add TEXT --strength always|never|prefer --scope name|"*" --repo name [--repo name ...] [--id slug] [--source path] [--status active|candidate]
+  brain premise seen ID --repo name --origin correction|defect [--date YYYY-MM-DD]
+  brain premise promote ID
   brain premise show ID
   brain premise rm ID
   brain premise search QUERY
@@ -579,9 +764,12 @@ function usage(stderr) {
   brain next [--cwd DIR] [--json] [--no-pr]
   brain flows
   brain worktree list [--cwd DIR] [--json]
-  brain mcp
+  brain mcp [check]
   brain accept-skill NAME
   brain link-skills [--apply] --target PATH [--target PATH ...]
+  brain dod path|run [--cwd DIR]
+  brain dod init [--cwd DIR] [--title TEXT] [--replace]
+  brain dod lint [--cwd DIR] [--done]
 ${skillsUsage}`);
 }
 

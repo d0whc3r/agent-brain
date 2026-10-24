@@ -26,9 +26,11 @@ The install writes a receipt to `~/.local/share/qdrant-review-brain/installed.tx
 | Part | What it is | Where it lives |
 |---|---|---|
 | Scope | A group of repos that share practices, such as `qdrant` (work) or `personal`. `*` means every scope. | `brain.config.json` |
-| Premise | One rule with a strength (`always`, `never`, `prefer`), a scope, and the repos it applies to | `memory/premises/` |
-| Decision note | The record of a correction, with its evidence | `memory/decisions/` |
-| Session note | The record of one review: premises applied and rejected | `memory/sessions/` |
+| Premise | One rule with a strength (`always`, `never`, `prefer`), a scope, and the repos it applies to. An `active` premise applies in reviews. A `candidate` premise counts repeats in `seen` and applies nowhere until the user promotes it. | `memory/premises/` |
+| Decision note | The record of a persistent rule: an explicit ask or a promoted candidate, with its evidence | `memory/decisions/` |
+| Session note | The record of one review: premises applied, hits, and rejected, and a one-line body | `memory/sessions/` |
+| Definition of Done (DoD) | The criteria that say when a task is done. Each criterion has an outcome, a check, a pass condition, and evidence. `brain dod lint` rejects a vague criterion. | `<git dir>/brain-dod/<branch>.md`, one per branch, never committed |
+| Standing DoD | The criteria that every task of a repo keeps, such as its lint and its tests. `brain dod init` copies them into the DoD of the task. | `dod/<repo>.md` |
 | Brain skill | A workflow the agent runs: review, learn, next steps | `skills/active/` |
 | Draft skill | A proposed skill that no tool loads yet | `skills/drafts/` |
 | Third-party skill | A vendored skill, read when a review flow needs it | `.agents/skills/`, listed in `skills/third-party.json` |
@@ -71,7 +73,7 @@ These skills live in `skills/active/`. The install links them, and the third-par
 | Skill | What it does | Say this | What it changes |
 |---|---|---|---|
 | `brain-next` | Reads the repo state, suggests matching flows, and runs the one you pick | "What should I do next?" "¿Qué hago ahora?" | Nothing until you pick a flow. It writes a new flow file only after you agree. |
-| `brain-learn` | Stores a correction as a decision note and, for `always` or `never`, as a premise | "Remember this." "A partir de ahora..." | A decision note and a premise. |
+| `brain-learn` | Stores an explicit rule as a decision note and an active premise. Stores any other correction as a candidate that counts repeats. | "Remember this." "A partir de ahora..." "No, do it this way." | A decision note and a premise, or a candidate with one more `seen` entry. |
 | `brain-harvest` | Reads Claude Code memories and Engram, and proposes premises for rules that are not premises yet | "Which of my corrections are not premises yet?" | Only the premises you approve, and one decision note. |
 | `brain-garden` | Drafts a skill when three premises share a repo and a rule | "Can these rules become a skill?" | A draft in `skills/drafts/`. |
 | `brain-accept-skill` | Moves a draft to `skills/active/`, commits that move, and refreshes the links | "Accept the go-error-wrapping draft." | One commit in this repo. No push. |
@@ -86,7 +88,7 @@ These skills live in `skills/active/`. The install links them, and the third-par
 4. It reviews, then tries to prove each finding wrong. It drops a finding when the input cannot reach the code or when the problem is older than the diff. It reports how many findings it dropped.
 5. It checks a finding that depends on library behavior against the official docs, with `brain-tp-source-driven-development`.
 6. It reports code smells from a baseline of 12 (after Fowler, via mattpocock/skills) as "possible" notes, never as findings. `brain-tp-code-simplification` shapes the fix.
-7. It tags each finding with the premise that produced it, and writes `applied` and `rejected` in the session note.
+7. It tags each finding with the premise that produced it, and writes `applied`, `hits`, and `rejected` in the session note.
 
 A flow can split the review into lenses, one agent each: `premises`, `security`, `tests`, and `simplify`. Each lens reads only its own skills. `review-branch` runs all four with a model per lens. The review edits no code. On your own branch, it applies the findings you name when you ask.
 
@@ -109,14 +111,14 @@ A flow is a file in `flows/`. Its frontmatter says when it matches and what it u
 
 | Flow | Matches when | Uses | Model | Done when |
 |---|---|---|---|---|
-| `start-ticket` | `qdrant` scope, on a clean `main` | Atlassian MCP, `brain-tp-grilling`, `brain-tp-planning-and-task-breakdown` | opus | The branch exists and the plan is in chat |
+| `start-ticket` | `qdrant` scope, on a clean `main` | Atlassian MCP, `brain-tp-grilling`, `brain-tp-planning-and-task-breakdown` | opus | The branch exists, the plan is in chat, and you approved a DoD that `brain dod lint` accepts |
 | `self-review` | Your feature branch with no PR | `brain-reviewer` in a fresh context, `brain-tp-requesting-code-review`, `brain-worktrees` | opus | Each finding has your answer. It edits code only when you ask |
-| `review-branch` | Any repo, when you ask to review the branch or PR of another author | `brain-reviewer` once per lens, `brain-tp-differential-review`, `brain-tp-doubt-driven-development` | opus, sonnet, haiku per lens | Each draft PR comment has your answer |
-| `ui-change-verify` | `qdrant` scope, in `qdrant-cloud-ui` with UI files changed | `chrome-devtools` MCP | sonnet | Checks pass and a screenshot shows the change |
+| `review-branch` | Any repo, when you ask to review the branch or PR of another author | `brain-reviewer` once per lens, `brain-tp-differential-review`, `brain-tp-doubt-driven-development` | opus and sonnet per lens | Each draft PR comment has your answer |
+| `ui-change-verify` | `qdrant` scope, in `qdrant-cloud-ui` with UI files changed | `chrome-devtools` MCP | sonnet | `brain dod lint --done` passes and a screenshot shows the change |
 | `proto-change` | `qdrant` scope, `.proto` files changed | `brain-tp-api-and-interface-design`, `brain-tp-golang-grpc` | opus | `buf breaking` is clean and each consumer has a pin to update |
 | `db-migration` | Files in `alembic/versions` or `migrations` changed | | sonnet | One alembic head, DB tests pass |
 | `sync-with-main` | Feature branch behind `origin/main` | | sonnet | Not behind, checks pass |
-| `prepare-pr` | Clean feature branch with no PR | `brain-tp-git-workflow-and-versioning`, `brain-tp-verification-before-completion` | sonnet | You have the PR draft |
+| `prepare-pr` | Clean feature branch with no PR | `brain-tp-git-workflow-and-versioning`, `brain-tp-verification-before-completion` | sonnet | `brain dod lint --done` passes and you have the PR draft |
 | `address-review` | The PR is open or has changes requested | `brain-tp-receiving-code-review`, `brain-learn` | opus | Each comment has a fix or a drafted reply |
 | `brain-care` | In this repo | `brain-workspace-audit`, `brain-harvest`, `brain-garden`, `brain-tp-writing-for-agents` | sonnet | `npm run check` passes and each flagged premise has a decision |
 | `split-branch` | Feature branch, when you ask to split it or `brain-next` sees a big diff | `brain-split-planner`, `brain-worktrees` | opus for the plan, sonnet to apply | Each part has a worktree whose checks pass, and no change is lost |
@@ -128,7 +130,7 @@ A flow is a file in `flows/`. Its frontmatter says when it matches and what it u
 |---|---|
 | `scopes` | Scope names, or `*` |
 | `repos` | Origin repo names, or `*` |
-| `kinds` | `go`, `python`, `proto`, `ui`, `migration`, `docs`, `test` |
+| `kinds` | `go`, `python`, `proto`, `ui`, `migration`, `docs`, `test`, `deps` |
 | `branch` | `main` or `feature` |
 | `dirty` | `true` or `false` |
 | `pr` | `none`, `draft`, `open`, `changes_requested`, `approved` |
@@ -148,14 +150,14 @@ The repo keeps every third-party skill once, in `.agents/skills/`, in the open A
 
 | Kind | Skills |
 |---|---|
-| `review` | `brain-tp-using-agent-skills`, `brain-tp-api-and-interface-design`, `brain-tp-doubt-driven-development`, `brain-tp-retro`, `brain-tp-diagnosing-bugs`, `brain-tp-handoff`, `brain-tp-code-review-and-quality`, `brain-tp-security-and-hardening`, `brain-tp-code-simplification`, `brain-tp-source-driven-development` |
+| `review` | `brain-tp-api-and-interface-design`, `brain-tp-doubt-driven-development`, `brain-tp-code-review-and-quality`, `brain-tp-security-and-hardening`, `brain-tp-code-simplification`, `brain-tp-source-driven-development`, `brain-tp-performance-optimization` |
 | `go` | `brain-tp-deprecation-and-migration`, `brain-tp-observability-and-instrumentation`, `brain-tp-golang-code-style`, `brain-tp-golang-error-handling`, `brain-tp-golang-testing`, `brain-tp-golang-safety`, `brain-tp-golang-grpc`, `brain-tp-golang-performance`, `brain-tp-golang-observability`, `brain-tp-golang-security`, `brain-tp-golang-concurrency`, `brain-tp-golang-context` |
 | `proto` | `brain-tp-api-and-interface-design`, `brain-tp-golang-grpc`, `brain-tp-protobuf` |
 | `python` | `brain-tp-deprecation-and-migration`, `brain-tp-sqlalchemy-alembic-expert-best-practices-code-review`, `brain-tp-python-testing-patterns`, `brain-tp-fastapi-python` |
 | `migration` | `brain-tp-sqlalchemy-alembic-expert-best-practices-code-review` |
 | `test` | `brain-tp-vitest`, `brain-tp-python-testing-patterns`, `brain-tp-test-driven-development` |
 | `ui` | `brain-tp-vercel-react-best-practices`, `brain-tp-vercel-composition-patterns`, `brain-tp-accessibility`, `brain-tp-web-design-guidelines`, `brain-tp-tanstack-query`, `brain-tp-tanstack-router`, `brain-tp-vitest`, `brain-tp-zod-validation`, `brain-tp-typescript-advanced-types`, `brain-tp-react-hook-form`, `brain-tp-frontend-design` |
-| `workflow` | `brain-tp-grilling`, `brain-tp-planning-and-task-breakdown`, `brain-tp-receiving-code-review`, `brain-tp-verification-before-completion`, `brain-tp-git-workflow-and-versioning`, `brain-tp-writing-for-agents`, `brain-tp-differential-review`, `brain-tp-requesting-code-review` |
+| `workflow` | `brain-tp-using-agent-skills`, `brain-tp-retro`, `brain-tp-diagnosing-bugs`, `brain-tp-handoff`, `brain-tp-grilling`, `brain-tp-planning-and-task-breakdown`, `brain-tp-receiving-code-review`, `brain-tp-verification-before-completion`, `brain-tp-git-workflow-and-versioning`, `brain-tp-writing-for-agents`, `brain-tp-differential-review`, `brain-tp-requesting-code-review` |
 
 `brain-reviewer` loads every kind except `workflow`. A `workflow` skill belongs to the flows that name it, so a review does not pay its context cost.
 
@@ -163,7 +165,7 @@ The repo keeps every third-party skill once, in `.agents/skills/`, in the open A
 
 Two internal skills help with skills: `find-skills` finds a third-party skill, and `skill-creator` writes and validates one. Say "Is there a skill for Go context cancellation?" or "Write a skill for our proto field numbers." A new skill goes to `skills/drafts/`.
 
-Add a skill to the catalog with `brain skills add owner/repo --skill NAME --kind KIND`. Update the copies with `pnpm skills:update`.
+Add a skill to the catalog with `brain skills add owner/repo --skill NAME --kind KIND`. Update the copies with `pnpm skills:update`. It also downloads the `../../references/` files that `addyosmani/agent-skills` skills link into `.agents/references/`, and `npm run check` fails when one is missing.
 
 ## Commands
 
@@ -173,14 +175,16 @@ The agent runs these. You can run them too.
 
 | Command | What it does |
 |---|---|
-| `brain premise list [--repo NAME] [--scope NAME]` | Active premises with their scope. `--scope ""` lists what a repo in no scope gets. |
+| `brain premise list [--repo NAME] [--scope NAME] [--status active\|candidate]` | Active premises with their scope, or candidates with `--status candidate`. `--scope ""` lists what a repo in no scope gets. |
 | `brain scope [--cwd DIR]` | The scope, repo, owner, and scope root of a directory |
 | `brain root` | The path of the brain checkout |
-| `brain premise add TEXT --strength S --scope SCOPE --repo R [--id ID] [--source PATH]` | Add a premise. Rejects a bad strength, an unknown scope, and text that looks like a secret. |
+| `brain premise add TEXT --strength S --scope SCOPE --repo R [--id ID] [--source PATH] [--status candidate]` | Add a premise. Rejects a bad strength, an unknown scope, and text that looks like a secret. |
+| `brain premise seen ID --repo R --origin correction\|defect [--date YYYY-MM-DD]` | Record one repeat of a rule |
+| `brain premise promote ID` | Make a candidate active |
 | `brain premise show ID` | One premise |
 | `brain premise rm ID` | Move a premise to `memory/dropped/` |
-| `brain premise search QUERY` | Premises whose text contains the query |
-| `brain premise stats` | Applied count, rejected count, and last use per premise, with a flag: `unused`, `stale` (not applied in 90 days), or `noisy` (rejected often) |
+| `brain premise search QUERY` | Active and candidate premises whose text contains the query |
+| `brain premise stats` | Per active premise: applied, hits, rejected, and last use, with a flag: `unused`, `stale` (not applied in 90 days), `noisy` (rejected 2 times or more, and at least as often as applied), or `idle` (applied 10 times or more with no hit). Per candidate: repeats and last repeat, with a flag: `ready` (2 corrections or 3 defects on 2 distinct days or more) or `expired` (no repeat in 30 days). |
 
 Pass at least one `--repo` when you add a premise. Use `--repo "*"` for every repo in its scope.
 
@@ -195,6 +199,10 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 | `brain next [--cwd DIR] [--json] [--no-pr]` | Repo state and the matching flows |
 | `brain flows` | Every flow with its model |
 | `brain worktree list [--cwd DIR] [--json]` | Each worktree with its branch, state (`main`, `active`, `merged`, `gone`, `detached`, `prunable`), parent branch, ahead, behind, and uncommitted files |
+| `brain dod path [--cwd DIR]` | The DoD file of the branch |
+| `brain dod init [--cwd DIR] [--title TEXT] [--replace]` | Writes the DoD of the branch from `templates/dod.md`, with the standing criteria of the repo. `--replace` overwrites the DoD of an earlier task on the same branch |
+| `brain dod lint [--cwd DIR] [--done]` | Checks that each criterion names an observable outcome, a check that can fail, and a concrete pass condition, and that the standing criteria are there. With `--done`, also checks that each criterion is checked, with evidence for the current code and the current check |
+| `brain dod run [--cwd DIR]` | Prints the tree, runs each command check at the repo top, and writes the time, the tree, a hash of the criterion, and the exit code as evidence. It checks a criterion only when the exit code and each quoted text of `pass` match. It refuses a check that commits, pushes, resets, cleans, or deletes a branch |
 
 ### Workspace and skills
 
@@ -206,6 +214,7 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 | `brain accept-skill NAME` | Move a draft to active and commit |
 | `brain link-skills --target PATH [--apply]` | Link the brain and third-party skills into a tool path. Removes brain links to skills that are gone, and skips entries that another install owns. |
 | `brain mcp` | Start the premise MCP server |
+| `brain mcp check` | Start a fresh server over stdio and verify its code version, tool schemas, and shared premise store. This checks a new process, not a connection already held by an app. |
 | `brain installed` | The install receipt: each skill, agent, command, MCP server, hook, and instruction block the install added |
 
 ### Repo checks
@@ -222,7 +231,7 @@ The install receipt decision is in [the install receipt spec](superpowers/specs/
 
 | Server | Tools | Use |
 |---|---|---|
-| `brain-premises` | `premise_list`, `premise_get`, `premise_search`, `premise_add`, `premise_update`, `premise_delete` | The same premise store as the CLI. `premise_update` changes only the fields you pass. |
+| `brain-premises` | `premise_list`, `premise_get`, `premise_search`, `premise_add`, `premise_update`, `premise_seen`, `premise_delete` | The same premise store and scope validation as the CLI. `premise_update` changes only the fields you pass. `premise_seen` records one repeat. |
 | `chrome-devtools` | Browser control, screenshots, console, network | UI checks with the review Chrome profile, which keeps test logins. Use this user server, not `plugin:ecc:chrome-devtools`. |
 | Engram | `mem_save`, `mem_search`, and more | The session log. `brain-harvest` reads it. The markdown notes stay the source for rules. |
 | Atlassian | Jira and Confluence | The `start-ticket` flow reads the issue. |

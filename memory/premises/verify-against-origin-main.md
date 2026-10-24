@@ -5,8 +5,10 @@ strength: always
 scope: qdrant
 repos:
   - "*"
-status: active
+status: candidate
 source: memory/decisions/2026-10-23-harvest.md
+seen:
+  - 2026-10-23 qdrant-cloud-ui correction
 ---
 
 Why: A fact read from a feature branch or a stale main can be wrong for the code the team runs.

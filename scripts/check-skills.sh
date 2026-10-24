@@ -179,4 +179,11 @@ done
 
 reject_write_active skills/active/brain-garden/SKILL.md
 
+# A third-party skill link to ../../references/ must resolve. scripts/sync-references.sh fetches them.
+for name in $(grep -rhoE '\.\./\.\./references/[a-z-]+\.md' .agents/skills | sed 's#.*/##' | sort -u); do
+  if [ ! -f ".agents/references/$name" ]; then
+    fail "missing .agents/references/$name: run scripts/sync-references.sh"
+  fi
+done
+
 exit 0

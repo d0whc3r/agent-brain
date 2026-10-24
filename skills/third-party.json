@@ -9,7 +9,7 @@
       "name": "using-agent-skills",
       "source": "addyosmani/agent-skills",
       "kinds": [
-        "review"
+        "workflow"
       ]
     },
     {
@@ -110,21 +110,21 @@
       "name": "retro",
       "source": "mattpocock/skills",
       "kinds": [
-        "review"
+        "workflow"
       ]
     },
     {
       "name": "diagnosing-bugs",
       "source": "mattpocock/skills",
       "kinds": [
-        "review"
+        "workflow"
       ]
     },
     {
       "name": "handoff",
       "source": "mattpocock/skills",
       "kinds": [
-        "review"
+        "workflow"
       ]
     },
     {
@@ -331,6 +331,13 @@
       "source": "obra/superpowers",
       "kinds": [
         "workflow"
+      ]
+    },
+    {
+      "name": "performance-optimization",
+      "source": "addyosmani/agent-skills",
+      "kinds": [
+        "review"
       ]
     }
   ]

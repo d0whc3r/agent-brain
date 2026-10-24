@@ -103,6 +103,7 @@ step "Verify"
 node bin/brain.mjs skills check
 node bin/brain.mjs premise list >/dev/null
 echo "brain premise list works."
+"$bin_dir/brain" mcp check
 
 cat <<MSG
 
