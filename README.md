@@ -35,4 +35,4 @@ Before a commit, run:
 npm run check
 ```
 
-This runs the tests, the skill check, and the layout and MCP snippet checks. [AGENTS.md](AGENTS.md) holds the repo rules.
+This runs oxlint, the oxfmt format check, the tests, the skill check, and the layout and MCP snippet checks. `npm run fmt` formats the code. `.editorconfig` sets the indent, the line ending, and the line width for editors and for oxfmt. [AGENTS.md](AGENTS.md) holds the repo rules.

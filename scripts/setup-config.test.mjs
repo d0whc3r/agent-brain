@@ -53,15 +53,20 @@ test("TestCodexTables", () => {
   assert.equal(out.includes("[features]"), true);
 
   const table = tomlTable("demo", { command: "cmd", args: ["-y", "x"], env: { K: "v" } });
-  assert.equal(table, '[mcp_servers.demo]\ntype = "stdio"\ncommand = "cmd"\nargs = ["-y", "x"]\n\n[mcp_servers.demo.env]\nK = "v"');
+  assert.equal(
+    table,
+    '[mcp_servers.demo]\ntype = "stdio"\ncommand = "cmd"\nargs = ["-y", "x"]\n\n[mcp_servers.demo.env]\nK = "v"',
+  );
 });
 
 test("TestDropKeepsOtherTomlTables", () => {
   const removed = '[mcp_servers.brain-premises] # old server\ncommand = "old"\n';
   const kept = '[features] # user settings\nx = true\n\n[[agents]]\nname = "kept"\n';
   assert.equal(dropTables(removed + kept, ["brain-premises"]), kept);
-  assert.equal(dropTables(removed.replace(" # old server", "") + kept.slice(kept.indexOf("[[agents]]")), ["brain-premises"]),
-    '[[agents]]\nname = "kept"\n');
+  assert.equal(
+    dropTables(removed.replace(" # old server", "") + kept.slice(kept.indexOf("[[agents]]")), ["brain-premises"]),
+    '[[agents]]\nname = "kept"\n',
+  );
 });
 
 test("TestInstallCreatesConfig", async (t) => {
@@ -96,7 +101,7 @@ test("TestInstallKeepsConfigSymlink", async (t) => {
   await mkdir(join(home, ".codex"));
   const target = join(home, "shared.toml");
   const path = join(home, ".codex", "config.toml");
-  const original = '[features] # keep this\nx = true\n';
+  const original = "[features] # keep this\nx = true\n";
   await writeFile(target, original);
   await symlink(target, path);
 
@@ -112,10 +117,11 @@ async function configHome(t) {
   const home = await mkdtemp(join(tmpdir(), "brain-config-"));
   t.after(() => rm(home, { recursive: true, force: true }));
   const script = fileURLToPath(new URL("./setup-config.mjs", import.meta.url));
-  const invoke = (...args) => execFileSync(process.execPath, [script, ...args], {
-    env: { ...process.env, HOME: home },
-    encoding: "utf8",
-  });
+  const invoke = (...args) =>
+    execFileSync(process.execPath, [script, ...args], {
+      env: { ...process.env, HOME: home },
+      encoding: "utf8",
+    });
   return { home, invoke };
 }
 
@@ -140,6 +146,6 @@ test("TestSetBlockKeepsUserText", async () => {
 
 test("TestOpencodeAgentTurnsOffMissingTools", async () => {
   const { opencodeAgent } = await import("./setup-config.mjs");
-  const out = opencodeAgent("---\nname: brain-x\ndescription: \"Reads.\"\ntools: Read, Bash, Write\n---\nBody\n");
-  assert.equal(out, "---\ndescription: \"Reads.\"\nmode: subagent\ntools:\n  edit: false\n  write: true\n---\nBody\n");
+  const out = opencodeAgent('---\nname: brain-x\ndescription: "Reads."\ntools: Read, Bash, Write\n---\nBody\n');
+  assert.equal(out, '---\ndescription: "Reads."\nmode: subagent\ntools:\n  edit: false\n  write: true\n---\nBody\n');
 });

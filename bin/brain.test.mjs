@@ -11,15 +11,19 @@ import { run } from "./brain.mjs";
 async function invoke(args) {
   let stdout = "";
   let stderr = "";
-  const code = await run(args, {
-    write(chunk) {
-      stdout += chunk;
+  const code = await run(
+    args,
+    {
+      write(chunk) {
+        stdout += chunk;
+      },
     },
-  }, {
-    write(chunk) {
-      stderr += chunk;
+    {
+      write(chunk) {
+        stderr += chunk;
+      },
     },
-  });
+  );
   return { code, stdout, stderr };
 }
 
@@ -185,7 +189,10 @@ test("cli", { concurrency: 1 }, async (t) => {
     };
     try {
       child.stdin.write(`${JSON.stringify(init)}\n`);
-      const line = await waitForLine(() => stdout, () => stderr);
+      const line = await waitForLine(
+        () => stdout,
+        () => stderr,
+      );
       const msg = JSON.parse(line);
       assert.equal(msg.id, 1);
       assert.equal(msg.result.serverInfo.name, "brain-premises");
@@ -243,15 +250,40 @@ test("TestCLICandidate", async (t) => {
     process.env.BRAIN_ROOT = previous;
   });
 
-  let result = await invoke(["premise", "add", "Maybe rule", "--strength", "never", "--scope", "*", "--repo", "*", "--status", "candidate"]);
+  let result = await invoke([
+    "premise",
+    "add",
+    "Maybe rule",
+    "--strength",
+    "never",
+    "--scope",
+    "*",
+    "--repo",
+    "*",
+    "--status",
+    "candidate",
+  ]);
   assert.equal(result.code, 0, result.stderr);
   assert.equal((await invoke(["premise", "list"])).stdout, "");
-  assert.equal((await invoke(["premise", "list", "--status", "candidate"])).stdout, "maybe-rule\t*\tnever\tMaybe rule\n");
+  assert.equal(
+    (await invoke(["premise", "list", "--status", "candidate"])).stdout,
+    "maybe-rule\t*\tnever\tMaybe rule\n",
+  );
 
   result = await invoke(["premise", "seen", "maybe-rule", "--repo", "repo-a", "--origin", "guess"]);
   assert.equal(result.code, 1);
   for (const date of ["2026-10-20", "2026-10-22"]) {
-    result = await invoke(["premise", "seen", "maybe-rule", "--repo", "repo-a", "--origin", "correction", "--date", date]);
+    result = await invoke([
+      "premise",
+      "seen",
+      "maybe-rule",
+      "--repo",
+      "repo-a",
+      "--origin",
+      "correction",
+      "--date",
+      date,
+    ]);
     assert.equal(result.code, 0, result.stderr);
   }
   result = await invoke(["premise", "stats"]);

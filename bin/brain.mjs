@@ -118,7 +118,14 @@ async function cmdList(args, stdout) {
 }
 
 async function cmdAdd(args, stdout, stderr) {
-  const f = flags(args, { strength: "string", scope: "string", id: "string", source: "string", repo: "list", status: "string" });
+  const f = flags(args, {
+    strength: "string",
+    scope: "string",
+    id: "string",
+    source: "string",
+    repo: "list",
+    status: "string",
+  });
   if (f.pos.length !== 1) {
     throw new UsageError("add needs one TEXT argument");
   }
@@ -134,13 +141,23 @@ async function cmdAdd(args, stdout, stderr) {
     throw new UsageError(`add needs --scope ${[...Object.keys(config.scopes), '"*"'].join(", ")}`);
   }
   const store = await open(brainRoot());
-  const added = await store.add({ id: f.id, text: f.pos[0], strength: f.strength, scope: f.scope, repos: f.repo, source: f.source, status });
+  const added = await store.add({
+    id: f.id,
+    text: f.pos[0],
+    strength: f.strength,
+    scope: f.scope,
+    repos: f.repo,
+    source: f.source,
+    status,
+  });
   stdout.write(`${added.id}\n`);
   // The hint goes to stderr, so a script that reads the id from stdout keeps working.
   try {
     const repeat = await repeatOf(config, store, added);
     if (repeat) {
-      stderr.write(`possible repeat of ${repeat.id} (confidence ${repeat.confidence.toFixed(2)}, local model): ${repeat.text}\n`);
+      stderr.write(
+        `possible repeat of ${repeat.id} (confidence ${repeat.confidence.toFixed(2)}, local model): ${repeat.text}\n`,
+      );
     }
   } catch (err) {
     stderr.write(`local model: ${err.message}\n`);
@@ -174,9 +191,7 @@ async function cmdStats(args, stdout) {
     throw new UsageError("stats takes no arguments");
   }
   for (const row of await premiseStats(brainRoot())) {
-    const cells = row.status === "active"
-      ? [row.applied, row.hits, row.rejected, "-"]
-      : ["-", "-", "-", row.seen];
+    const cells = row.status === "active" ? [row.applied, row.hits, row.rejected, "-"] : ["-", "-", "-", row.seen];
     stdout.write(`${[row.id, row.status, ...cells, row.last || "-", row.flag || "-"].join("\t")}\n`);
   }
   return 0;
@@ -331,7 +346,11 @@ async function cmdInstalled(args, stdout, stderr) {
     if (f.pos.length !== 0) {
       throw new UsageError();
     }
-    const items = await writeReceipt(brainRoot(), { targets: f.target, binDir: f["bin-dir"] ?? "", claude: f.claude }, stdout);
+    const items = await writeReceipt(
+      brainRoot(),
+      { targets: f.target, binDir: f["bin-dir"] ?? "", claude: f.claude },
+      stdout,
+    );
     stdout.write(`${items.length} items in ${receiptPath()}\n`);
     return 0;
   }
@@ -405,7 +424,9 @@ async function cmdNext(args, stdout, stderr) {
     return 0;
   }
   const ticket = ctx.ticket ? ` (${ctx.ticket})` : "";
-  stdout.write(`repo ${ctx.repo}, scope ${ctx.scope || "-"}, branch ${ctx.branch || "detached"}${ticket}, ahead ${ctx.ahead}, behind ${ctx.behind}, ${ctx.dirty ? "dirty" : "clean"}, pr ${ctx.pr}, worktrees ${ctx.worktrees}\n`);
+  stdout.write(
+    `repo ${ctx.repo}, scope ${ctx.scope || "-"}, branch ${ctx.branch || "detached"}${ticket}, ahead ${ctx.ahead}, behind ${ctx.behind}, ${ctx.dirty ? "dirty" : "clean"}, pr ${ctx.pr}, worktrees ${ctx.worktrees}\n`,
+  );
   stdout.write(`kinds: ${ctx.kinds.join(", ") || "-"}; ${premises.length} active premises\n`);
   flows.forEach((flow, i) => {
     stdout.write(`${i + 1}. ${flow.name}: ${flow.description ?? ""}\n`);

@@ -50,7 +50,9 @@ export function opencodeAgent(text) {
     throw new Error("agent file has no frontmatter");
   }
   const field = (name) => (match[1].match(new RegExp(`^${name}:\\s*(.*)$`, "m")) ?? [])[1] ?? "";
-  const tools = field("tools").split(",").map((t) => t.trim());
+  const tools = field("tools")
+    .split(",")
+    .map((t) => t.trim());
   const lines = ["---", `description: ${field("description")}`, "mode: subagent", "tools:"];
   lines.push(`  edit: ${tools.includes("Edit")}`, `  write: ${tools.includes("Write")}`);
   return `${lines.join("\n")}\n---\n${match[2]}`;
@@ -186,21 +188,28 @@ function main(args) {
     case "instructions-add":
     case "instructions-remove": {
       // arg is the global instruction file of a tool, such as ~/.codex/AGENTS.md.
-      const block = cmd === "instructions-add" ? readFileSync(join(root, "templates", "agent-instructions.md"), "utf8") : "";
+      const block =
+        cmd === "instructions-add" ? readFileSync(join(root, "templates", "agent-instructions.md"), "utf8") : "";
       return edit(arg, (text) => setBlock(text, block), cmd === "instructions-add" ? "" : undefined);
     }
     case "codex-add":
     case "codex-remove": {
-      return edit(join(home, ".codex", "config.toml"), (text) => {
-        let out = dropTables(text, servers).trimEnd();
-        if (cmd === "codex-add") {
-          out += `${out ? "\n\n" : ""}${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}`;
-        }
-        return out ? `${out}\n` : "";
-      }, cmd === "codex-add" ? "" : undefined);
+      return edit(
+        join(home, ".codex", "config.toml"),
+        (text) => {
+          let out = dropTables(text, servers).trimEnd();
+          if (cmd === "codex-add") {
+            out += `${out ? "\n\n" : ""}${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}`;
+          }
+          return out ? `${out}\n` : "";
+        },
+        cmd === "codex-add" ? "" : undefined,
+      );
     }
     default:
-      process.stderr.write("usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n");
+      process.stderr.write(
+        "usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
+      );
       return 1;
   }
 }
