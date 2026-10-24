@@ -62,7 +62,7 @@ The test: every changed line traces to the request.
 - Return early. Do not build an else pyramid.
 - Function names stay under 30 characters.
 - Braces on every `if`.
-- Comments say what the block does and why. Cut the rest.
+- Comment only what the code cannot say. The premise `comments-only-what-code-cannot-say` holds the rule.
 
 ## 7. Words
 
