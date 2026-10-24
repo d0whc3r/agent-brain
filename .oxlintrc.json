@@ -1,17 +1,107 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["eslint", "unicorn", "oxc", "import", "node", "promise"],
-  "categories": {
-    "correctness": "error"
-  },
-  "env": {
-    "builtin": true,
-    "node": true
-  },
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "node", "promise"],
+  // sonarjs gives the cognitive-complexity rule, which oxlint has no native version of.
+  "jsPlugins": ["eslint-plugin-sonarjs"],
+  "categories": { "correctness": "error", "suspicious": "error", "pedantic": "error", "perf": "error" },
+  "env": { "builtin": true, "node": true },
+  // typeAware runs the typescript/* rules on the JS files that tsconfig.json includes.
+  "options": { "reportUnusedDisableDirectives": "error", "typeAware": true },
   "rules": {
+    // Size and complexity limits keep each file and function short enough to read in one pass.
+    "eslint/max-lines": ["error", { "max": 300, "skipBlankLines": true, "skipComments": true }],
+    "eslint/max-lines-per-function": ["error", { "max": 50, "skipBlankLines": true, "skipComments": true }],
+    "eslint/max-params": ["error", 3],
+    "eslint/max-depth": ["error", 3],
+    "eslint/max-statements": ["error", 15],
+    "eslint/max-nested-callbacks": ["error", 3],
+    "eslint/complexity": ["error", 10],
+    "sonarjs/cognitive-complexity": ["error", 10],
+    "import/max-dependencies": "off",
+    // The CLI runs git, file, and network steps in order on purpose.
+    "eslint/no-await-in-loop": "off",
+    // An async function that returns a promise turns a sync throw into a rejection.
+    "eslint/require-await": "off",
+    "typescript/require-await": "off",
+    // Lists hold tens of items, and a spread copy keeps the input unchanged.
+    "oxc/no-map-spread": "off",
+    // JS has no type annotations, so every parameter is any. These rules flag each use of it.
+    "typescript/no-unsafe-argument": "off",
+    "typescript/no-unsafe-assignment": "off",
+    "typescript/no-unsafe-call": "off",
+    "typescript/no-unsafe-member-access": "off",
+    "typescript/no-unsafe-return": "off",
+    // JS has no readonly modifier, and a truthy check is the JS idiom.
+    "typescript/prefer-readonly-parameter-types": "off",
+    "typescript/strict-boolean-expressions": "off",
+    // An empty string falls back to the default on purpose, so || stays for strings.
+    "typescript/prefer-nullish-coalescing": [
+      "error",
+      { "ignorePrimitives": { "string": true, "boolean": true, "number": true, "bigint": true } }
+    ],
+    // node:test runs each test() call, and the runner awaits the promise it returns.
+    "typescript/no-floating-promises": [
+      "error",
+      {
+        "allowForKnownSafeCalls": [
+          { "from": "package", "package": "node:test", "name": ["test", "describe", "it", "suite"] }
+        ]
+      }
+    ],
+
+    // AGENTS.md: names stay under 30 characters, and every if has braces.
+    "eslint/id-length": ["error", { "min": 1, "max": 29, "properties": "never" }],
     "eslint/curly": ["error", "all"],
-    "eslint/no-unused-vars": "error",
-    "import/no-cycle": "error"
+
+    "eslint/no-var": "error",
+    "eslint/prefer-const": "error",
+    "eslint/object-shorthand": "error",
+    "eslint/prefer-template": "error",
+    "eslint/prefer-object-has-own": "error",
+    "eslint/no-nested-ternary": "error",
+    "eslint/no-implicit-coercion": "error",
+    "eslint/no-param-reassign": "error",
+    "eslint/no-return-assign": "error",
+    "eslint/no-multi-assign": "error",
+    "eslint/no-sequences": "error",
+
+    "import/no-cycle": "error",
+    "import/first": "error",
+    "import/no-duplicates": "error",
+    "import/no-mutable-exports": "error",
+    "node/no-path-concat": "error",
+
+    "promise/catch-or-return": "error",
+    "promise/param-names": "error",
+    "promise/prefer-await-to-then": "error",
+    "promise/prefer-catch": "error",
+
+    "unicorn/error-message": "error",
+    "unicorn/no-array-for-each": "error",
+    "unicorn/no-process-exit": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-number-properties": "error",
+    "unicorn/prefer-object-from-entries": "error",
+    "unicorn/prefer-optional-catch-binding": "error",
+    "unicorn/prefer-structured-clone": "error",
+    "unicorn/text-encoding-identifier-case": "error",
+    "unicorn/throw-new-error": "error"
   },
+  "overrides": [
+    {
+      // A test is a linear list of steps and asserts, so the size and complexity limits skip it.
+      "files": ["**/*.test.mjs"],
+      "rules": {
+        "eslint/max-lines": "off",
+        "eslint/max-lines-per-function": "off",
+        "eslint/max-params": "off",
+        "eslint/max-depth": "off",
+        "eslint/max-statements": "off",
+        "eslint/max-nested-callbacks": "off",
+        "eslint/complexity": "off",
+        "sonarjs/cognitive-complexity": "off"
+      }
+    }
+  ],
   "ignorePatterns": [".agents/**"]
 }

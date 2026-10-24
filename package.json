@@ -16,11 +16,14 @@
     "skills:update": "node bin/brain.mjs skills sync && bash scripts/sync-references.sh"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "oxfmt": "0.72.0",
-    "oxlint": "1.87.0"
+    "@types/node": "26.6.5",
+    "eslint-plugin-sonarjs": "4.2.2",
+    "oxfmt": "0.74.0",
+    "oxlint": "1.89.0",
+    "oxlint-tsgolint": "7.0.2005"
   }
 }

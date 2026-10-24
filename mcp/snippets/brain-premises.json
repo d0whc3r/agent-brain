@@ -1,7 +1,1 @@
-{
-  "command": "${HOME}/.local/bin/brain",
-  "args": ["mcp"],
-  "env": {
-    "BRAIN_ROOT": "${BRAIN_ROOT}"
-  }
-}
+{ "command": "${HOME}/.local/bin/brain", "args": ["mcp"], "env": { "BRAIN_ROOT": "${BRAIN_ROOT}" } }

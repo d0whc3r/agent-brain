@@ -1,12 +1,15 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "sortImports": true,
+  "objectWrap": "collapse",
+  "proseWrap": "never",
   "ignorePatterns": [
-    "**/*.md",
     ".agents/**",
     ".claude/**",
     "memory/**",
     "pnpm-lock.yaml",
     "skills-lock.json",
-    "skills/third-party.json"
+    "skills/third-party.json",
+    "templates/**"
   ]
 }
