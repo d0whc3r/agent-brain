@@ -7,6 +7,7 @@ Behavioral rules for coding agents in this repo. Commands, paths, and MCP snippe
 **Read first. State assumptions. Ask when two readings exist.**
 
 - Read the file you will change, and the note it links to, before you edit.
+- Search for code to reuse before you write new code. The premise `read-and-reuse-first` holds the rule.
 - State assumptions. Uncertain: ask.
 - Two valid readings: present both. Do not pick in silence.
 - A simpler approach exists: say so.
@@ -17,8 +18,7 @@ Behavioral rules for coding agents in this repo. Commands, paths, and MCP snippe
 **The smallest change that does the job.**
 
 - No feature beyond the ask.
-- No abstraction with one caller.
-- No config for a value that never changes.
+- No abstraction and no config option without two concrete uses. The premise `abstraction-needs-two-uses` holds the rule.
 - No error handling for a state that cannot happen.
 - The CLI and the premise MCP call one library. They do not keep a second database.
 
