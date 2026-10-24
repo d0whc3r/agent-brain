@@ -1,7 +1,9 @@
-# Keep premises and directory scaffolds. Captures and working notes stay local.
+# Keep premises, decision notes, dropped premises, and directory scaffolds. Sessions and working notes stay local.
 memory/**
 !memory/*/
 !memory/premises/**
+!memory/decisions/**
+!memory/dropped/**
 !memory/*/.gitkeep
 !memory/sessions/screenshots/
 !memory/sessions/screenshots/.gitkeep
@@ -11,3 +13,4 @@ mcp/snippets/obsidian.key
 node_modules/
 .obsidian/
 .agents/linked/
+todo.md

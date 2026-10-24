@@ -275,9 +275,9 @@ The install registers `brain-premises` and `chrome-devtools` in Claude Code and 
 | `memory/workspace/` | Audit notes | `brain-workspace-audit` |
 | `templates/` | Shapes for each note | You and the skills |
 
-Git keeps active and candidate premises of every scope in `memory/premises/`, the templates, and the `.gitkeep` files that preserve the folder layout. Other memory files stay local: decision captures, sessions and screenshots, draft patterns, dropped rules, workspace audits, and split plans. New memory folders are local by default.
+Git keeps active and candidate premises of every scope in `memory/premises/`, the decision notes in `memory/decisions/`, the dropped premises in `memory/dropped/`, the templates, and the `.gitkeep` files that preserve the folder layout. Other memory files stay local: sessions and screenshots, draft patterns, workspace audits, and split plans. New memory folders are local by default.
 
-Ignoring a note does not delete it. A premise can name a local decision note in `source`; the rule and its explanation must make sense without that capture on another machine. A fresh clone has the shared rules and templates, but no local review history or usage counts.
+The `source` of a premise names a decision note that git keeps, so a fresh clone can read the reason for each rule. A dropped premise reaches every clone, so a restore works on any machine. A fresh clone has no review history or usage counts, because sessions stay local.
 
 Obsidian can open this repo as a vault. Add and remove premises with the CLI or the MCP server, not by hand, because the tools check the id, the strength, and secrets.
 

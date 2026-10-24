@@ -6,6 +6,8 @@ import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { frontmatter } from "../lib/stats.mjs";
+
 test("TestLayoutKeepsScreenshots", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "brain-layout-"));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -38,14 +40,14 @@ test("TestGitKeepsRulesAndSkipsCaptures", async (t) => {
     "memory/premises/candidate.md",
     "memory/premises/.gitkeep",
     "memory/decisions/.gitkeep",
+    "memory/decisions/capture.md",
     "memory/dropped/.gitkeep",
+    "memory/dropped/old-rule.md",
     "memory/patterns/.gitkeep",
     "memory/sessions/.gitkeep",
     "memory/sessions/screenshots/.gitkeep",
   ];
   const local = [
-    "memory/decisions/capture.md",
-    "memory/dropped/old-rule.md",
     "memory/patterns/draft.md",
     "memory/sessions/review.md",
     "memory/sessions/screenshots/shot.png",
@@ -67,6 +69,27 @@ test("TestGitKeepsRulesAndSkipsCaptures", async (t) => {
   for (const path of local) {
     assert.equal(await readFile(join(root, path), "utf8"), path);
   }
+});
+
+// A fresh clone has only what git keeps, so a source outside that set is a broken link there.
+test("TestPremiseSourcesStayInGit", async () => {
+  const repo = fileURLToPath(new URL("..", import.meta.url));
+  const listed = execFileSync(
+    "git",
+    ["-C", repo, "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "memory"],
+    { encoding: "utf8" },
+  );
+  const kept = new Set(listed.split("\0"));
+  const lost = [];
+  for (const dir of ["memory/premises", "memory/dropped"]) {
+    for (const name of await readdir(join(repo, dir))) {
+      const { source } = frontmatter(await readFile(join(repo, dir, name), "utf8"));
+      if (source && !kept.has(source)) {
+        lost.push(`${dir}/${name}: ${source}`);
+      }
+    }
+  }
+  assert.deepEqual(lost, []);
 });
 
 // Premise docs-summary-first: a doc with this many ## sections, or an agent file longer than
