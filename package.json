@@ -7,12 +7,20 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --test && node bin/brain.mjs mcp check && node bin/brain.mjs skills check && bash scripts/check-layout.sh && bash scripts/check-skills.sh && bash scripts/check-paths.sh && bash scripts/check-snippets.sh",
+    "lint": "oxlint --deny-warnings",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "check": "oxlint --deny-warnings && node --test && node bin/brain.mjs mcp check && node bin/brain.mjs skills check && bash scripts/check-layout.sh && bash scripts/check-skills.sh && bash scripts/check-paths.sh && bash scripts/check-snippets.sh",
     "skills:check": "node bin/brain.mjs skills check",
     "skills:drift": "node bin/brain.mjs workspace check",
     "skills:update": "node bin/brain.mjs skills sync && bash scripts/sync-references.sh"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.1"
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "oxfmt": "0.72.0",
+    "oxlint": "1.87.0"
   }
 }

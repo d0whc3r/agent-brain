@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "unicorn", "oxc", "import", "node", "promise"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "rules": {
+    "eslint/curly": ["error", "all"],
+    "eslint/no-unused-vars": "error",
+    "import/no-cycle": "error"
+  },
+  "ignorePatterns": [".agents/**"]
+}

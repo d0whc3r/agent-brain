@@ -17,56 +17,6 @@ need() {
   fi
 }
 
-front_name() {
-  awk '
-    NR == 1 {
-      if ($0 != "---") {
-        exit 2
-      }
-      next
-    }
-    $0 == "---" {
-      exit 3
-    }
-    $0 ~ /^name:[[:space:]]*/ {
-      sub(/^name:[[:space:]]*/, "")
-      gsub(/^["'\'']|["'\'']$/, "")
-      gsub(/[[:space:]]+$/, "")
-      print
-      exit 0
-    }
-  ' "$1"
-}
-
-desc_text() {
-  awk '
-    NR == 1 && $0 == "---" { fm = 1; next }
-    fm && $0 == "---" { exit }
-    fm && $0 ~ /^description: [>|]/ {
-      fold = 1
-      next
-    }
-    fm && fold && $0 ~ /^[[:space:]]/ {
-      sub(/^[[:space:]]+/, "")
-      if (n++) {
-        printf " "
-      }
-      printf "%s", $0
-      next
-    }
-    fm && fold { exit }
-    fm && $0 ~ /^description: / {
-      sub(/^description: /, "")
-      if ($0 ~ /^".*"$/) {
-        sub(/^"/, "")
-        sub(/"$/, "")
-      }
-      printf "%s", $0
-      exit
-    }
-  ' "$1"
-}
-
 # One line must not tell the agent to write into skills/active.
 reject_write_active() {
   local file="$1"
@@ -119,26 +69,48 @@ for dir in skills/active/*/; do
   if [ ! -f "$skill" ]; then
     fail "missing $skill"
   fi
-  if ! fm_name="$(front_name "$skill")"; then
-    fail "bad frontmatter in $skill"
-  fi
   case "$name" in
     brain-tp-*|brain) fail "$skill: a brain skill name starts with brain- and not brain-tp-" ;;
     brain-*) ;;
     *) fail "$skill: a brain skill name starts with brain-" ;;
   esac
-  if [ "$fm_name" != "$name" ]; then
-    fail "name mismatch in $skill: frontmatter is ${fm_name:-empty}"
-  fi
-  description="$(desc_text "$skill")"
-  if [ -z "$description" ]; then
-    fail "$skill has no description"
-  fi
-  if [ "${#description}" -gt 1024 ]; then
-    fail "$skill description is longer than 1024 characters"
-  fi
 done
 shopt -u nullglob
+
+# The frontmatter name is the directory name, and the description has 1 to 1024 characters.
+# The YAML parser of the brain reads the frontmatter, as an agent tool does.
+node --input-type=module - skills/active/*/SKILL.md <<'JS'
+import { readFileSync } from "node:fs";
+import { basename, dirname } from "node:path";
+import { frontmatter } from "./lib/stats.mjs";
+
+for (const skill of process.argv.slice(2)) {
+  let fields = {};
+  try {
+    fields = frontmatter(readFileSync(skill, "utf8"));
+  } catch {
+    // Invalid YAML is a bad frontmatter below.
+  }
+  const fail = (message) => {
+    console.error(message);
+    process.exit(1);
+  };
+  if (!Object.hasOwn(fields, "name")) {
+    fail(`bad frontmatter in ${skill}`);
+  }
+  const name = String(fields.name ?? "");
+  if (name !== basename(dirname(skill))) {
+    fail(`name mismatch in ${skill}: frontmatter is ${name || "empty"}`);
+  }
+  const description = String(fields.description ?? "").trim();
+  if (description === "") {
+    fail(`${skill} has no description`);
+  }
+  if (description.length > 1024) {
+    fail(`${skill} description is longer than 1024 characters`);
+  }
+}
+JS
 
 for agent in agents/*.md; do
   case "$(basename "$agent")" in

@@ -134,23 +134,28 @@ export function tomlTable(name, server) {
   return lines.join("\n");
 }
 
+// edit applies change to the text of path and prints whether the file changed. A missing file
+// starts as initial, or stays missing when initial is undefined, as a remove needs.
 function edit(path, change, initial) {
   const exists = existsSync(path);
-  if (!exists && initial === undefined) {
-    return false;
-  }
   const before = exists ? readFileSync(path, "utf8") : initial;
-  const after = change(before);
-  if (after === before) {
-    return false;
+  const after = before === undefined ? before : change(before);
+  if (after !== before) {
+    mkdirSync(dirname(path), { recursive: true });
+    if (exists) {
+      copyFileSync(path, `${path}.brain-bak`);
+    }
+    // Write in place so a symlinked config file stays a symlink.
+    writeFileSync(path, after, { mode: 0o600 });
   }
-  mkdirSync(dirname(path), { recursive: true });
-  if (exists) {
-    copyFileSync(path, `${path}.brain-bak`);
-  }
-  // Write in place so a symlinked config file stays a symlink.
-  writeFileSync(path, after, { mode: 0o600 });
-  return true;
+  process.stdout.write(`${after !== before ? "updated" : "unchanged"} ${path}\n`);
+  return 0;
+}
+
+// editSettings applies change to the JSON of ~/.claude/settings.json. add creates the file.
+function editSettings(home, add, change) {
+  const path = join(home, ".claude", "settings.json");
+  return edit(path, (text) => `${JSON.stringify(change(JSON.parse(text)), null, 2)}\n`, add ? "{}" : undefined);
 }
 
 function main(args) {
@@ -162,22 +167,11 @@ function main(args) {
       process.stdout.write(`${JSON.stringify(render(arg, vars))}\n`);
       return 0;
     case "hook-add":
-    case "hook-remove": {
-      const path = join(home, ".claude", "settings.json");
-      const command = cmd === "hook-add" ? arg : "";
-      const changed = edit(path, (text) => `${JSON.stringify(setHook(JSON.parse(text), command), null, 2)}\n`,
-        cmd === "hook-add" ? "{}" : undefined);
-      process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
-      return 0;
-    }
+    case "hook-remove":
+      return editSettings(home, cmd === "hook-add", (settings) => setHook(settings, cmd === "hook-add" ? arg : ""));
     case "guard-add":
-    case "guard-remove": {
-      const path = join(home, ".claude", "settings.json");
-      const changed = edit(path, (text) => `${JSON.stringify(setGuards(JSON.parse(text), cmd === "guard-add"), null, 2)}\n`,
-        cmd === "guard-add" ? "{}" : undefined);
-      process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
-      return 0;
-    }
+    case "guard-remove":
+      return editSettings(home, cmd === "guard-add", (settings) => setGuards(settings, cmd === "guard-add"));
     case "opencode-agents": {
       // Rebuild the OpenCode copies of the agents. install.sh links them.
       const out = join(root, ".agents", "linked", "opencode-agents");
@@ -193,22 +187,17 @@ function main(args) {
     case "instructions-remove": {
       // arg is the global instruction file of a tool, such as ~/.codex/AGENTS.md.
       const block = cmd === "instructions-add" ? readFileSync(join(root, "templates", "agent-instructions.md"), "utf8") : "";
-      const changed = edit(arg, (text) => setBlock(text, block), cmd === "instructions-add" ? "" : undefined);
-      process.stdout.write(`${changed ? "updated" : "unchanged"} ${arg}\n`);
-      return 0;
+      return edit(arg, (text) => setBlock(text, block), cmd === "instructions-add" ? "" : undefined);
     }
     case "codex-add":
     case "codex-remove": {
-      const path = join(home, ".codex", "config.toml");
-      const changed = edit(path, (text) => {
+      return edit(join(home, ".codex", "config.toml"), (text) => {
         let out = dropTables(text, servers).trimEnd();
         if (cmd === "codex-add") {
           out += `${out ? "\n\n" : ""}${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}`;
         }
         return out ? `${out}\n` : "";
       }, cmd === "codex-add" ? "" : undefined);
-      process.stdout.write(`${changed ? "updated" : "unchanged"} ${path}\n`);
-      return 0;
     }
     default:
       process.stderr.write("usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n");

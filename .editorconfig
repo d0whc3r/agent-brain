@@ -1,0 +1,18 @@
+# Editor settings for every file in the brain. oxfmt reads indent_style, indent_size,
+# end_of_line, insert_final_newline, and max_line_length from here.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{js,mjs,cjs,json,jsonc,yml,yaml}]
+max_line_length = 120
+
+# Markdown keeps one line per paragraph, and two trailing spaces are a line break.
+[*.md]
+trim_trailing_whitespace = false

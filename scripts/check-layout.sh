@@ -10,19 +10,12 @@ if ! grep -F -q -e "$line" AGENTS.md; then
   exit 1
 fi
 
-shots='memory/sessions/screenshots'
-mkdir -p "$shots"
-shot="$(mktemp "$shots/check-XXXXXX")"
-cleanup() {
-  command rm -f "$shot"
-}
-trap cleanup EXIT
+# git check-ignore matches the path against the ignore rules, so the file need not exist.
+shot='memory/sessions/screenshots/check.png'
 if ! git check-ignore -q "$shot"; then
   echo "git check-ignore failed for $shot" >&2
   exit 1
 fi
-command rm -f "$shot"
-trap - EXIT
 
 profile="${HOME}/.local/share/qdrant-review-brain/chrome-profile"
 repo="$(git rev-parse --show-toplevel)"

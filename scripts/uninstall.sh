@@ -24,7 +24,7 @@ while IFS= read -r target; do
   for link in "$target"/*; do
     target_of="$(readlink "$link" 2>/dev/null || true)"
     if [ -L "$link" ] && { [[ "$target_of" == "$root/skills/active/"* ]] || [[ "$target_of" == "$root/.agents/skills/"* ]] || [[ "$target_of" == "$root/.agents/linked/"* ]]; }; then
-      rm "$link"
+      command rm -f "$link"
       echo "rm $link"
     fi
   done
@@ -40,7 +40,7 @@ done
 
 step "Remove the brain command"
 if [ -L "$bin_dir/brain" ] && [ "$(readlink "$bin_dir/brain")" = "$root/bin/brain.mjs" ]; then
-  rm "$bin_dir/brain"
+  command rm -f "$bin_dir/brain"
   echo "rm $bin_dir/brain"
 fi
 
