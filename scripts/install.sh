@@ -80,8 +80,8 @@ else
   echo "claude not found. Skipped."
 fi
 
-step "Add the SessionStart premises hook"
-node scripts/setup-config.mjs hook-add "node $root/bin/session-premises.mjs 2>/dev/null || true"
+step "Add the session premises hooks"
+node scripts/setup-config.mjs hooks-apply
 
 step "Ask before git commit, push, and destructive git commands"
 node scripts/setup-config.mjs guard-add
@@ -107,7 +107,8 @@ echo "brain premise list works."
 
 cat <<MSG
 
-Done. Start a new Claude Code or Codex session to load the changes.
+Done. Start a new Claude Code, Codex, or OpenCode session to load the changes.
+Codex skips a new hook until you trust it in /hooks.
 OpenCode reads its MCP servers and AGENTS.md from dotfiles. Add brain-premises and chrome-devtools
 there from mcp/snippets/, and paste templates/agent-instructions.md into that AGENTS.md.
 Run "brain installed" to list what this install put on disk.

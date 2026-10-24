@@ -1,0 +1,22 @@
+[
+  {
+    "id": "session-premises",
+    "tool": "claude",
+    "event": "SessionStart",
+    "command": "node ${BRAIN_ROOT}/bin/session-premises.mjs 2>/dev/null || true",
+    "timeout": 10
+  },
+  {
+    "id": "session-premises",
+    "tool": "codex",
+    "event": "SessionStart",
+    "command": "node ${BRAIN_ROOT}/bin/session-premises.mjs 2>/dev/null || true",
+    "timeout": 10
+  },
+  {
+    "id": "session-premises",
+    "tool": "opencode",
+    "plugin": "hooks/opencode/session-premises.js",
+    "linkName": "brain-session-premises.js"
+  }
+]

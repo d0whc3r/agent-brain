@@ -53,8 +53,8 @@ else
   echo "claude not found. Skipped."
 fi
 
-step "Remove the SessionStart premises hook"
-node scripts/setup-config.mjs hook-remove
+step "Remove the session premises hooks"
+node scripts/setup-config.mjs hooks-remove
 
 step "Remove the git confirmation rules"
 node scripts/setup-config.mjs guard-remove

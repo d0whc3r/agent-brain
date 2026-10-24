@@ -8,9 +8,12 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import { applyHooks, removeHooks, setCodexHook, setHook } from "../hooks/install.mjs";
+
+export { setCodexHook, setHook };
+
 const root = fileURLToPath(new URL("..", import.meta.url));
 const servers = ["brain-premises", "chrome-devtools"];
-const hookMarker = "session-premises.mjs";
 
 // Git commands that need a confirmation in Claude Code. They enforce the premises
 // no-commit-push-unasked and no-schema-or-deploy-unasked for git, so the rule does not
@@ -33,7 +36,7 @@ export function setBlock(text, block) {
   const end = text.indexOf(blockEnd);
   let out = text;
   if (start !== -1 && end > start) {
-    out = (text.slice(0, start) + text.slice(end + blockEnd.length)).replace(/\n{3,}/g, "\n\n");
+    out = (text.slice(0, start) + text.slice(end + blockEnd.length)).replaceAll(/\n{3,}/gu, "\n\n");
   }
   out = out.trimEnd();
   if (block) {
@@ -45,45 +48,32 @@ export function setBlock(text, block) {
 // opencodeAgent turns a Claude Code agent file into an OpenCode subagent file.
 // OpenCode takes a tools map, so a tool missing from the Claude list is turned off.
 export function opencodeAgent(text) {
-  const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/u);
   if (!match) {
     throw new Error("agent file has no frontmatter");
   }
-  const field = (name) => (match[1].match(new RegExp(`^${name}:\\s*(.*)$`, "m")) ?? [])[1] ?? "";
-  const tools = field("tools")
-    .split(",")
-    .map((t) => t.trim());
-  const lines = ["---", `description: ${field("description")}`, "mode: subagent", "tools:"];
-  lines.push(`  edit: ${tools.includes("Edit")}`, `  write: ${tools.includes("Write")}`);
+  const field = (name) => (match[1].match(new RegExp(`^${name}:\\s*(.*)$`, "mu")) ?? [])[1] ?? "";
+  const tools = new Set(
+    field("tools")
+      .split(",")
+      .map((t) => t.trim()),
+  );
+  const lines = [
+    "---",
+    `description: ${field("description")}`,
+    "mode: subagent",
+    "tools:",
+    `  edit: ${tools.has("Edit")}`,
+    `  write: ${tools.has("Write")}`,
+  ];
   return `${lines.join("\n")}\n---\n${match[2]}`;
 }
 
 // render fills ${HOME} and ${BRAIN_ROOT} in an MCP snippet.
 export function render(name, vars) {
   const text = readFileSync(join(vars.root, "mcp", "snippets", `${name}.json`), "utf8");
-  const filled = text.replaceAll("${HOME}", vars.home).replaceAll("${BRAIN_ROOT}", vars.root.replace(/\/$/, ""));
+  const filled = text.replaceAll("${HOME}", vars.home).replaceAll("${BRAIN_ROOT}", vars.root.replace(/\/$/u, ""));
   return { type: "stdio", ...JSON.parse(filled) };
-}
-
-// setHook removes the brain SessionStart hook, then adds command when it is set.
-export function setHook(settings, command) {
-  const hooks = settings.hooks ?? {};
-  const kept = [];
-  for (const entry of hooks.SessionStart ?? []) {
-    const rest = (entry.hooks ?? []).filter((h) => !String(h.command ?? "").includes(hookMarker));
-    if (rest.length > 0) {
-      kept.push({ ...entry, hooks: rest });
-    }
-  }
-  if (command) {
-    kept.push({ hooks: [{ type: "command", command, timeout: 10 }] });
-  }
-  if (kept.length > 0) {
-    hooks.SessionStart = kept;
-  } else {
-    delete hooks.SessionStart;
-  }
-  return { ...settings, hooks };
 }
 
 // setGuards removes the guard rules from permissions.ask, then adds them back when add is true.
@@ -107,7 +97,7 @@ export function dropTables(text, names) {
   const out = [];
   let skip = false;
   for (const line of text.split("\n")) {
-    const header = line.match(/^\s*\[{1,2}([^\]]+)\]{1,2}\s*(?:#.*)?$/);
+    const header = line.match(/^\s*\[{1,2}([^\]]+)\]{1,2}\s*(?:#.*)?$/u);
     if (header) {
       const name = header[1].trim();
       skip = headers.some((h) => name === h || name.startsWith(`${h}.`));
@@ -116,7 +106,7 @@ export function dropTables(text, names) {
       out.push(line);
     }
   }
-  return out.join("\n").replace(/\n+$/, "\n");
+  return out.join("\n").replace(/\n+$/u, "\n");
 }
 
 export function tomlTable(name, server) {
@@ -150,7 +140,7 @@ function edit(path, change, initial) {
     // Write in place so a symlinked config file stays a symlink.
     writeFileSync(path, after, { mode: 0o600 });
   }
-  process.stdout.write(`${after !== before ? "updated" : "unchanged"} ${path}\n`);
+  process.stdout.write(`${after === before ? "unchanged" : "updated"} ${path}\n`);
   return 0;
 }
 
@@ -160,58 +150,67 @@ function editSettings(home, add, change) {
   return edit(path, (text) => `${JSON.stringify(change(JSON.parse(text)), null, 2)}\n`, add ? "{}" : undefined);
 }
 
-function main(args) {
-  const home = homedir();
-  const vars = { home, root };
-  const [cmd, arg] = args;
-  switch (cmd) {
-    case "claude-json":
-      process.stdout.write(`${JSON.stringify(render(arg, vars))}\n`);
-      return 0;
-    case "hook-add":
-    case "hook-remove":
-      return editSettings(home, cmd === "hook-add", (settings) => setHook(settings, cmd === "hook-add" ? arg : ""));
-    case "guard-add":
-    case "guard-remove":
-      return editSettings(home, cmd === "guard-add", (settings) => setGuards(settings, cmd === "guard-add"));
-    case "opencode-agents": {
-      // Rebuild the OpenCode copies of the agents. install.sh links them.
-      const out = join(root, ".agents", "linked", "opencode-agents");
-      rmSync(out, { recursive: true, force: true });
-      mkdirSync(out, { recursive: true });
-      for (const name of readdirSync(join(root, "agents")).filter((n) => n.endsWith(".md"))) {
-        writeFileSync(join(out, name), opencodeAgent(readFileSync(join(root, "agents", name), "utf8")));
-        process.stdout.write(`${join(out, name)}\n`);
-      }
-      return 0;
-    }
-    case "instructions-add":
-    case "instructions-remove": {
-      // arg is the global instruction file of a tool, such as ~/.codex/AGENTS.md.
-      const block =
-        cmd === "instructions-add" ? readFileSync(join(root, "templates", "agent-instructions.md"), "utf8") : "";
-      return edit(arg, (text) => setBlock(text, block), cmd === "instructions-add" ? "" : undefined);
-    }
-    case "codex-add":
-    case "codex-remove": {
-      return edit(
-        join(home, ".codex", "config.toml"),
-        (text) => {
-          let out = dropTables(text, servers).trimEnd();
-          if (cmd === "codex-add") {
-            out += `${out ? "\n\n" : ""}${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}`;
-          }
-          return out ? `${out}\n` : "";
-        },
-        cmd === "codex-add" ? "" : undefined,
-      );
-    }
-    default:
-      process.stderr.write(
-        "usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
-      );
-      return 1;
+// writeOpencodeAgents rebuilds the OpenCode copies of the agents. install.sh links them.
+function writeOpencodeAgents() {
+  const out = join(root, ".agents", "linked", "opencode-agents");
+  rmSync(out, { recursive: true, force: true });
+  mkdirSync(out, { recursive: true });
+  for (const name of readdirSync(join(root, "agents")).filter((n) => n.endsWith(".md"))) {
+    writeFileSync(join(out, name), opencodeAgent(readFileSync(join(root, "agents", name), "utf8")));
+    process.stdout.write(`${join(out, name)}\n`);
   }
+  return 0;
+}
+
+// editCodex removes the brain MCP server tables from ~/.codex/config.toml, then adds them
+// back when add is true.
+function editCodex(vars, add) {
+  return edit(
+    join(vars.home, ".codex", "config.toml"),
+    (text) => {
+      let out = dropTables(text, servers).trimEnd();
+      if (add) {
+        out += `${out ? "\n\n" : ""}${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}`;
+      }
+      return out ? `${out}\n` : "";
+    },
+    add ? "" : undefined,
+  );
+}
+
+// Each command takes its argument and the paths, and returns the exit code.
+// The arg of instructions-add and instructions-remove is the global instruction file of a tool,
+// such as ~/.codex/AGENTS.md.
+const commands = {
+  "claude-json": (arg, vars) => {
+    process.stdout.write(`${JSON.stringify(render(arg, vars))}\n`);
+    return 0;
+  },
+  "hook-add": (arg, vars) => editSettings(vars.home, true, (settings) => setHook(settings, arg)),
+  "hook-remove": (_arg, vars) => editSettings(vars.home, false, (settings) => setHook(settings, "")),
+  "hooks-apply": (_arg, vars) => applyHooks(vars.home, vars.root),
+  "hooks-remove": (_arg, vars) => removeHooks(vars.home, vars.root),
+  "guard-add": (_arg, vars) => editSettings(vars.home, true, (settings) => setGuards(settings, true)),
+  "guard-remove": (_arg, vars) => editSettings(vars.home, false, (settings) => setGuards(settings, false)),
+  "opencode-agents": () => writeOpencodeAgents(),
+  "instructions-add": (arg) => {
+    const block = readFileSync(join(root, "templates", "agent-instructions.md"), "utf8");
+    return edit(arg, (text) => setBlock(text, block), "");
+  },
+  "instructions-remove": (arg) => edit(arg, (text) => setBlock(text, "")),
+  "codex-add": (_arg, vars) => editCodex(vars, true),
+  "codex-remove": (_arg, vars) => editCodex(vars, false),
+};
+
+function main(args) {
+  const [cmd, arg] = args;
+  if (!Object.hasOwn(commands, cmd)) {
+    process.stderr.write(
+      "usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | hooks-apply | hooks-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
+    );
+    return 1;
+  }
+  return commands[cmd](arg, { home: homedir(), root });
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

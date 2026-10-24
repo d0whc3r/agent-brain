@@ -2,9 +2,29 @@
 
 Date: 2026-10-24.
 
-Status: proposal for evaluation. The user asked for an assessment of how lifecycle hooks could support the brain flows, and then for an English record that another AI model can evaluate and challenge. Implementation has not been approved or started.
+Summary: The original proposal adds three hooks now (H1, H2, and H3), pilots three (H4, H5, and H6), and postpones or rejects the rest. The independent assessment at the end ranks the next decision differently: add only H3 now, set Claude Code `attribution` to `false`, and add `permissions.ask` rules for pull-request comments. Nothing is approved or implemented.
+
+Status: proposal for evaluation. The user asked for an assessment of how lifecycle hooks could support the brain flows, and then for an English record that another AI model can evaluate and challenge. Implementation has not been approved or started. An independent assessment is appended. It does not approve implementation.
 
 Location: `communications/` holds standalone communications. This document is informational and is not registered as a flow, skill, agent, premise, hook, or MCP resource. References to existing flows below describe potential integration points.
+
+Contents:
+
+- [Purpose and evidence labels](#purpose-and-evidence-labels)
+- [Existing system](#existing-system)
+- [Observed state](#observed-state)
+- [Documented hook capabilities](#documented-hook-capabilities)
+- [Reported community experience](#reported-community-experience)
+- [Proposed use cases](#proposed-use-cases)
+- [Proposed design rules](#proposed-design-rules)
+- [Decision boundaries](#decision-boundaries)
+- [Alternatives and trade-offs](#alternatives-and-trade-offs)
+- [Proposed evaluation and adoption sequence](#proposed-evaluation-and-adoption-sequence)
+- [Unknowns](#unknowns)
+- [Questions for independent assessment](#questions-for-independent-assessment)
+- [Applied premise snapshot](#applied-premise-snapshot)
+- [Sources](#sources)
+- [Independent assessment](#independent-assessment)
 
 ## Purpose and evidence labels
 
@@ -13,7 +33,7 @@ Assess where hooks in Claude Code, Codex, and OpenCode could make brain rules an
 The original recommendation is to add three hooks now, to pilot three more with measurements, and to postpone the rest. Treat that recommendation as a hypothesis to evaluate, rather than an accepted architecture decision.
 
 | Label | Meaning |
-|---|---|
+| --- | --- |
 | Observed | Read from the local repository, the local tool configuration, or a command output during the assessment on this date. |
 | Documented | Reported by the official documentation of Claude Code, Codex, OpenCode, or Gemini CLI, consulted on this date. This does not establish behavior on this machine. |
 | Reported | Stated by a third-party blog, guide, security report, or issue tracker. Not verified against official documentation. |
@@ -27,7 +47,7 @@ The brain is a personal repository shared by Claude Code, Codex, and OpenCode. P
 Observed enforcement points today:
 
 | Mechanism | What it enforces | Deterministic | Local reference |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | SessionStart hook in Claude Code | Prints the scope, the active premises, and the three best flows into the session context | Yes, for context only | [session hook](../bin/session-premises.mjs), [installer](../scripts/install.sh) |
 | `permissions.ask` rules in Claude Code | Asks before `git commit`, `git push`, `git reset --hard`, `git clean`, and `git branch -D` | Yes, but it matches the command prefix only | [setup-config](../scripts/setup-config.mjs) |
 | Brain block in `~/.codex/AGENTS.md` | Tells the Codex model to run `brain scope` and `premise_list` at session start | No: the model must follow it | [setup-config](../scripts/setup-config.mjs) |
@@ -40,7 +60,7 @@ The gap: most rules and flow steps take effect only when the model reads and fol
 ## Observed state
 
 | Item | Observed result | Interpretation |
-|---|---|---|
+| --- | --- | --- |
 | Tool versions | `2.1.310 (Claude Code)`, `codex-cli 0.164.0` | Claude Code is newer than v2.1.295, which documents `onFailure: "block"`. |
 | Brain SessionStart entry in `~/.claude/settings.json` | Command `node <brain>/bin/session-premises.mjs 2>/dev/null \|\| true`, no matcher, timeout 10 | With no matcher, it fires on `startup`, `resume`, `clear`, `compact`, and `fork`. It reinjects premises after compaction. It fails open on purpose. |
 | Hook output in this session | The brain context appeared after `/clear` | The hook ran as configured. |
@@ -101,7 +121,7 @@ The gap: most rules and flow steps take effect only when the model reads and fol
 Value and risk express the original qualitative assessment. They are not measurements.
 
 | ID | Hook | Behavior | Rule or flow served | Value | Risk | Portability | Tier |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | H1 | `PreToolUse` on `Bash(git commit:*)`, `Bash(gh pr create:*)`, `Bash(gh pr edit:*)` | Deny when the command, or the file of `-F`, contains `Co-Authored-By` or "Generated with" | `no-co-author-no-footer` | High | Low | Claude Code and Codex. OpenCode through `tool.execute.before` | Now |
 | H2 | `Stop` in the frontmatter of `agents/brain-reviewer.md`, run as `SubagentStop` | Block when `last_assistant_message` lacks an active `always` or `never` premise id, or lacks the verdict. The reason lists what is missing | `AGENTS.md` section 4: "A review: the output quotes each active `always` and `never` premise for that repo." | High | Low | Claude Code only | Now |
 | H3 | `SessionStart` in `~/.codex/hooks.json` | Run the existing `session-premises.mjs` | Same context as Claude Code | High for Codex sessions | Low | Codex | Now |
@@ -158,7 +178,7 @@ An OpenCode plugin waits until OpenCode use grows. `tool.execute.before` could s
 ## Alternatives and trade-offs
 
 | Option | Benefit | Cost or limit |
-|---|---|---|
+| --- | --- | --- |
 | Keep instructions only | No new code | The model can skip a rule, as the attribution conflict shows. |
 | Use `permissions` rules only | Native, simple, no script | Matches a command prefix. It cannot read a commit message, a path condition, or a DoD state. |
 | Add harness hooks | Deterministic at the moment of the action | Adds latency, scripts to test, per-tool differences, and trust steps. |
@@ -206,7 +226,7 @@ A useful response would correct facts, rank the cases, compare each one with a s
 The assessment used the active premises that the SessionStart hook printed for repository `qdrant-review-brain`, scope `personal`. These quotations record the constraints of the assessment. Current rules remain in [the premise store](../memory/premises/).
 
 | ID | Strength | Exact rule text |
-|---|---|---|
+| --- | --- | --- |
 | `brain-memory-is-shared` | always | "Save a lasting rule or correction as a brain premise, not only in the memory of one tool, so every tool applies it." |
 | `dod-before-done` | always | "Agree a Definition of Done before work starts, call a task done only when brain dod lint --done passes, and make each review report that result: each criterion names an observable outcome, a check, a concrete pass condition, and fresh evidence." |
 | `memory-only-what-repeats` | always | "Store a rule only when it is important: an explicit ask becomes a premise, any other correction becomes a candidate that waits for a repeat, and ephemeral facts such as branch state, ticket details, review findings, and what git or the code records go into no memory." |
@@ -237,3 +257,98 @@ The assessment used the active premises that the SessionStart hook printed for r
 - [Claude Code hooks: the four worth having, and the traps](https://bestagent.dev/claude-code-hooks-2026)
 - [Malicious repo files could hijack Claude Code sessions](https://www.bankinfosecurity.com/malicious-repo-files-could-hijack-claude-code-sessions-a-30854)
 - [The Register: Claude Code CVEs](https://www.theregister.com/2026/02/26/clade_code_cves/)
+- [Claude Code settings reference, attribution](https://code.claude.com/docs/en/settings-reference#attribution)
+- [Claude Code settings in cloud sessions](https://code.claude.com/docs/en/settings#settings-in-cloud-sessions)
+
+## Independent assessment
+
+Date: 2026-10-24. A second session reviewed the proposal above in OpenCode, against the official hook pages and this repository. This section does not approve implementation. The original tiers stay as the hypothesis. The verdict below is the ranking for the next decision.
+
+### Verdict
+
+One hook is worth adding now. That hook is H3. Two changes that are not hooks close more of the observed gap than H1 does. Set Claude Code `attribution` to `false`. Add `permissions.ask` rules for pull-request comments. The other hooks wait for a recorded miss, or for an observation log.
+
+### Corrections
+
+These facts come from the official pages and from this repository on this date.
+
+Claude Code lists 33 hook events. `Stop` and `UserPromptSubmit` have no matcher. A handler `if` field runs only on tool events. On any other event, a handler with `if` set never runs. Source: [Hooks reference](https://code.claude.com/docs/en/hooks).
+
+Codex `Stop` and `SubagentStop` include `last_assistant_message` and `stop_hook_active`. The first unknown in the original text is closed. Source: [Codex hooks](https://learn.chatgpt.com/docs/hooks).
+
+Codex records trust against the hook definition hash. The page does not say that the hash covers the script file. A changed script with the same command string can run without a new trust step. Treat the definition hash as documented. Treat a hash of the script bytes as still unknown.
+
+Codex has no `if` filter of the Claude Code kind. An H1 hook there must match `Bash` and exit at once when the command is not a commit or a pull request.
+
+Codex `permissionDecision: "ask"` is parsed and not supported. The hook fails and the tool call continues. A Codex deny is not a stand-in for ask.
+
+OpenCode still has no documented hook that continues a finished turn. `tool.execute.before` blocks when it throws. `experimental.session.compacting` can add context at compaction. The plugin page does not show a session-start context injection. Source: [OpenCode plugins](https://opencode.ai/docs/plugins). This review ran in OpenCode, so "wait until OpenCode use grows" is no longer a reason to ignore that tool. The missing events still block H3 and H4 there.
+
+Claude Code has an `attribution` setting. On version 2.1.281 and later, `attribution: false` hides the commit trailer, the pull-request line, and the session link. The observed Claude Code version in the original text is 2.1.310. The user settings file has no `attribution` key. Source: [settings reference](https://code.claude.com/docs/en/settings-reference#attribution). Observed: `~/.claude/settings.json` on this date.
+
+The same page says Claude Code tells the model that a user attribution rule takes precedence, unless managed settings set the line. The conflict in every session is real. The source fix is a setting, not a hook. `includeGitInstructions: false` also removes the git status snapshot. Do not use that key as the fix.
+
+Three flows require `brain dod lint --done`: `prepare-pr`, `self-review`, and `ui-change-verify`. The other nine flows do not. The sentence "most flows already end in `brain dod lint --done`" is not accurate.
+
+`agents/brain-reviewer.md` already says every lens quotes the premises it applied. The open lens question for H2 is closed by that file.
+
+A skill hook stays for the rest of the session after the skill runs. It does not end when the flow ends. `once: true` does not remove a hook that blocks with exit 2. An H4 hook in `brain-next` frontmatter is not limited to the flow.
+
+User-level hooks do not reach a Claude Code cloud session. Source: [settings in cloud sessions](https://code.claude.com/docs/en/settings#settings-in-cloud-sessions).
+
+`permissions.ask` covers `git commit` and `git push`. It does not cover `gh pr comment`, `gh pr review`, or a comment call through `gh api`. Observed in `~/.claude/settings.json` and in `scripts/setup-config.mjs`.
+
+The premise snapshot is right for this repository. A user-level hook also runs in qdrant-scope repositories. Those repositories have four more active premises: `engine-repo-read-only`, `cloud-ui-lint-fix-branch`, `cloud-ui-no-prettier-no-dir-format`, and `proto-is-api-source`.
+
+### Answers
+
+1. The gap is real. Most rules run only when the model follows them. Only H3, and the attribution setting, close a failure that this assessment observed. H1 closes a symptom whose source is a missing setting. H2, H4, H5, and H6 close contracts without a recorded miss in this text.
+
+2. Fix the attribution setting first. Keep a deny hook only as a backstop, and mainly for Codex and OpenCode, which have no such setting. A `permissions` rule cannot read a commit message. Do not set `includeGitInstructions` to `false`.
+
+3. H2 can look for the premise id format in `last_assistant_message`. Codex documents that field, and it can be null. A null field must fail open. A structured file would be more reliable, and it is not required for a later pilot. Do not build H2 until one review skips the quote block.
+
+4. The three conditions are necessary and not sufficient. A completion claim is free text, so it has the same false-positive class as H6. Block once per fingerprint needs a local state file. Exit when `stop_hook_active` is true. That limits a loop. It does not prove the claim detector is precise. Observe before any block.
+
+5. Do not register H4 only through `brain-next`. That hook would keep firing after the flow ends. Codex has no skill-scoped hooks, so a blocking H4 there is global. Observation mode, with a fast exit when no DoD file exists, is the only form that fits both tools.
+
+6. Reject a flow `done:` field. The original reason is wrong. The right reason is that the machine checks already belong in the DoD, and the other completion lines need a person. Examples: the user answered each finding, the user confirmed the plan, and the user read the drafted replies.
+
+7. Do not pilot the H6 regex. "never" and "nunca" match ordinary speech. Rule capture stays in the `brain-learn` skill. A `prompt` handler would add a model call to every prompt, and Codex skips that handler.
+
+8. The current hook volume should change the order, not forbid every new hook. SessionStart already has six command hooks. A new Stop hook competes with the gstack timeline hook. Add H3, which is one more SessionStart command and fails open. Do not add a global Stop hook until the observation log exists. Pruning plugin hooks is a separate user decision. It is not a prerequisite for H3.
+
+9. The design rules hold for Claude Code guards if `onFailure` is `block` and the script denies without `updatedInput`. They hold only in part for Codex: a failed `PreToolUse` hook lets the tool run, and `ask` does not work. They hold for OpenCode only where `tool.execute.before` can throw. One script can still serve all three. Fail closed is not available on every tool.
+
+10. Adopt H3 when the Codex session shows the same premise list as Claude Code, and the hook fails open on a bad exit. Adopt the attribution setting when one throwaway commit has no trailer and one pull-request body has no footer. Postpone H1 until that probe still shows a trailer written by the model. Postpone H4 until an observation log shows blocks that match real completion claims, with an agreed false-positive cap. Reject H6 if a two-week log is mostly ordinary speech. Reject H11 as the original text does.
+
+### Cases the original text does not list
+
+| ID | Mechanism | Behavior | Rule served | Value | Risk | Portability | Tier |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| H12 | User setting `attribution: false` | Hide the commit trailer, the pull-request line, and the session link | `no-co-author-no-footer` | High | Low. Needs Claude Code 2.1.281 or later. This machine is past that | Claude Code | Now. Not a hook |
+| H13 | `PreToolUse` on `rm` and `cp` | Deny when the command has no `-f` or `--force`. Do not rewrite | `shell-rm-cp-no-prompt` | Medium | Low | Claude Code and Codex | Pilot |
+| H14 | `PreToolUse` on edit and write | Deny a write whose path is the engine directory `qdrant/` under the qdrant scope root. Allow reads | `engine-repo-read-only` | Medium | Low if the path is exact | All three, through the local guard each tool has | Pilot |
+| H15 | `permissions.ask` | Ask before `gh pr comment`, `gh pr review`, and a comment call through `gh api` | `no-pr-comment-unasked` | Medium | Low | Claude Code. Codex has no ask | Now. Not a hook |
+| H16 | `CwdChanged` | Run `session-premises.mjs` when the git root changes | Session context after `cd` | Low | Medium. The event has no matcher, so every `cd` pays the cost | Claude Code | Postpone |
+| H17 | `PreToolUse` on read | Deny a read of the daily Chrome profile. Allow the DevTools profile used for UI checks | `AGENTS.md` section 8 | Medium | Medium until the two paths are written down | All three | Postpone until the paths are named |
+| H18 | `PreToolUse` on `git commit` | Deny a commit that would open an editor: no `-m`, no `-F`, and no `--no-edit` | Agent hang. No premise yet | Medium | Low | Claude Code and Codex | Pilot |
+| H19 | `experimental.session.compacting` | Add the premise list to the compaction prompt | Same gap as SessionStart after compact | Low | Low | OpenCode | Postpone. Claude Code and Codex already reinject on compact |
+
+`cloud-ui-no-prettier-no-dir-format` can use the same shape as H13, limited to the qdrant-cloud-ui repository. It waits for the same pilot bar. `proto-is-api-source` is not a hook. A hook cannot see that an API change started in the wrong file without judging the diff.
+
+`no-commit-push-unasked` stays on `permissions.ask`. A hook cannot see that the user asked in this turn.
+
+### Revised order
+
+1. Set `attribution` to `false` in the user settings, after the user agrees. Prove it with one throwaway commit. Do not commit that probe in a team repository.
+2. Add the comment ask rules to `guardRules`, after the user agrees. That is a config change, not a hook.
+3. Add H3. Reuse `session-premises.mjs`. Fail open. One installer step and one Codex trust approval.
+4. Leave H1 unbuilt until the probe in step 1 still shows a trailer that the model wrote. If that happens, deny and do not rewrite.
+5. Run H4 in observation mode only, and only after H3 is stable. Do not block.
+6. Pilot H13 and H14 only after a second occurrence, or when the user asks. H5 stays a Claude-only pilot. Do not deny `brain dod run` on Codex.
+7. Do not build H2, H6, H7, H8, H9, H10, H11, H16, H17, or H19 now.
+
+### What this review did not do
+
+This review did not change tool settings, did not add a hook, and did not create a task DoD. Implementation still needs an explicit ask and a DoD, as `dod-before-done` requires.

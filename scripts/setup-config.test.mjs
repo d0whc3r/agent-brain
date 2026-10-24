@@ -6,7 +6,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { dropTables, guardRules, setGuards, setHook, tomlTable } from "./setup-config.mjs";
+import { dropTables, guardRules, setCodexHook, setGuards, setHook, tomlTable } from "./setup-config.mjs";
 
 test("TestSetHookReplacesOnlyBrainHook", () => {
   const other = { type: "command", command: "other-hook" };
@@ -29,6 +29,22 @@ test("TestSetHookReplacesOnlyBrainHook", () => {
 
   const removed = setHook(added, "");
   assert.deepEqual(removed.hooks.SessionStart, [{ matcher: "startup", hooks: [other] }]);
+});
+
+test("TestSetCodexHookKeepsOtherHooks", () => {
+  const other = { type: "command", command: "herdr-state", timeout: 10 };
+  const config = { hooks: { SessionStart: [{ hooks: [other] }] } };
+  const command = "node /brain/bin/session-premises.mjs 2>/dev/null || true";
+
+  const added = setCodexHook(config, command);
+  assert.equal(added.hooks.SessionStart.length, 2);
+  assert.deepEqual(added.hooks.SessionStart[0].hooks, [other]);
+  assert.equal(added.hooks.SessionStart[1].hooks[0].command, command);
+  assert.equal(added.hooks.SessionStart[1].hooks[0].timeout, 10);
+  assert.deepEqual(setCodexHook(added, command), added);
+
+  const removed = setCodexHook(added, "");
+  assert.deepEqual(removed.hooks.SessionStart, [{ hooks: [other] }]);
 });
 
 test("TestCodexTables", () => {
@@ -78,8 +94,8 @@ test("TestInstallCreatesConfig", async (t) => {
   const hookText = await readFile(settings, "utf8");
   const codexText = await readFile(codex, "utf8");
   assert.equal(JSON.parse(hookText).hooks.SessionStart[0].hooks[0].command, "node /brain/bin/session-premises.mjs");
-  assert.match(codexText, /\[mcp_servers\.brain-premises\]/);
-  assert.match(codexText, /\[mcp_servers\.chrome-devtools\]/);
+  assert.match(codexText, /\[mcp_servers\.brain-premises\]/u);
+  assert.match(codexText, /\[mcp_servers\.chrome-devtools\]/u);
 
   invoke("hook-add", "node /brain/bin/session-premises.mjs");
   invoke("codex-add");
@@ -87,6 +103,45 @@ test("TestInstallCreatesConfig", async (t) => {
   assert.equal(await readFile(codex, "utf8"), codexText);
   assert.deepEqual(await readdir(join(home, ".claude")), ["settings.json"]);
   assert.deepEqual(await readdir(join(home, ".codex")), ["config.toml"]);
+});
+
+test("TestHooksApplyWritesThreeTools", async (t) => {
+  const { home, invoke } = await configHome(t);
+  const plugins = join(home, ".config", "opencode", "plugins");
+  await mkdir(plugins, { recursive: true });
+  const codexHooks = join(home, ".codex", "hooks.json");
+  await mkdir(join(home, ".codex"), { recursive: true });
+  await writeFile(
+    codexHooks,
+    `${JSON.stringify({ hooks: { SessionStart: [{ hooks: [{ type: "command", command: "herdr-state", timeout: 10 }] }] } }, null, 2)}\n`,
+  );
+
+  const first = invoke("hooks-apply");
+  const settings = JSON.parse(await readFile(join(home, ".claude", "settings.json"), "utf8"));
+  const codex = JSON.parse(await readFile(codexHooks, "utf8"));
+  const link = join(plugins, "brain-session-premises.js");
+  const command = settings.hooks.SessionStart[0].hooks[0].command;
+  assert.match(command, /session-premises\.mjs 2>\/dev\/null \|\| true$/u);
+  assert.equal(codex.hooks.SessionStart[0].hooks[0].command, "herdr-state");
+  assert.equal(codex.hooks.SessionStart[1].hooks[0].command, command);
+  assert.equal(await readlink(link), fileURLToPath(new URL("../hooks/opencode/session-premises.js", import.meta.url)));
+  assert.match(first, /updated/u);
+
+  const claudeText = await readFile(join(home, ".claude", "settings.json"), "utf8");
+  const codexText = await readFile(codexHooks, "utf8");
+  const second = invoke("hooks-apply");
+  assert.match(second, /unchanged/u);
+  assert.equal(await readFile(join(home, ".claude", "settings.json"), "utf8"), claudeText);
+  assert.equal(await readFile(codexHooks, "utf8"), codexText);
+
+  invoke("hooks-remove");
+  const after = JSON.parse(await readFile(codexHooks, "utf8"));
+  assert.deepEqual(after.hooks.SessionStart, [{ hooks: [{ type: "command", command: "herdr-state", timeout: 10 }] }]);
+  assert.equal(
+    JSON.parse(await readFile(join(home, ".claude", "settings.json"), "utf8")).hooks?.SessionStart,
+    undefined,
+  );
+  await assert.rejects(readlink(link));
 });
 
 test("TestRemoveSkipsMissingConfig", async (t) => {
@@ -107,7 +162,7 @@ test("TestInstallKeepsConfigSymlink", async (t) => {
 
   invoke("codex-add");
   assert.equal(await readlink(path), target);
-  assert.match(await readFile(target, "utf8"), /\[features\] # keep this\nx = true/);
+  assert.match(await readFile(target, "utf8"), /\[features\] # keep this\nx = true/u);
   assert.equal(await readFile(`${path}.brain-bak`, "utf8"), original);
   invoke("codex-remove");
   assert.equal(await readFile(target, "utf8"), original);
@@ -118,10 +173,7 @@ async function configHome(t) {
   t.after(() => rm(home, { recursive: true, force: true }));
   const script = fileURLToPath(new URL("./setup-config.mjs", import.meta.url));
   const invoke = (...args) =>
-    execFileSync(process.execPath, [script, ...args], {
-      env: { ...process.env, HOME: home },
-      encoding: "utf8",
-    });
+    execFileSync(process.execPath, [script, ...args], { env: { ...process.env, HOME: home }, encoding: "utf8" });
   return { home, invoke };
 }
 
