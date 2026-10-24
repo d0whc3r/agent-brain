@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
-import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { execFileSync, spawnSync } from "node:child_process";
+import { copyFile, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -170,4 +170,62 @@ test("TestDocsLinkSectionsFromContents", async () => {
 
   assert.ok(checked.length > 0, "no file needs a table of contents, so the check tests nothing");
   assert.deepEqual(checked.flat(), []);
+});
+
+const premisesLine = "Premises are rules. Skills are workflows. Engram is the session log.\n";
+
+async function layoutRoot(t, { agents = premisesLine, ignore = "memory/sessions/screenshots/*\n" } = {}) {
+  // realpath, so the profile path and git rev-parse agree on macOS, where /var is a link.
+  const root = await mkdtemp(join(await realpath(tmpdir()), "brain-layout-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(join(root, "scripts"));
+  await copyFile(
+    fileURLToPath(new URL("./check-layout.sh", import.meta.url)),
+    join(root, "scripts", "check-layout.sh"),
+  );
+  if (agents !== null) {
+    await writeFile(join(root, "AGENTS.md"), agents);
+  }
+  await writeFile(join(root, ".gitignore"), ignore);
+  execFileSync("git", ["-C", root, "init", "-q"]);
+  return root;
+}
+
+function checkLayout(root, home = process.env.HOME) {
+  return spawnSync("bash", [join(root, "scripts", "check-layout.sh")], {
+    encoding: "utf8",
+    env: { ...process.env, HOME: home },
+  });
+}
+
+test("TestLayoutPrintsOk", async (t) => {
+  const result = checkLayout(await layoutRoot(t));
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, "layout ok\n");
+});
+
+test("TestLayoutReportsEachProblem", async (t) => {
+  const cases = [
+    ["AGENTS.md without the line", { agents: "# Agents\n" }, null, "AGENTS.md is missing the premises line"],
+    ["no AGENTS.md", { agents: null }, null, "AGENTS.md is missing the premises line"],
+    [
+      "screenshots not ignored",
+      { ignore: "" },
+      null,
+      "git check-ignore failed for memory/sessions/screenshots/check.png",
+    ],
+    ["Chrome profile inside the repo", {}, (root) => root, "the Chrome profile is inside the repo: "],
+  ];
+  for (const [name, options, homeOf, message] of cases) {
+    await t.test(name, async (st) => {
+      const root = await layoutRoot(st, options);
+
+      const result = checkLayout(root, homeOf ? homeOf(root) : undefined);
+
+      assert.equal(result.status, 1);
+      assert.ok(result.stderr.includes(message), result.stderr);
+      assert.equal(result.stdout, "");
+    });
+  }
 });

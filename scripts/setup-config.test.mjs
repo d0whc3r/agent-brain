@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, readdir, readlink, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -200,4 +200,52 @@ test("TestOpencodeAgentTurnsOffMissingTools", async () => {
   const { opencodeAgent } = await import("./setup-config.mjs");
   const out = opencodeAgent('---\nname: brain-x\ndescription: "Reads."\ntools: Read, Bash, Write\n---\nBody\n');
   assert.equal(out, '---\ndescription: "Reads."\nmode: subagent\ntools:\n  edit: false\n  write: true\n---\nBody\n');
+});
+
+function runConfig(home, ...args) {
+  const script = fileURLToPath(new URL("./setup-config.mjs", import.meta.url));
+  return spawnSync(process.execPath, [script, ...args], { env: { ...process.env, HOME: home }, encoding: "utf8" });
+}
+
+test("TestHooksSayWhyTheySkip", async (t) => {
+  const { home, invoke } = await configHome(t);
+  const plugin = join(home, ".config", "opencode", "plugins", "brain-session-premises.js");
+  const other = "/other/checkout/hooks/opencode/session-premises.js";
+
+  assert.ok(invoke("hooks-apply").includes(`skipped ${plugin} (OpenCode is not installed)\n`));
+  await mkdir(dirname(plugin), { recursive: true });
+  await writeFile(plugin, "mine");
+  assert.ok(invoke("hooks-apply").includes(`skipped ${plugin} (a file, not a link)\n`));
+  assert.ok(invoke("hooks-remove").includes(`skipped ${plugin} (a file, not a link)\n`));
+  assert.equal(await readFile(plugin, "utf8"), "mine");
+  await rm(plugin);
+  await symlink(other, plugin);
+  assert.ok(invoke("hooks-remove").includes(`skipped ${plugin} (links to another checkout)\n`));
+  assert.equal(await readlink(plugin), other);
+});
+
+test("TestSetupConfigNamesBrokenJson", async (t) => {
+  const { home } = await configHome(t);
+  const settings = join(home, ".claude", "settings.json");
+  await mkdir(dirname(settings));
+  await writeFile(settings, "{");
+
+  for (const command of ["guard-add", "guard-remove", "hooks-apply", "hooks-remove"]) {
+    const result = runConfig(home, command);
+    assert.equal(result.status, 1, command);
+    assert.ok(result.stderr.startsWith(`${settings} is not valid JSON: `), result.stderr);
+    assert.doesNotMatch(result.stderr, /^\s+at /mu, "no stack trace");
+  }
+  assert.equal(await readFile(settings, "utf8"), "{");
+});
+
+test("TestSetupConfigPrintsUsage", async (t) => {
+  const { home } = await configHome(t);
+
+  for (const args of [[], ["nope"]]) {
+    const result = runConfig(home, ...args);
+    assert.equal(result.status, 1);
+    assert.ok(result.stderr.startsWith("usage: setup-config.mjs "), result.stderr);
+  }
+  assert.deepEqual(await readdir(home), []);
 });
