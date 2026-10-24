@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "node", "promise"],
-  // sonarjs gives the cognitive-complexity rule, which oxlint has no native version of.
+  // sonarjs gives the cognitive-complexity and no-identical-functions rules, which oxlint lacks.
   "jsPlugins": ["eslint-plugin-sonarjs"],
   "categories": { "correctness": "error", "suspicious": "error", "pedantic": "error", "perf": "error" },
   "env": { "builtin": true, "node": true },
@@ -17,6 +17,8 @@
     "eslint/max-nested-callbacks": ["error", 3],
     "eslint/complexity": ["error", 10],
     "sonarjs/cognitive-complexity": ["error", 10],
+    // A copied function keeps one rule in two places, as the premise one-place-per-rule forbids.
+    "sonarjs/no-identical-functions": "error",
     "import/max-dependencies": "off",
     // The CLI runs git, file, and network steps in order on purpose.
     "eslint/no-await-in-loop": "off",
