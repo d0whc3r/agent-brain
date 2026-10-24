@@ -14,7 +14,7 @@ The user states the rule in chat. You run `brain premise`. Do not ask the user t
 ## What to keep
 
 | Category | Examples | Where |
-|---|---|---|
+| --- | --- | --- |
 | Ephemeral | Branch state, ticket details, the text of one finding, commands you ran, what git or the code records, a `once` decision | Nowhere. It ends with the session. |
 | Candidate | A correction or a defect class with no explicit ask | A premise with `status: candidate` and one `seen` entry per repeat. Reviews skip it. No decision note. |
 | Persistent | An explicit ask, or a candidate the user promotes | An active premise, a decision note, and later a skill from `brain-garden` |

@@ -5,7 +5,7 @@ A flow is a task you do often, with the steps that finish it well. `brain next` 
 ## Fields
 
 | Field | Use |
-|---|---|
+| --- | --- |
 | `name` | Flow id. Defaults to the file name. |
 | `description` | One sentence. `brain next` prints it. |
 | `scopes` | Brain scopes from `brain.config.json`, or `*`. Use it for a flow that fits one team or project, so it does not show up in the others. |

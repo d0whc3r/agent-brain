@@ -18,6 +18,19 @@ The method is `brain-tp-code-review-and-quality`: five axes (correctness, readab
 
 This review checks a diff against the rules the user already stated. Premises hold those rules, so a review that skips them repeats old mistakes.
 
+Contents:
+
+- [Steps](#steps)
+- [Size and verification story](#size-and-verification-story)
+- [Definition of Done](#definition-of-done)
+- [Lenses](#lenses)
+- [Verify](#verify)
+- [Structural blockers](#structural-blockers)
+- [Smell baseline](#smell-baseline)
+- [Output](#output)
+- [Session note](#session-note)
+- [Limits](#limits)
+
 ## Steps
 
 1. Run `brain scope` in the repo. It prints the scope, the repo name, the origin owner, and the scope root. A copy or a worktree uses the repo it was cloned from. A `-` scope means the repo is in no scope, so only global premises apply.
@@ -55,7 +68,7 @@ The prompt names the repo or the worktree of the branch. `brain dod path --cwd <
 A flow can split one review across agents, one lens each. A lens limits the findings to its focus and names the skills to read. With no lens, the review covers all four. Every lens quotes the premises it applied.
 
 | Lens | Focus | Skills |
-|---|---|---|
+| --- | --- | --- |
 | `premises` | Every active premise, size, verification story, the Definition of Done, and the axes correctness, architecture, and performance | `brain-tp-code-review-and-quality`, `brain-tp-performance-optimization`, and the skills of the changed kinds |
 | `security` | Auth, input validation, secrets, external calls, supply chain of `deps`, and what else the change can break | `brain-tp-security-and-hardening`, `brain-tp-differential-review` |
 | `tests` | Changed code that no test covers, weak assertions, and swallowed errors | `brain-tp-test-driven-development` and the test skills of the changed kinds |
@@ -106,7 +119,7 @@ Dead code is a note too: an unused variable, an unreachable branch, a commented-
 - Middle man: a function or class only delegates.
 - Refused bequest: an implementer ignores most of what it inherits.
 
-This list comes from the `code-review` skill in mattpocock/skills (MIT), after Martin Fowler, *Refactoring*, chapter 3.
+This list comes from the `code-review` skill in mattpocock/skills (MIT), after Martin Fowler, _Refactoring_, chapter 3.
 
 ## Output
 
@@ -114,26 +127,32 @@ Use this structure:
 
 ```markdown
 ## Premises applied
+
 - [always] <text> (<id>)
 
 ## Context
+
 - Intent: <one line, or "no description: correctness against the intent is unchecked">
 - Size: <N files, +A -D lines>
 - Verification story: <checks and test notes, or what is missing>
 - Definition of Done: <file, and the results of brain dod lint and brain dod lint --done, or "no DoD">
 
 ## Findings
+
 - Critical: path/to/file.go:42: <problem>. <fix>.
 - path/to/file.go:57: <problem>. <fix>.
 - Consider: path/to/file.go:63: <problem>. <fix>.
 
 ## Simplify and performance
+
 - path/to/file.go:80: <note tied to a measurement or to concrete duplication>.
 
 ## Verdict
+
 Approve | Request changes: <one line>
 
 ## Learn
+
 /brain-learn "<rule>" (only when the user rejects a finding)
 ```
 

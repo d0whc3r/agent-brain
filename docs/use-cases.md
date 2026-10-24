@@ -4,6 +4,32 @@ The user talks. You run the commands. Do not ask the user to type a slash comman
 
 Read this file when the user's words match a case below. The skill for that case has the steps.
 
+Contents:
+
+- [Suggest the next steps](#suggest-the-next-steps)
+- [Save or change a flow](#save-or-change-a-flow)
+- [Stress-test a plan](#stress-test-a-plan)
+- [Review the branch of a teammate](#review-the-branch-of-a-teammate)
+- [Split a branch into PRs](#split-a-branch-into-prs)
+- [Understand or clean worktrees](#understand-or-clean-worktrees)
+- [Get an independent review](#get-an-independent-review)
+- [Review the current work](#review-the-current-work)
+- [Define when a task is done](#define-when-a-task-is-done)
+- [Review a page in the browser](#review-a-page-in-the-browser)
+- [Keep a rule apart by scope](#keep-a-rule-apart-by-scope)
+- [Keep a rule](#keep-a-rule)
+- [Drop a rule](#drop-a-rule)
+- [Turn repeated rules into a skill](#turn-repeated-rules-into-a-skill)
+- [Accept a draft](#accept-a-draft)
+- [Find a third-party skill](#find-a-third-party-skill)
+- [Write a new skill](#write-a-new-skill)
+- [Import rules from memory](#import-rules-from-memory)
+- [Check premise use](#check-premise-use)
+- [Audit the workspace config](#audit-the-workspace-config)
+- [Check repo skills against the brain](#check-repo-skills-against-the-brain)
+- [Update third-party skills](#update-third-party-skills)
+- [What you do not wait for](#what-you-do-not-wait-for)
+
 ## Suggest the next steps
 
 User: "What should I do next?" "¿Qué hago ahora?" "What would be good to do in this repo?"
@@ -155,9 +181,9 @@ You run `pnpm skills:check`. When the user asks to update, you run `pnpm skills:
 
 ## What you do not wait for
 
-| You might wait for | Do this instead |
-|---|---|
-| The user types `/brain-reviewer` | Start the review when they ask for a review |
-| The user types `/brain-learn` | Store the rule when they state one |
-| The user types the `brain` command | You run `brain` |
-| The user names a flow such as `go` or `ui` | You pick the flow from the changed files |
+| You might wait for                         | Do this instead                             |
+| ------------------------------------------ | ------------------------------------------- |
+| The user types `/brain-reviewer`           | Start the review when they ask for a review |
+| The user types `/brain-learn`              | Store the rule when they state one          |
+| The user types the `brain` command         | You run `brain`                             |
+| The user names a flow such as `go` or `ui` | You pick the flow from the changed files    |

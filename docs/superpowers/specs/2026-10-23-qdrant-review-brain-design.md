@@ -1,9 +1,28 @@
 # Personal Qdrant review brain
 
-Date: 2026-10-23
-Status: approved 2026-10-23
-Owner: Josep
+Date: 2026-10-23  
+Status: approved 2026-10-23  
+Owner: Josep  
 Audience: one person. The Cloud team does not use this repo.
+
+Summary: This spec designs one personal git repo of Markdown premises and skills. Claude Code, OpenCode, and Codex load it, so a correction from one review applies in the next one. A skill reaches the tools only after Josep accepts it.
+
+Contents:
+
+- [Intent](#intent)
+- [Goals](#goals)
+- [Out of scope](#out-of-scope)
+- [Anti-goals](#anti-goals)
+- [Constraints](#constraints)
+- [Approaches](#approaches)
+- [Decisions Josep made](#decisions-josep-made)
+- [Calls made in this design](#calls-made-in-this-design)
+- [Parts](#parts)
+- [First slice](#first-slice)
+- [Verification](#verification)
+- [Later slices, not this build](#later-slices-not-this-build)
+- [AGENTS.md to ship](#agentsmd-to-ship)
+- [Open questions for Josep](#open-questions-for-josep)
 
 ## Intent
 
@@ -194,7 +213,7 @@ Why this server exists: Engram search can miss a rule. A skill is too heavy for 
 ### MCP servers
 
 | Server | Role in this brain | First slice |
-|---|---|---|
+| --- | --- | --- |
 | `brain-premises` | List, add, update, and delete premises. | Build it. Register it on all three tools. |
 | `chrome-devtools` | Screenshot, console, network, performance trace on a local UI. Login for test environments stays in one profile folder. | Register the official server. Use it when the diff touches `qdrant-cloud-ui` or `qdrant-cloud-admin-v2` and a local URL is up. Skip it for a Go-only or Python-only diff. |
 | Obsidian Local REST API | Read and edit vault notes while Obsidian is open. | Register it. Premise add and delete still go through `brain premise` when the agent is the writer. |
@@ -209,8 +228,8 @@ Josep wants one folder that keeps test-environment logins, and he wants the next
 
 Both servers can do that:
 
-| | Chrome DevTools MCP | Playwright MCP |
-|---|---|---|
+|  | Chrome DevTools MCP | Playwright MCP |
+| --- | --- | --- |
 | Persistent folder | `--user-data-dir` ([configuration](https://developer.chrome.com/docs/devtools/agents/get-started/configuration)) | `--user-data-dir`, and persistent is the default ([profile docs](https://playwright.dev/mcp/configuration/user-profile)) |
 | What you lose with a fresh profile | `--isolated` deletes the profile when Chrome closes. That flag fights the login goal. | `--isolated` also starts with no saved login. |
 | Extra diagnostic tools | Performance trace, console with source maps, network tools, header redaction | Screenshots, console, storage-state export, cross-browser runs |
@@ -291,7 +310,7 @@ The command does not edit the diff.
 ### Tool adapters
 
 | Tool | How the brain shows up | What the first slice adds |
-|---|---|---|
+| --- | --- | --- |
 | Claude Code | Skill links in `~/.claude/skills/`. Agent file for the gardener. | `/learn`, `/garden`, `/review-brain`, `/accept-skill` as skills. Claude Code exposes a skill as a slash command when the skill is installed. |
 | OpenCode | Skill links on the one path the probe confirms. Existing `code-reviewer` stays. `/review` in the profile stays. | Skills with `metadata.opencode/slash: "true"` for the four commands. No edit to `dotfiles/agents/`. |
 | Codex | Skill links in `~/.codex/skills/` unless the probe shows a double load. | The same skills. Codex has no subagent file in this slice. The skill text is the adapter. |

@@ -19,28 +19,35 @@ Run `brain root` to find the brain. Read the Split section of `skills/active/bra
 
 ```markdown
 ## Summary
+
 Source <branch>, base <sha>, N files, +A -D lines, M parts.
 
 ## Parts
-| # | Branch | Worktree | Parent | Purpose | Lines | Checks |
-|---|---|---|---|---|---|---|
+
+| #   | Branch | Worktree | Parent | Purpose | Lines | Checks |
+| --- | ------ | -------- | ------ | ------- | ----- | ------ |
 
 ### Part 1: <title>
+
 - Files: path (whole file) or path (hunks: function or line range)
 - Commits from the source that it takes, if any
 - Why a reviewer can read it alone
 - PR title and a two-line PR body
 
 ## Dependencies
+
 Part 2 needs part 1 because <symbol or file>.
 
 ## Conflicts
+
 - path: in parts 1 and 3. Resolution: <hunks per part, or move to one part>.
 
 ## Risks
+
 Each part that cannot pass the checks alone, and why.
 
 ## Merge order
+
 1, 2, 3. Rebase after each merge: <commands>.
 ```
 

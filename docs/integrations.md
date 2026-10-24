@@ -1,6 +1,17 @@
 # Tool integrations
 
+This page explains how the brain connects to Claude Code, Codex, OpenCode, Chrome, Obsidian, and a local Ollama model. The installer writes the configuration, and `brain mcp check` confirms that the running `brain-premises` server matches this checkout.
+
 Run [the installation steps](getting-started.md#2-install-once) to set up or update the brain. The [catalog](catalog.md#mcp-servers) lists each MCP server and its purpose.
+
+Contents:
+
+- [Configuration files](#configuration-files)
+- [Chrome profile](#chrome-profile)
+- [Obsidian](#obsidian)
+- [Check MCP drift](#check-mcp-drift)
+- [Local decision model](#local-decision-model)
+- [Setup record](#setup-record)
 
 ## Configuration files
 
@@ -10,7 +21,7 @@ The installer creates missing Claude Code and Codex configuration files. Before 
 
 OpenCode reads its MCP configuration from dotfiles. Add `brain-premises` and `chrome-devtools` there from the snippet files.
 
-The installer adds a SessionStart hook that prints the repo scope, active premises, and matching flows. [brain.config.json](../brain.config.json) defines the scopes. The [catalog](catalog.md#hooks-and-settings) describes the hook and Git confirmation rules.
+The installer registers the session premises hook for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). [brain.config.json](../brain.config.json) defines the scopes. The [catalog](catalog.md#hooks-and-settings) describes the hook and the Git confirmation rules. Codex does not run a new hook until you trust it in `/hooks`.
 
 ## Chrome profile
 
@@ -30,9 +41,19 @@ Use the user server `chrome-devtools` for UI reviews. The `plugin:ecc:chrome-dev
 
 Open the repo as an Obsidian vault. The CLI and `brain-premises` also work when Obsidian is closed.
 
-Follow [the Obsidian MCP instructions](../mcp/snippets/obsidian.md) to enable the Local REST API plugin. Register the server only after both `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key` exist. Both files are gitignored.
+Open [premises.base](../premises.base) with the core Bases plugin for Active, Candidates, and Archived views. The Meaning column makes the rule polarity explicit: `always` requires the text, `never` forbids the action in the text, and a candidate does not apply. Scope and repositories stay visible. The Active view spans all scopes; it is not the rule set for a particular repo.
 
-Agents add and delete premises through `brain premise` or the premise MCP. This keeps validation and archived deletions in the shared store.
+Use `brain-premises` for rule management. Its initialization instructions describe rule strength, scope, candidates, evidence, and the write path. Read tools carry MCP read-only hints; these hints describe behavior and do not enforce permissions. Agents add, update, and delete premises through `brain premise` or the premise MCP. Direct edits in Bases or a general Obsidian MCP bypass that validation.
+
+Search can narrow discovery without mixing work and personal rules:
+
+```bash
+brain premise search commit --repo qdrant-review-brain --scope personal --status active
+```
+
+The equivalent MCP call is `premise_search` with `query`, `repo`, `scope`, and optional `status`. Omitting `status` searches active and candidate premises. Search matches a case-insensitive substring in the text or ID; it does not translate or perform semantic search. Load the complete applicable rules with `premise_list` before work or review, regardless of search results.
+
+The general Obsidian MCP is optional for live vault metadata and UI commands. Follow [its setup notes](../mcp/snippets/obsidian.md) only when those capabilities are needed. [The memory tools assessment](../communications/2026-10-24-memory-tools-assessment.md) compares local retrieval alternatives and the conditions for adding an index.
 
 ## Check MCP drift
 

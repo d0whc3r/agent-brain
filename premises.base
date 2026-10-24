@@ -1,0 +1,63 @@
+filters:
+  and:
+    - file.ext == "md"
+    - or:
+        - file.inFolder("memory/premises")
+        - file.inFolder("memory/dropped")
+formulas:
+  meaning: if(status == "candidate", "Not active", if(strength == "never", "Forbidden", if(strength == "always", "Required", "Preferred")))
+properties:
+  file.name:
+    displayName: Premise
+  formula.meaning:
+    displayName: Meaning
+  note.text:
+    displayName: Rule text
+  note.scope:
+    displayName: Scope
+  note.repos:
+    displayName: Repositories
+  note.source:
+    displayName: Decision source
+  note.seen:
+    displayName: Repeats
+views:
+  - type: table
+    name: Active
+    filters:
+      and:
+        - file.inFolder("memory/premises")
+        - status == "active"
+    order:
+      - file.name
+      - formula.meaning
+      - text
+      - scope
+      - repos
+      - source
+  - type: table
+    name: Candidates
+    filters:
+      and:
+        - file.inFolder("memory/premises")
+        - status == "candidate"
+    order:
+      - file.name
+      - formula.meaning
+      - text
+      - scope
+      - repos
+      - seen
+      - source
+  - type: table
+    name: Archived
+    filters:
+      and:
+        - file.inFolder("memory/dropped")
+        - status == "dropped"
+    order:
+      - file.name
+      - text
+      - scope
+      - repos
+      - source

@@ -2,9 +2,26 @@
 
 Date: 2026-10-24.
 
+Summary: The assessment proposes a pilot of intent-aware flow selection in `brain next`, and then progressive skill selection. Code still computes the facts and the allowed candidates, and the skills and premises that a flow requires stay mandatory. The published rate gives about USD 0.21 for 1,000 decisions. Nothing is approved or implemented.
+
 Status: proposal for evaluation. The user requested an assessment and then an English record for another AI model to interpret and challenge. Implementation has not been approved or started.
 
 Location: `communications/` holds standalone communications. This document is informational and is not registered as a flow, skill, agent, premise, hook, or MCP resource. References to existing flows below describe potential integration points.
+
+Contents:
+
+- [Purpose and evidence labels](#purpose-and-evidence-labels)
+- [Existing system](#existing-system)
+- [Observed verification and operational findings](#observed-verification-and-operational-findings)
+- [Documented Jev capabilities and limits](#documented-jev-capabilities-and-limits)
+- [Proposed integration opportunities](#proposed-integration-opportunities)
+- [Proposed minimum architecture](#proposed-minimum-architecture)
+- [Decision boundaries](#decision-boundaries)
+- [Alternatives and trade-offs](#alternatives-and-trade-offs)
+- [Proposed evaluation and adoption sequence](#proposed-evaluation-and-adoption-sequence)
+- [Cost estimate](#cost-estimate)
+- [Questions for independent assessment](#questions-for-independent-assessment)
+- [Applied premise snapshot](#applied-premise-snapshot)
 
 ## Purpose and evidence labels
 
@@ -13,7 +30,7 @@ Assess whether a decision model such as TypeSafe's Jev could simplify the review
 The original recommendation is to pilot intent-aware flow selection, followed by progressive skill selection. Treat that recommendation as a hypothesis to evaluate, rather than an accepted architecture decision.
 
 | Label | Meaning |
-|---|---|
+| --- | --- |
 | Observed | Read from the local repository or returned by a command during the assessment on this date. |
 | Documented | Reported by the official TypeSafe documentation consulted on this date. This does not establish performance on this repository. |
 | Proposed | A suggested change or experiment that is not implemented. |
@@ -24,7 +41,7 @@ The original recommendation is to pilot intent-aware flow selection, followed by
 The brain is a personal repository shared by Claude Code, Codex, and OpenCode. Its central distinction is: premises are rules, skills are workflows, and Engram is the session log.
 
 | Component | Current responsibility | Local reference |
-|---|---|---|
+| --- | --- | --- |
 | Scope resolution | Identify the repository and applicable personal, Qdrant, or global rules | [scope library](../lib/scope.mjs), [scope configuration](../brain.config.json) |
 | Premise store | Store active and candidate rules, filter by scope and repository, validate mutations | [premise library](../lib/premise.mjs), [learning skill](../skills/active/brain-learn/SKILL.md) |
 | CLI and MCP | Expose the same premise library and store | [CLI](../bin/brain.mjs), [MCP server](../lib/mcp.mjs) |
@@ -41,7 +58,7 @@ The flow bodies are procedures that an agent follows. The CLI matcher selects ca
 These results describe the working tree examined during the original assessment. The tree contained extensive pre-existing uncommitted changes. These observations are a dated snapshot, not a certification of the repository's later state.
 
 | Check | Observed result | Interpretation |
-|---|---|---|
+| --- | --- | --- |
 | `npm run check` | Exit 0; 108 tests, 108 passes, 0 failures | Tests and the MCP, skill, layout, path, and snippet checks passed locally. |
 | `brain dod lint --done` | `ok: 7 criteria, each with evidence for tree f008db1e3b0b` | The existing branch DoD passed. Its title was `DoD system for the brain`; it did not cover Jev integration or every external service. |
 | `brain workspace check` | Exit 1; 71 reported entries | The workspace was not free of configuration drift or unreadable skills. |
@@ -49,11 +66,11 @@ These results describe the working tree examined during the original assessment.
 
 Workspace findings were counted as follows:
 
-| Scope | `broken`: no readable `SKILL.md` | `version`: content differs from brain | Total |
-|---|---:|---:|---:|
-| Qdrant | 31 | 13 | 44 |
-| Personal | 1 | 26 | 27 |
-| Total | 32 | 39 | 71 |
+| Scope    | `broken`: no readable `SKILL.md` | `version`: content differs from brain | Total |
+| -------- | -------------------------------: | ------------------------------------: | ----: |
+| Qdrant   |                               31 |                                    13 |    44 |
+| Personal |                                1 |                                    26 |    27 |
+| Total    |                               32 |                                    39 |    71 |
 
 The `broken` category includes both broken links and other entries without a readable `SKILL.md`. A checked example was `qdrant-cloud-cluster-api/.claude/skills/fastapi-python`: its symlink target was `../../.agents/skills/fastapi-python`, and that target did not exist. The personal `monedix/.agents/skills/monedix-testing-workspace` entry existed but lacked `SKILL.md`.
 
@@ -84,7 +101,7 @@ TypeSafe documents literal interpretation, numeric precision, indirection, irrel
 Priority expresses the original qualitative assessment. It is not a measured return on investment.
 
 | Existing point | Priority | Proposed Jev decision | Responsibility retained by code, the agent, or the user |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `brain next` | High | Select a flow using the user's request and repository facts, from compatible candidates plus an explicit no-match option | Code computes facts and admissible candidates; existing flow selection and approval requirements remain in force. |
 | Skill selection | High | Rank optional skills and load a small relevant subset progressively | Skills explicitly required by the flow and all applicable hard premises remain mandatory. |
 | `brain-learn` | High | Classify a user intervention as ephemeral, an implicit correction, or an explicit request to retain a rule; suggest existing equivalents | Scope validation, repeat tracking, promotion rules, and authorized mutations remain in the current system. |
@@ -157,7 +174,7 @@ Proposed: distinguish an unknown PR state from a confirmed absence before making
 ## Alternatives and trade-offs
 
 | Option | Benefit | Cost or limit |
-|---|---|---|
+| --- | --- | --- |
 | Keep deterministic routing and refine metadata | Small change, local operation, predictable behavior | Metadata alone does not interpret arbitrary user intent. |
 | Keep the current LLM's selection | No additional provider or decision layer | Selection quality and repeated context costs remain to be measured. |
 | Add Jev for one bounded decision | Typed output, explicit uncertainty, shared behavior across clients | Adds network failure modes, question maintenance, evaluation work, and provider dependence. |
@@ -209,7 +226,7 @@ A useful response would identify factual corrections, rank opportunities, compar
 The audit used the active premises returned for repository `qdrant-review-brain`, scope `personal`. The connected MCP rejected the call because it was stale, so the CLI supplied the list. These quotations record the audit's constraints; current authoritative rules remain in [the premise store](../memory/premises/).
 
 | ID | Strength | Exact rule text |
-|---|---|---|
+| --- | --- | --- |
 | `brain-memory-is-shared` | always | "Save a lasting rule or correction as a brain premise, not only in the memory of one tool, so every tool applies it." |
 | `dod-before-done` | always | "Agree a Definition of Done before work starts, call a task done only when brain dod lint --done passes, and make each review report that result: each criterion names an observable outcome, a check, a concrete pass condition, and fresh evidence." |
 | `memory-only-what-repeats` | always | "Store a rule only when it is important: an explicit ask becomes a premise, any other correction becomes a candidate that waits for a repeat, and ephemeral facts such as branch state, ticket details, review findings, and what git or the code records go into no memory." |

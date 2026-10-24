@@ -10,6 +10,14 @@
 
 **Spec:** `/Users/josep/projects/specs/2026-10-23-qdrant-review-brain-design.md`
 
+Contents:
+
+- [Global Constraints](#global-constraints)
+- [Review Focus](#review-focus)
+- [File structure](#file-structure)
+- [Spec coverage](#spec-coverage)
+- [Not in this plan](#not-in-this-plan)
+
 ## Global Constraints
 
 - Repo path: `/Users/josep/projects/qdrant-review-brain`. Local git. No remote. No push.
@@ -39,7 +47,7 @@ These inputs are the ones most likely to bite. Each has a test in the task that 
 ## File structure
 
 | Path | Responsibility |
-|---|---|
+| --- | --- |
 | `AGENTS.md` | Behavior rules. Exact text from the spec section "AGENTS.md to ship". |
 | `README.md` | Commands, MCP snippets, probe result. |
 | `internal/premise/store.go` | Open, list, get, add, update, delete, search. |
@@ -55,6 +63,7 @@ These inputs are the ones most likely to bite. Each has a test in the task that 
 ### Task 1: Repo skeleton
 
 **Files:**
+
 - Create: `/Users/josep/projects/qdrant-review-brain/AGENTS.md`
 - Create: `/Users/josep/projects/qdrant-review-brain/README.md`
 - Create: `/Users/josep/projects/qdrant-review-brain/.gitignore`
@@ -69,6 +78,7 @@ These inputs are the ones most likely to bite. Each has a test in the task that 
 - Copy: this plan to `docs/superpowers/plans/2026-10-23-qdrant-review-brain.md`
 
 **Interfaces:**
+
 - Consumes: the spec section "AGENTS.md to ship"
 - Produces: repo root `/Users/josep/projects/qdrant-review-brain` with no git remote
 
@@ -122,12 +132,12 @@ Include the repo path, the four human commands from the spec (`brain premise lis
 
 - [ ] **Step 7: Run the layout check**
 
-Run: `bash scripts/check-layout.sh`
+Run: `bash scripts/check-layout.sh`  
 Expected: exit 0.
 
 - [ ] **Step 8: Confirm the Qdrant workspace is untouched**
 
-Run: `git -C /Users/josep/projects/qdrant status --short`
+Run: `git -C /Users/josep/projects/qdrant status --short`  
 Expected: no brain files. Do not commit there.
 
 - [ ] **Step 9: Commit in the brain repo only**
@@ -142,12 +152,14 @@ git commit -m "chore: add review brain skeleton"
 ### Task 2: Premise store
 
 **Files:**
+
 - Create: `internal/premise/store.go`
 - Create: `internal/premise/store_test.go`
 - Create: `go.mod`
 - Test: `internal/premise/store_test.go`
 
 **Interfaces:**
+
 - Consumes: repo layout from Task 1 (`memory/premises`, `memory/dropped`)
 - Produces:
 
@@ -204,7 +216,7 @@ Tests, each with a temp directory:
 
 - [ ] **Step 2: Run the tests and confirm they fail**
 
-Run: `go test ./internal/premise/ -count=1`
+Run: `go test ./internal/premise/ -count=1`  
 Expected: FAIL, package or symbols missing.
 
 - [ ] **Step 3: Implement `Open`, `List`, `Get`, `Add`, `Update`, `Delete`, `Search`**
@@ -213,7 +225,7 @@ Reject an ID that does not match `^[a-z0-9]+(-[a-z0-9]+)*$`. Reject text that ma
 
 - [ ] **Step 4: Run the tests and confirm they pass**
 
-Run: `go test ./internal/premise/ -count=1`
+Run: `go test ./internal/premise/ -count=1`  
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -228,11 +240,13 @@ git commit -m "feat: add premise store"
 ### Task 3: CLI
 
 **Files:**
+
 - Create: `cmd/brain/main.go`
 - Create: `cmd/brain/main_test.go`
 - Test: `cmd/brain/main_test.go`
 
 **Interfaces:**
+
 - Consumes: `premise.Open`, `List`, `Get`, `Add`, `Update`, `Delete`, `Search`
 - Produces: binary `brain` with these invocations:
 
@@ -255,7 +269,7 @@ Use `go test` and a temp `BRAIN_ROOT`. Invoke the command function, not a shell,
 
 - [ ] **Step 2: Run the tests and confirm they fail**
 
-Run: `go test ./cmd/brain/ -count=1`
+Run: `go test ./cmd/brain/ -count=1`  
 Expected: FAIL.
 
 - [ ] **Step 3: Implement the CLI in `cmd/brain/main.go`**
@@ -264,7 +278,7 @@ Parse with the standard library `flag` package. Call the store. Print one premis
 
 - [ ] **Step 4: Run the tests and confirm they pass**
 
-Run: `go test ./cmd/brain/ -count=1`
+Run: `go test ./cmd/brain/ -count=1`  
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -279,12 +293,14 @@ git commit -m "feat: add brain premise CLI"
 ### Task 4: Premise MCP
 
 **Files:**
+
 - Modify: `cmd/brain/main.go`
 - Create: `cmd/brain/mcp.go`
 - Create: `cmd/brain/mcp_test.go`
 - Test: `cmd/brain/mcp_test.go`
 
 **Interfaces:**
+
 - Consumes: the same store methods
 - Produces: `brain mcp` on stdio, tools `premise_list`, `premise_get`, `premise_add`, `premise_update`, `premise_delete`, `premise_search`
 
@@ -296,7 +312,7 @@ Tool arguments match the store fields. `premise_list` takes optional `repo`. `pr
 
 - [ ] **Step 2: Run the test and confirm it fails**
 
-Run: `go test ./cmd/brain/ -run TestMCPAddAndList -count=1`
+Run: `go test ./cmd/brain/ -run TestMCPAddAndList -count=1`  
 Expected: FAIL.
 
 - [ ] **Step 3: Implement `brain mcp`**
@@ -305,7 +321,7 @@ Register the six tools. Each tool calls the store and returns the premise JSON. 
 
 - [ ] **Step 4: Run the test and confirm it passes**
 
-Run: `go test ./cmd/brain/ -count=1`
+Run: `go test ./cmd/brain/ -count=1`  
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -320,6 +336,7 @@ git commit -m "feat: add brain-premises MCP"
 ### Task 5: Skills and example notes
 
 **Files:**
+
 - Create: `skills/active/qdrant-personal-review/SKILL.md`
 - Create: `skills/active/skill-gardener/SKILL.md`
 - Create: `skills/active/learn/SKILL.md`
@@ -333,6 +350,7 @@ git commit -m "feat: add brain-premises MCP"
 - Test: `scripts/check-skills.sh`
 
 **Interfaces:**
+
 - Consumes: premise field names from Task 2
 - Produces: skill names the linker in Task 6 will publish: `qdrant-personal-review`, `skill-gardener`, `learn`, `garden`, `review-brain`, `accept-skill`, `brain-probe`. It will not publish `example-draft`.
 
@@ -368,14 +386,14 @@ Exit 0 only when:
 
 - [ ] **Step 2: Run the check and confirm it fails**
 
-Run: `bash scripts/check-skills.sh`
+Run: `bash scripts/check-skills.sh`  
 Expected: exit 1.
 
 - [ ] **Step 3: Write the skill files and example notes**
 
 - [ ] **Step 4: Run the check and confirm it passes**
 
-Run: `bash scripts/check-skills.sh`
+Run: `bash scripts/check-skills.sh`  
 Expected: exit 0.
 
 - [ ] **Step 5: Commit**
@@ -390,6 +408,7 @@ git commit -m "feat: add review skills and example notes"
 ### Task 6: Accept and link
 
 **Files:**
+
 - Create: `internal/skills/accept.go`
 - Create: `internal/skills/link.go`
 - Create: `internal/skills/accept_test.go`
@@ -398,6 +417,7 @@ git commit -m "feat: add review skills and example notes"
 - Test: `internal/skills/accept_test.go`, `internal/skills/link_test.go`
 
 **Interfaces:**
+
 - Consumes: skill directory names from Task 5
 - Produces:
 
@@ -418,7 +438,7 @@ func Link(root string, targets []string, apply bool) ([]string, error)
 
 - [ ] **Step 2: Run the tests and confirm they fail**
 
-Run: `go test ./internal/skills/ -count=1`
+Run: `go test ./internal/skills/ -count=1`  
 Expected: FAIL.
 
 - [ ] **Step 3: Implement `Accept` and `Link` and wire `brain accept-skill` and `brain link-skills`**
@@ -434,7 +454,7 @@ brain link-skills [--apply] --target PATH [--target PATH ...]
 
 - [ ] **Step 4: Run the tests and confirm they pass**
 
-Run: `go test ./internal/skills/ ./cmd/brain/ -count=1`
+Run: `go test ./internal/skills/ ./cmd/brain/ -count=1`  
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -449,6 +469,7 @@ git commit -m "feat: accept and link skills"
 ### Task 7: MCP registration files
 
 **Files:**
+
 - Create: `mcp/snippets/chrome-devtools.json`
 - Create: `mcp/snippets/brain-premises.json`
 - Create: `mcp/snippets/obsidian.md`
@@ -456,6 +477,7 @@ git commit -m "feat: accept and link skills"
 - Test: `scripts/check-snippets.sh`
 
 **Interfaces:**
+
 - Consumes: `brain mcp` from Task 4, profile path from Global Constraints
 - Produces: snippet files the human configs can copy. This task does not edit `dotfiles/`.
 
@@ -481,7 +503,7 @@ Exit 0 only when the chrome snippet contains `--no-usage-statistics`, `--redact-
 
 - [ ] **Step 2: Run the check and confirm it fails**
 
-Run: `bash scripts/check-snippets.sh`
+Run: `bash scripts/check-snippets.sh`  
 Expected: exit 1.
 
 - [ ] **Step 3: Write the three snippet files**
@@ -505,10 +527,10 @@ Do not register Obsidian until `obsidian.url` and `obsidian.key` exist. Those fi
 
 - [ ] **Step 5: Run the check and confirm it passes**
 
-Run: `bash scripts/check-snippets.sh`
+Run: `bash scripts/check-snippets.sh`  
 Expected: exit 0.
 
-Run: `test -d "$HOME/.local/share/qdrant-review-brain/chrome-profile"`
+Run: `test -d "$HOME/.local/share/qdrant-review-brain/chrome-profile"`  
 Expected: exit 0.
 
 - [ ] **Step 6: Commit snippets only**
@@ -525,10 +547,12 @@ Do not add `obsidian.url` or `obsidian.key`.
 ### Task 8: Probe, Engram, README
 
 **Files:**
+
 - Modify: `README.md`
 - Create: `mcp/link-targets.txt` after the probe, only with paths that do not double-load
 
 **Interfaces:**
+
 - Consumes: `brain link-skills` from Task 6, active skill names from Task 5
 - Produces: README probe section and symlinks for active skills only
 
@@ -604,18 +628,18 @@ git commit -m "docs: record skill probe"
 
 ## Spec coverage
 
-| Spec requirement | Task |
-|---|---|
-| Repo, AGENTS.md, templates, no remote | 1 |
-| Premise list, add, delete, search | 2, 3, 4 |
-| Secret and path rejection | 2 |
-| Seed skill and example notes | 5 |
-| Gardener writes drafts only | 5 |
-| Accept moves and commits, no push | 6 |
-| Drafts not linked | 6, 8 |
-| Chrome DevTools profile and flags | 7 |
-| Obsidian MCP instructions, key out of git | 7 |
-| Engram on Codex if missing | 8 |
+| Spec requirement                          | Task       |
+| ----------------------------------------- | ---------- |
+| Repo, AGENTS.md, templates, no remote     | 1          |
+| Premise list, add, delete, search         | 2, 3, 4    |
+| Secret and path rejection                 | 2          |
+| Seed skill and example notes              | 5          |
+| Gardener writes drafts only               | 5          |
+| Accept moves and commits, no push         | 6          |
+| Drafts not linked                         | 6, 8       |
+| Chrome DevTools profile and flags         | 7          |
+| Obsidian MCP instructions, key out of git | 7          |
+| Engram on Codex if missing                | 8          |
 | No team file edits, no third-party skills | every task |
 
 ## Not in this plan

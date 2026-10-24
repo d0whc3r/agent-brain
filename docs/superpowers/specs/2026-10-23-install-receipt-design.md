@@ -1,8 +1,25 @@
 # Install receipt
 
-Date: 2026-10-23
-Status: accepted 2026-10-23, built 2026-10-23 with the amendment below
+Date: 2026-10-23  
+Status: accepted 2026-10-23, built 2026-10-23 with the amendment below  
 Owner: Josep
+
+Summary: `scripts/install.sh` writes a receipt that lists what it put on disk, so a later install or uninstall can name an agent or a skill that a new version dropped. The amendment below adds the `brain-` and `brain-tp-` name prefixes.
+
+Contents:
+
+- [Amendment, 2026-10-23](#amendment-2026-10-23)
+- [Intent](#intent)
+- [Goals](#goals)
+- [Out of scope](#out-of-scope)
+- [Anti-goals](#anti-goals)
+- [Constraints](#constraints)
+- [Approaches](#approaches)
+- [File format](#file-format)
+- [Install rules](#install-rules)
+- [Uninstall rules](#uninstall-rules)
+- [Proof](#proof)
+- [Builder notes](#builder-notes)
 
 ## Amendment, 2026-10-23
 

@@ -15,7 +15,7 @@ Copy directories are out of scope. Do not learn rules from them.
 ## Homes
 
 | Home | Path | What it owns |
-|---|---|---|
+| --- | --- | --- |
 | Workspace agents | `~/projects/qdrant/.agents/skills` | Vendor skills for every repo in the workspace. This is the set that overlaps the brain Go skills. |
 | Workspace Claude | `~/projects/qdrant/.claude/skills` | Speckit skills. Repo tooling. |
 | Cloud UI publisher | `skills-team-cloud-ui/skills` | The published UI skills. `qdrant-cloud-ui` installs from here. |

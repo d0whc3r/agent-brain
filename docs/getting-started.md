@@ -4,10 +4,20 @@ You talk to the agent in the code repo. The agent runs the brain commands. You d
 
 This page gets you from "I cloned the repo" to "I asked for a review in chat".
 
+Contents:
+
+- [1. What you need](#1-what-you-need)
+- [2. Install once](#2-install-once)
+- [3. How a chat works](#3-how-a-chat-works)
+- [4. Worked example](#4-worked-example)
+- [5. More things you can say](#5-more-things-you-can-say)
+- [6. Tips](#6-tips)
+- [7. When you want the file, not the chat](#7-when-you-want-the-file-not-the-chat)
+
 ## 1. What you need
 
 | Requirement | Why | Detail |
-|---|---|---|
+| --- | --- | --- |
 | Node 20 or later | Runs `brain` | `node --version` |
 | pnpm or npm | Installs the one dependency | The install script picks pnpm when it is present |
 | Claude Code, OpenCode, or Codex | The chat | Open a new session after install |
@@ -26,6 +36,8 @@ scripts/install.sh
 Run it again after a pull or a skill change. That is also the update.
 
 The script links `brain`, links the brain skills and the third-party skills from `.agents/skills`, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a git repo. A repo outside every scope gets only the global premises. A copy or a worktree uses the premises of the repo it was cloned from.
+
+The install registers that hook for Claude Code, Codex, and OpenCode. Codex does not run it until you trust it in `/hooks`.
 
 Start a new chat after install. The old chat does not see the new skills.
 
@@ -87,7 +99,7 @@ The new line is the proof.
 ## 5. More things you can say
 
 | You say | The agent does |
-|---|---|
+| --- | --- |
 | "Check localhost:3000." | Opens the page in `chrome-devtools`, takes one screenshot, reads the console |
 | "Confirm the proto is the source. Do not touch qdrant/." | Reviews the proto diff and leaves the engine repo alone |
 | "These three rules keep coming up. Make a skill." | Writes a draft under `skills/drafts/` and stops |

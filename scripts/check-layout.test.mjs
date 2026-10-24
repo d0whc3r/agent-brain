@@ -63,8 +63,88 @@ test("TestGitKeepsRulesAndSkipsCaptures", async (t) => {
   git("init", "-q");
   git("add", "memory");
 
-  assert.deepEqual(git("ls-files", "-z", "memory").split("\0").filter(Boolean).sort(), shared.sort());
+  assert.deepEqual(git("ls-files", "-z", "memory").split("\0").filter(Boolean).toSorted(), shared.toSorted());
   for (const path of local) {
     assert.equal(await readFile(join(root, path), "utf8"), path);
   }
+});
+
+// Premise docs-summary-first: a doc with this many ## sections, or an agent file longer than
+// agentFileLines, links every section from a table of contents above the first ## heading.
+const minSections = 4;
+const agentFileLines = 100;
+const agentFile = /(^|\/)(SKILL|AGENTS|CLAUDE)\.md$|^agents\//u;
+const fenceLine = /^ {0,3}(`{3,}|~{3,})(.*)$/u;
+const anchorLink = /\]\(#([^)\s]+)\)/gu;
+
+// sectionsOf returns the ## headings outside code fences and the lead text above the first one.
+function sectionsOf(text) {
+  const headings = [];
+  const lead = [];
+  let fence = "";
+  for (const line of text.split("\n")) {
+    const mark = line.match(fenceLine);
+    if (mark && fence === "") {
+      fence = mark[1];
+    } else if (mark && mark[1][0] === fence[0] && mark[1].length >= fence.length && mark[2].trim() === "") {
+      fence = "";
+    } else if (fence === "" && line.startsWith("## ")) {
+      headings.push(line.slice(3));
+    }
+    if (headings.length === 0) {
+      lead.push(line);
+    }
+  }
+  return { headings, lead: lead.join("\n") };
+}
+
+// slugsOf builds the GitHub anchors of the headings, with -1, -2 for a repeated heading.
+function slugsOf(headings) {
+  const seen = new Map();
+  return headings.map((heading) => {
+    const base = heading
+      .trim()
+      .toLowerCase()
+      .replaceAll(/[^\p{L}\p{N}\s_-]/gu, "")
+      .replaceAll(/\s/gu, "-");
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return count === 0 ? base : `${base}-${count}`;
+  });
+}
+
+function contentsProblems(path, text) {
+  const { headings, lead } = sectionsOf(text);
+  const long = text.split("\n").length > agentFileLines;
+  if (agentFile.test(path) ? !long : headings.length < minSections) {
+    return null;
+  }
+  const slugs = slugsOf(headings);
+  const links = new Set([...lead.matchAll(anchorLink)].map((match) => match[1]));
+  const missing = slugs.filter((slug) => !links.has(slug)).map((slug) => `${path}: no contents link to #${slug}`);
+  const broken = [...links].filter((link) => !slugs.includes(link)).map((link) => `${path}: #${link} is no ## heading`);
+  return [...missing, ...broken];
+}
+
+test("TestDocsLinkSectionsFromContents", async () => {
+  assert.deepEqual(slugsOf(["2. Install once", "`brain next`", "Steps", "Steps"]), [
+    "2-install-once",
+    "brain-next",
+    "steps",
+    "steps-1",
+  ]);
+  const repo = fileURLToPath(new URL("..", import.meta.url));
+  const listed = execFileSync(
+    "git",
+    ["-C", repo, "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "*.md"],
+    { encoding: "utf8" },
+  );
+  const paths = listed.split("\0").filter((path) => path !== "" && !path.startsWith(".agents/"));
+  const results = await Promise.all(
+    paths.map(async (path) => contentsProblems(path, await readFile(join(repo, path), "utf8"))),
+  );
+  const checked = results.filter((problems) => problems !== null);
+
+  assert.ok(checked.length > 0, "no file needs a table of contents, so the check tests nothing");
+  assert.deepEqual(checked.flat(), []);
 });

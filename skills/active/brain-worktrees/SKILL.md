@@ -14,7 +14,7 @@ metadata:
 Run `brain worktree list --cwd <repo>`. Each row has the branch, the state, the parent, ahead and behind against the base, the count of uncommitted files, and the path. `*` marks the worktree you are in.
 
 | State | Meaning |
-|---|---|
+| --- | --- |
 | `main` | The main branch. |
 | `active` | A branch with commits or uncommitted changes. |
 | `merged` | No commit beyond the base and a clean tree. It is safe to remove. |
