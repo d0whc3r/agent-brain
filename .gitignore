@@ -13,4 +13,5 @@ mcp/snippets/obsidian.key
 node_modules/
 .obsidian/
 .agents/linked/
+.claude/worktrees/
 todo.md
