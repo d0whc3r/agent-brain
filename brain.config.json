@@ -10,5 +10,9 @@
       "owners": ["d0whc3r"],
       "roots": ["~/projects/github"]
     }
+  },
+  "decide": {
+    "model": "nimble-v3-16k:latest",
+    "scopes": ["*"]
   }
 }

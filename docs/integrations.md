@@ -42,6 +42,23 @@ The server version includes a hash of its source files and dependency lock at st
 
 Older servers have no drift guard. If `premise_list` exposes no `scope` parameter, reconnect it. Until then, use `brain premise list --repo REPO --scope SCOPE` to keep scope filtering. An empty scope (`--scope ""`) returns only global rules.
 
+## Local decision model
+
+The `decide` block of [brain.config.json](../brain.config.json) turns on a local decision model in Ollama. Without the block, the brain sends no request. The model answers closed questions through `POST http://localhost:11434/v1/systemone`. This integration is experimental.
+
+```json
+"decide": { "model": "nimble-v3-16k:latest", "scopes": ["*"] }
+```
+
+`scopes` lists the brain scopes where the model runs. `"*"` runs it in every scope and in repos with no scope. Add `url` to use another server.
+
+The model gives two hints:
+
+- `brain next --request TEXT` prints the flow that best fits the request, from the flows that match the repo state, or `none`. The JSON output has `suggested` with the flow and its confidence. The `brain-next` skill passes the words of the user.
+- `brain premise add` and `premise_add` name a premise of the same scope that may state the same rule. The CLI writes the hint to stderr. The MCP result has `repeat_of`. Run `brain premise seen` on that premise when it is a repeat.
+
+A hint never changes the flow order, never blocks an add, and never writes a premise. When Ollama is down, the model is missing, or the answer is not a listed choice, the CLI writes `local model:` and the reason to stderr and keeps its normal output. The MCP result omits the hint. The first request after the model unloads takes a few seconds.
+
 ## Setup record
 
 The [setup history](setup-history.md) records the skill discovery probe and Engram registration. The [install receipt decision](superpowers/specs/2026-10-23-install-receipt-design.md) defines the requirements for tracking installed items.

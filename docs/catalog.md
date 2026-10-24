@@ -196,7 +196,7 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 
 | Command | What it does |
 |---|---|
-| `brain next [--cwd DIR] [--json] [--no-pr]` | Repo state and the matching flows |
+| `brain next [--cwd DIR] [--json] [--no-pr] [--request TEXT]` | Repo state and the matching flows. With `--request` and a `decide` block, also the flow that the local decision model suggests |
 | `brain flows` | Every flow with its model |
 | `brain worktree list [--cwd DIR] [--json]` | Each worktree with its branch, state (`main`, `active`, `merged`, `gone`, `detached`, `prunable`), parent branch, ahead, behind, and uncommitted files |
 | `brain dod path [--cwd DIR]` | The DoD file of the branch |

@@ -11,9 +11,9 @@ The brain keeps the usual tasks as flows in `flows/` under `brain root`. This sk
 
 ## Suggest
 
-1. Run `brain next --json --cwd <repo directory>`.
+1. Run `brain next --json --cwd <repo directory> --request "<the words of the user>"`.
 2. Show one line of context: repo, branch, ticket, ahead, behind, dirty, PR state, worktrees, and file kinds.
-3. Show at most three flows, in the order of the output. For each one, give the description, the reason it matches (the signals in its frontmatter), and what it uses: skills, agents, MCP servers, and model.
+3. Show at most three flows, in the order of the output. For each one, give the description, the reason it matches (the signals in its frontmatter), and what it uses: skills, agents, MCP servers, and model. When the output has `suggested`, name its flow and confidence as a hint from the local model. The hint does not change the order or the choice of the user.
 4. Add one suggestion that no flow covers when the context shows it. Examples: a branch far behind main, untracked files that no check sees, a ticket key with no Jira link in the commits, a diff too big for one review (offer `split-branch`), or worktrees that `brain worktree list` marks `merged` or `gone` (offer to clean them with `brain-worktrees`).
 5. Ask which flow to run. Run nothing before the answer.
 

@@ -8,7 +8,7 @@ Read this file when the user's words match a case below. The skill for that case
 
 User: "What should I do next?" "¿Qué hago ahora?" "What would be good to do in this repo?"
 
-You load `brain-next`. You run `brain next --json --cwd <repo>`. You show at most three flows with the reason each one matches. You run the flow the user picks, with its skills, agents, MCP servers, and model.
+You load `brain-next`. You run `brain next --json --cwd <repo> --request "<the words of the user>"`. You show at most three flows with the reason each one matches. You run the flow the user picks, with its skills, agents, MCP servers, and model.
 
 ## Save or change a flow
 

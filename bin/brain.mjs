@@ -10,6 +10,7 @@ import { brainRoot, open } from "../lib/premise.mjs";
 import { loadConfig, resolveRepo, validScope } from "../lib/scope.mjs";
 import { acceptSkill, linkSkills } from "../lib/skills.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
+import { repeatOf, suggestFlow } from "../lib/decide.mjs";
 import { premiseStats } from "../lib/stats.mjs";
 import { formatWorktree, listWorktrees } from "../lib/worktrees.mjs";
 import { readReceipt, receiptPath, removeReceipt, writeReceipt } from "../lib/receipt.mjs";
@@ -151,8 +152,9 @@ async function cmdAdd(args, stdout, stderr) {
   if (opened.code !== 0) {
     return opened.code;
   }
+  let added;
   try {
-    const added = await opened.store.add({
+    added = await opened.store.add({
       id: last(parsed.flags.id),
       text: parsed.pos[0],
       strength,
@@ -161,11 +163,20 @@ async function cmdAdd(args, stdout, stderr) {
       source: last(parsed.flags.source),
       status,
     });
-    stdout.write(`${added.id}\n`);
-    return 0;
   } catch (err) {
     return failStore(stderr, err);
   }
+  stdout.write(`${added.id}\n`);
+  // The hint goes to stderr, so a script that reads the id from stdout keeps working.
+  try {
+    const repeat = await repeatOf(config, opened.store, added);
+    if (repeat) {
+      stderr.write(`possible repeat of ${repeat.id} (confidence ${repeat.confidence.toFixed(2)}, local model): ${repeat.text}\n`);
+    }
+  } catch (err) {
+    stderr.write(`local model: ${err.message}\n`);
+  }
+  return 0;
 }
 
 async function cmdShow(args, stdout, stderr) {
@@ -484,11 +495,13 @@ function cmdWorktree(args, stdout, stderr) {
 }
 
 // cmdNext reads the repo state at --cwd (default: the current directory) and lists
-// the flows that match it, most specific first.
+// the flows that match it, most specific first. With --request and a decide block in
+// brain.config.json, it also prints the flow that the local model suggests for the request.
 async function cmdNext(args, stdout, stderr) {
   let cwd = process.cwd();
   let json = false;
   let pr = true;
+  let request = "";
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--json") {
       json = true;
@@ -496,12 +509,15 @@ async function cmdNext(args, stdout, stderr) {
       pr = false;
     } else if (args[i] === "--cwd" && i + 1 < args.length) {
       cwd = args[++i];
+    } else if (args[i] === "--request" && i + 1 < args.length) {
+      request = args[++i];
     } else {
       usage(stderr);
       return 1;
     }
   }
-  const ctx = repoContext(cwd, { pr, config: loadConfig(brainRoot()) });
+  const config = loadConfig(brainRoot());
+  const ctx = repoContext(cwd, { pr, config });
   if (!ctx) {
     stderr.write(`not a git repo: ${cwd}\n`);
     return 1;
@@ -509,8 +525,21 @@ async function cmdNext(args, stdout, stderr) {
   const flows = matchFlows(await loadFlows(brainRoot()), ctx);
   const store = await open(brainRoot());
   const premises = await store.list(ctx.repo, ctx.scope);
+  let suggested = null;
+  if (request) {
+    try {
+      const answer = await suggestFlow(config, ctx, request, flows);
+      suggested = answer && { flow: answer.choice, confidence: answer.confidence };
+    } catch (err) {
+      stderr.write(`local model: ${err.message}\n`);
+    }
+  }
   if (json) {
-    stdout.write(`${JSON.stringify({ context: ctx, premises: premises.map((p) => p.id), flows }, null, 2)}\n`);
+    const out = { context: ctx, premises: premises.map((p) => p.id), flows };
+    if (request) {
+      out.suggested = suggested;
+    }
+    stdout.write(`${JSON.stringify(out, null, 2)}\n`);
     return 0;
   }
   const ticket = ctx.ticket ? ` (${ctx.ticket})` : "";
@@ -519,6 +548,9 @@ async function cmdNext(args, stdout, stderr) {
   flows.forEach((flow, i) => {
     stdout.write(`${i + 1}. ${flow.name}: ${flow.description ?? ""}\n`);
   });
+  if (suggested) {
+    stdout.write(`suggested by the local model: ${suggested.flow} (confidence ${suggested.confidence.toFixed(2)})\n`);
+  }
   return 0;
 }
 
@@ -761,7 +793,7 @@ function usage(stderr) {
   brain scope [--cwd DIR]
   brain installed [write --bin-dir DIR [--target PATH ...] [--claude] | remove]
   brain workspace check
-  brain next [--cwd DIR] [--json] [--no-pr]
+  brain next [--cwd DIR] [--json] [--no-pr] [--request TEXT]
   brain flows
   brain worktree list [--cwd DIR] [--json]
   brain mcp [check]
