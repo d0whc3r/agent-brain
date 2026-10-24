@@ -76,8 +76,17 @@ function writeText(path, change, initial) {
   process.stdout.write(`${after === before ? "unchanged" : "updated"} ${path}\n`);
 }
 
+// parseJson names the file in a parse error, so the install tells the user which file to fix.
+export function parseJson(path, text) {
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error(`${path} is not valid JSON: ${err.message}`, { cause: err });
+  }
+}
+
 function writeJson(path, change, initial) {
-  writeText(path, (text) => `${JSON.stringify(change(JSON.parse(text)), null, 2)}\n`, initial);
+  writeText(path, (text) => `${JSON.stringify(change(parseJson(path, text)), null, 2)}\n`, initial);
 }
 
 function pluginLink(home, entry) {
@@ -96,13 +105,13 @@ function readPluginLink(link) {
   }
 }
 
-function writeLinkStatus(link, status) {
-  process.stdout.write(`${status} ${link}\n`);
+function writeLinkStatus(link, status, reason = "") {
+  process.stdout.write(`${status} ${link}${reason && ` (${reason})`}\n`);
 }
 
 function placeLink(link, current, target) {
   if (current === null || (current === "" && existsSync(link))) {
-    writeLinkStatus(link, "skipped");
+    writeLinkStatus(link, "skipped", "a file, not a link");
     return;
   }
   if (current === target) {
@@ -120,7 +129,7 @@ function placeLink(link, current, target) {
 function linkPlugin(home, dir, entry) {
   const link = pluginLink(home, entry);
   if (!existsSync(join(home, ".config", "opencode"))) {
-    writeLinkStatus(link, "skipped");
+    writeLinkStatus(link, "skipped", "OpenCode is not installed");
     return;
   }
   mkdirSync(dirname(link), { recursive: true });
@@ -131,12 +140,16 @@ function linkPlugin(home, dir, entry) {
 function unlinkPlugin(home, dir, entry) {
   const link = pluginLink(home, entry);
   const current = readPluginLink(link);
-  if (current === "" || current === null) {
-    writeLinkStatus(link, current === null ? "skipped" : "unchanged");
+  if (current === null) {
+    writeLinkStatus(link, "skipped", "a file, not a link");
+    return;
+  }
+  if (current === "") {
+    writeLinkStatus(link, "unchanged");
     return;
   }
   if (current !== join(dir, entry.plugin)) {
-    writeLinkStatus(link, "skipped");
+    writeLinkStatus(link, "skipped", "links to another checkout");
     return;
   }
   unlinkSync(link);

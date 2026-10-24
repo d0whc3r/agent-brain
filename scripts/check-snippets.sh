@@ -41,4 +41,4 @@ if git ls-files --error-unmatch -- mcp/snippets/obsidian.key >/dev/null 2>&1; th
   fail "mcp/snippets/obsidian.key is tracked by git"
 fi
 
-exit 0
+echo "snippets ok"

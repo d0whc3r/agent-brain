@@ -8,7 +8,7 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { applyHooks, removeHooks, setCodexHook, setHook } from "../hooks/install.mjs";
+import { applyHooks, parseJson, removeHooks, setCodexHook, setHook } from "../hooks/install.mjs";
 
 export { setCodexHook, setHook };
 
@@ -147,7 +147,7 @@ function edit(path, change, initial) {
 // editSettings applies change to the JSON of ~/.claude/settings.json. add creates the file.
 function editSettings(home, add, change) {
   const path = join(home, ".claude", "settings.json");
-  return edit(path, (text) => `${JSON.stringify(change(JSON.parse(text)), null, 2)}\n`, add ? "{}" : undefined);
+  return edit(path, (text) => `${JSON.stringify(change(parseJson(path, text)), null, 2)}\n`, add ? "{}" : undefined);
 }
 
 // writeOpencodeAgents rebuilds the OpenCode copies of the agents. install.sh links them.
@@ -213,6 +213,12 @@ function main(args) {
   return commands[cmd](arg, { home: homedir(), root });
 }
 
+// A failure prints its message without a stack, because install.sh shows it to the user.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  process.exit(main(process.argv.slice(2)));
+  try {
+    process.exit(main(process.argv.slice(2)));
+  } catch (err) {
+    process.stderr.write(`${err.message}\n`);
+    process.exit(1);
+  }
 }

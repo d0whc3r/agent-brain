@@ -158,4 +158,4 @@ for name in $(grep -rhoE '\.\./\.\./references/[a-z-]+\.md' .agents/skills | sed
   fi
 done
 
-exit 0
+echo "skills ok"

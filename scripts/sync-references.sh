@@ -11,6 +11,9 @@ cd "$root"
 base='https://raw.githubusercontent.com/addyosmani/agent-skills/main/references'
 mkdir -p .agents/references
 for name in $(grep -rhoE '\.\./\.\./references/[a-z-]+\.md' .agents/skills | sed 's#.*/##' | sort -u); do
-  curl -fsSL "$base/$name" -o ".agents/references/$name"
+  if ! curl -fsSL "$base/$name" -o ".agents/references/$name"; then
+    printf 'download failed: %s/%s\n' "$base" "$name" >&2
+    exit 1
+  fi
   printf 'synced .agents/references/%s\n' "$name"
 done

@@ -21,9 +21,9 @@ profile="${HOME}/.local/share/qdrant-review-brain/chrome-profile"
 repo="$(git rev-parse --show-toplevel)"
 case "$profile/" in
   "$repo"/*)
-    printf '%s\n' "$profile"
+    printf 'the Chrome profile is inside the repo: %s\n' "$profile" >&2
     exit 1
     ;;
 esac
 
-exit 0
+echo "layout ok"
