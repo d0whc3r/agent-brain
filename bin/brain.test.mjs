@@ -27,8 +27,8 @@ async function invoke(args) {
   return { code, stdout, stderr };
 }
 
-test("cli", { concurrency: 1 }, async (t) => {
-  await t.test("TestCLIAddListRm", async (t) => {
+test("cli", { concurrency: 1 }, async (suite) => {
+  await suite.test("TestCLIAddListRm", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
     const previous = process.env.BRAIN_ROOT;
@@ -43,7 +43,7 @@ test("cli", { concurrency: 1 }, async (t) => {
 
     const unscoped = await invoke(["premise", "add", "Rule without a repo", "--strength", "always", "--scope", "*"]);
     assert.equal(unscoped.code, 2);
-    assert.match(unscoped.stderr, /repos/);
+    assert.match(unscoped.stderr, /repos/u);
 
     let result = await invoke([
       "premise",
@@ -79,7 +79,7 @@ test("cli", { concurrency: 1 }, async (t) => {
     assert.equal(result.stdout.includes("New RPC lands in service-a"), false);
   });
 
-  await t.test("TestCLISecretExitCode", async (t) => {
+  await suite.test("TestCLISecretExitCode", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
     const previous = process.env.BRAIN_ROOT;
@@ -104,10 +104,10 @@ test("cli", { concurrency: 1 }, async (t) => {
       "*",
     ]);
     assert.equal(result.code, 2, result.stderr);
-    assert.match(result.stderr, /secret/);
+    assert.match(result.stderr, /secret/u);
   });
 
-  await t.test("TestCLIScopeRequired", async (t) => {
+  await suite.test("TestCLIScopeRequired", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
     const previous = process.env.BRAIN_ROOT;
@@ -123,7 +123,7 @@ test("cli", { concurrency: 1 }, async (t) => {
 
     let result = await invoke(["premise", "add", "Work rule", "--strength", "always", "--repo", "*"]);
     assert.equal(result.code, 1);
-    assert.match(result.stderr, /--scope work, "\*"/);
+    assert.match(result.stderr, /--scope work, "\*"/u);
     result = await invoke(["premise", "add", "Work rule", "--strength", "always", "--scope", "home", "--repo", "*"]);
     assert.equal(result.code, 1);
     result = await invoke(["premise", "add", "Work rule", "--strength", "always", "--scope", "work", "--repo", "*"]);
@@ -136,7 +136,7 @@ test("cli", { concurrency: 1 }, async (t) => {
     assert.equal(result.stdout, "every-rule\t*\tnever\tEvery rule\n");
   });
 
-  await t.test("TestCLIMissingID", async (t) => {
+  await suite.test("TestCLIMissingID", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
     const previous = process.env.BRAIN_ROOT;
@@ -157,11 +157,9 @@ test("cli", { concurrency: 1 }, async (t) => {
     assert.equal(result.code, 1, result.stderr);
   });
 
-  await t.test("TestMCPStdio", async () => {
+  await suite.test("TestMCPStdio", async () => {
     const script = fileURLToPath(new URL("./brain.mjs", import.meta.url));
-    const child = spawn(process.execPath, [script, "mcp"], {
-      stdio: ["pipe", "pipe", "pipe"],
-    });
+    const child = spawn(process.execPath, [script, "mcp"], { stdio: ["pipe", "pipe", "pipe"] });
     const stop = () => {
       if (child.exitCode === null && child.signalCode === null) {
         child.kill();
@@ -181,11 +179,7 @@ test("cli", { concurrency: 1 }, async (t) => {
       jsonrpc: "2.0",
       id: 1,
       method: "initialize",
-      params: {
-        protocolVersion: "2025-03-26",
-        capabilities: {},
-        clientInfo: { name: "test", version: "0.0.1" },
-      },
+      params: { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "test", version: "0.0.1" } },
     };
     try {
       child.stdin.write(`${JSON.stringify(init)}\n`);
@@ -287,7 +281,7 @@ test("TestCLICandidate", async (t) => {
     assert.equal(result.code, 0, result.stderr);
   }
   result = await invoke(["premise", "stats"]);
-  assert.match(result.stdout, /^maybe-rule\tcandidate\t-\t-\t-\t2\t2026-10-22\t(ready|expired)\n$/);
+  assert.match(result.stdout, /^maybe-rule\tcandidate\t-\t-\t-\t2\t2026-10-22\t(ready|expired)\n$/u);
 
   result = await invoke(["premise", "promote", "maybe-rule"]);
   assert.equal(result.code, 0, result.stderr);

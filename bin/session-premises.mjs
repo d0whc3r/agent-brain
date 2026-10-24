@@ -16,8 +16,10 @@ export function formatContext(ctx, premises, flows) {
   const where = ctx.scope ? `scope ${ctx.scope}` : "no scope, so only global premises apply";
   const out = [`Brain: repo ${ctx.repo}, ${where}.`];
   if (premises.length > 0) {
-    out.push("Apply every always and never premise. Quote each one you apply.");
-    out.push(...premises.map((p) => `- [${p.strength}] ${p.text} (${p.id}, scope ${p.scope})`));
+    out.push(
+      "Apply every always and never premise. Quote each one you apply.",
+      ...premises.map((p) => `- [${p.strength}] ${p.text} (${p.id}, scope ${p.scope})`),
+    );
   }
   if (flows.length > 0) {
     out.push(
