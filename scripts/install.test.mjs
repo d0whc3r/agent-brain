@@ -101,8 +101,8 @@ const paths = (box) => ({
   codexConfig: join(box.home, ".codex", "config.toml"),
   codexHooks: join(box.home, ".codex", "hooks.json"),
   codexAgents: join(box.home, ".codex", "AGENTS.md"),
-  receipt: join(box.home, ".local", "share", "qdrant-review-brain", "installed.txt"),
-  profile: join(box.home, ".local", "share", "qdrant-review-brain", "chrome-profile"),
+  receipt: join(box.home, ".local", "share", "agent-brain", "installed.txt"),
+  profile: join(box.home, ".local", "share", "agent-brain", "chrome-profile"),
   opencode: join(box.home, ".config", "opencode"),
   plugin: join(box.home, ".config", "opencode", "plugins", "brain-session-premises.js"),
 });
@@ -255,7 +255,7 @@ test("TestInstallRemovesStaleLinksAndKeepsForeignEntries", async (t) => {
   const [claudeSkills] = p.skills;
   await mkdir(claudeSkills, { recursive: true });
   await mkdir(p.agents, { recursive: true });
-  await mkdir(join(box.home, ".local", "share", "qdrant-review-brain"), { recursive: true });
+  await mkdir(join(box.home, ".local", "share", "agent-brain"), { recursive: true });
   // Left by an older version: a skill and an agent that this checkout no longer has.
   await symlink(join(box.root, "skills", "active", "brain-gone"), join(claudeSkills, "brain-gone"));
   await symlink(join(box.root, "agents", "brain-old.md"), join(p.agents, "brain-old.md"));

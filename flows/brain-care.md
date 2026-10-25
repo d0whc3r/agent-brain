@@ -1,7 +1,7 @@
 ---
 name: brain-care
 description: "Keep the brain current: premise stats, workspace drift, and new rules from memory."
-repos: [qdrant-review-brain]
+repos: [agent-brain]
 skills: [brain-workspace-audit, brain-harvest, brain-garden, brain-tp-writing-for-agents]
 model: sonnet
 ---

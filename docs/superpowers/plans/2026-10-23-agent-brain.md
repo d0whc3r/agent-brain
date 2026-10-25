@@ -1,14 +1,14 @@
-# Personal Qdrant review brain Implementation Plan
+# Personal agent brain Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build Josep's personal review brain: a local git repo of skills and premises, a CLI and MCP to list, add, and delete premises, and the links that load active skills in Claude Code, OpenCode, and Codex.
+**Goal:** Build Josep's personal agent brain: a local git repo of skills and premises, a CLI and MCP to list, add, and delete premises, and the links that load active skills in Claude Code, OpenCode, and Codex.
 
 **Architecture:** Markdown files are the store. One Go library reads and writes them. The `brain` CLI and the `brain mcp` server call that library. Active skills are symlinks into each tool's discovery path. Drafts stay off those paths. Obsidian and Chrome DevTools are registered as MCP servers. Engram stays the session log.
 
 **Tech Stack:** Go 1.27 (`go1.27.2` is on this machine), `github.com/modelcontextprotocol/go-sdk/mcp`, git, the existing `engram` binary.
 
-**Spec:** `/Users/josep/projects/specs/2026-10-23-qdrant-review-brain-design.md`
+**Spec:** `/Users/josep/projects/specs/2026-10-23-agent-brain-design.md`
 
 Contents:
 
@@ -20,14 +20,14 @@ Contents:
 
 ## Global Constraints
 
-- Repo path: `/Users/josep/projects/qdrant-review-brain`. Local git. No remote. No push.
+- Repo path: `/Users/josep/projects/agent-brain`. Local git. No remote. No push.
 - Do not edit `/Users/josep/projects/qdrant/AGENTS.md`, `cloud-rc-docs`, or `dotfiles/`.
 - Do not commit in `/Users/josep/projects/qdrant`.
 - Commits in the brain repo happen only while executing this plan, or via `brain accept-skill`. Message format is in each task. No co-author trailer.
 - Skills and notes are English. Chat with Josep is Spanish when he writes in Spanish.
 - Premise strengths: `always`, `never`, `prefer`. Status: `active` or `dropped`.
 - `brain premise rm` moves the file to `memory/dropped/` and sets status `dropped`. List does not return it.
-- Chrome profile: `$HOME/.local/share/qdrant-review-brain/chrome-profile`. Flags: `--user-data-dir` that path, `--no-usage-statistics`, `--no-performance-crux`, `--redact-network-headers`. No `--isolated`. No `--autoConnect`.
+- Chrome profile: `$HOME/.local/share/agent-brain/chrome-profile`. Flags: `--user-data-dir` that path, `--no-usage-statistics`, `--no-performance-crux`, `--redact-network-headers`. No `--isolated`. No `--autoConnect`.
 - Screenshots directory `memory/sessions/screenshots/` is gitignored.
 - Obsidian API key and MCP URL stay out of git.
 - Brain skills are not entries in `dotfiles/skills-lock.json`.
@@ -64,29 +64,29 @@ These inputs are the ones most likely to bite. Each has a test in the task that 
 
 **Files:**
 
-- Create: `/Users/josep/projects/qdrant-review-brain/AGENTS.md`
-- Create: `/Users/josep/projects/qdrant-review-brain/README.md`
-- Create: `/Users/josep/projects/qdrant-review-brain/.gitignore`
-- Create: `/Users/josep/projects/qdrant-review-brain/templates/decision.md`
-- Create: `/Users/josep/projects/qdrant-review-brain/templates/premise.md`
-- Create: `/Users/josep/projects/qdrant-review-brain/templates/pattern.md`
-- Create: `/Users/josep/projects/qdrant-review-brain/templates/session.md`
-- Create: `/Users/josep/projects/qdrant-review-brain/templates/skill.md`
-- Create: `/Users/josep/projects/qdrant-review-brain/scripts/check-layout.sh`
+- Create: `/Users/josep/projects/agent-brain/AGENTS.md`
+- Create: `/Users/josep/projects/agent-brain/README.md`
+- Create: `/Users/josep/projects/agent-brain/.gitignore`
+- Create: `/Users/josep/projects/agent-brain/templates/decision.md`
+- Create: `/Users/josep/projects/agent-brain/templates/premise.md`
+- Create: `/Users/josep/projects/agent-brain/templates/pattern.md`
+- Create: `/Users/josep/projects/agent-brain/templates/session.md`
+- Create: `/Users/josep/projects/agent-brain/templates/skill.md`
+- Create: `/Users/josep/projects/agent-brain/scripts/check-layout.sh`
 - Create: empty dirs `memory/decisions`, `memory/premises`, `memory/patterns`, `memory/sessions`, `memory/sessions/screenshots`, `memory/dropped`, `skills/active`, `skills/drafts`, `mcp/snippets`
-- Copy: the spec to `docs/superpowers/specs/2026-10-23-qdrant-review-brain-design.md`
-- Copy: this plan to `docs/superpowers/plans/2026-10-23-qdrant-review-brain.md`
+- Copy: the spec to `docs/superpowers/specs/2026-10-23-agent-brain-design.md`
+- Copy: this plan to `docs/superpowers/plans/2026-10-23-agent-brain.md`
 
 **Interfaces:**
 
 - Consumes: the spec section "AGENTS.md to ship"
-- Produces: repo root `/Users/josep/projects/qdrant-review-brain` with no git remote
+- Produces: repo root `/Users/josep/projects/agent-brain` with no git remote
 
 - [ ] **Step 1: Create the directory and git repo**
 
 ```bash
-mkdir -p /Users/josep/projects/qdrant-review-brain
-git -C /Users/josep/projects/qdrant-review-brain init
+mkdir -p /Users/josep/projects/agent-brain
+git -C /Users/josep/projects/agent-brain init
 ```
 
 Expected: `Initialized empty Git repository`.
@@ -144,7 +144,7 @@ Expected: no brain files. Do not commit there.
 
 ```bash
 git add AGENTS.md README.md .gitignore templates scripts memory skills mcp docs
-git commit -m "chore: add review brain skeleton"
+git commit -m "chore: add agent brain skeleton"
 ```
 
 ---
@@ -258,7 +258,7 @@ brain premise rm ID
 brain premise search QUERY
 ```
 
-Exit 0 on success. Exit 2 when the store rejects the input. Exit 1 when the id is missing or the usage is wrong. Root comes from `BRAIN_ROOT`, else `/Users/josep/projects/qdrant-review-brain`.
+Exit 0 on success. Exit 2 when the store rejects the input. Exit 1 when the id is missing or the usage is wrong. Root comes from `BRAIN_ROOT`, else `/Users/josep/projects/agent-brain`.
 
 - [ ] **Step 1: Write the failing CLI tests**
 
@@ -486,14 +486,14 @@ git commit -m "feat: accept and link skills"
 ```text
 -y
 chrome-devtools-mcp@latest
---user-data-dir=${HOME}/.local/share/qdrant-review-brain/chrome-profile
+--user-data-dir=${HOME}/.local/share/agent-brain/chrome-profile
 --no-usage-statistics
 --no-performance-crux
 --redact-network-headers
---filesystemRoot=${HOME}/projects/qdrant-review-brain/memory/sessions/screenshots
+--filesystemRoot=${HOME}/projects/agent-brain/memory/sessions/screenshots
 ```
 
-`brain-premises.json` command is `/Users/josep/.local/bin/brain`, args are `["mcp"]`, and env `BRAIN_ROOT` is `/Users/josep/projects/qdrant-review-brain`.
+`brain-premises.json` command is `/Users/josep/.local/bin/brain`, args are `["mcp"]`, and env `BRAIN_ROOT` is `/Users/josep/projects/agent-brain`.
 
 `obsidian.md` tells Josep to install the Local REST API plugin, copy its MCP URL into `mcp/snippets/obsidian.url`, and copy the API key into `mcp/snippets/obsidian.key`. Both files are gitignored. The agent adds and deletes premises only through `brain premise` or the premise MCP.
 
@@ -511,7 +511,7 @@ Expected: exit 1.
 Create the profile directory:
 
 ```bash
-mkdir -p "$HOME/.local/share/qdrant-review-brain/chrome-profile"
+mkdir -p "$HOME/.local/share/agent-brain/chrome-profile"
 go build -o /Users/josep/.local/bin/brain ./cmd/brain
 ```
 
@@ -530,7 +530,7 @@ Do not register Obsidian until `obsidian.url` and `obsidian.key` exist. Those fi
 Run: `bash scripts/check-snippets.sh`  
 Expected: exit 0.
 
-Run: `test -d "$HOME/.local/share/qdrant-review-brain/chrome-profile"`  
+Run: `test -d "$HOME/.local/share/agent-brain/chrome-profile"`  
 Expected: exit 0.
 
 - [ ] **Step 6: Commit snippets only**
@@ -611,7 +611,7 @@ bash scripts/check-layout.sh
 bash scripts/check-skills.sh
 bash scripts/check-snippets.sh
 go test ./... -count=1
-git -C /Users/josep/projects/qdrant-review-brain remote -v
+git -C /Users/josep/projects/agent-brain remote -v
 git -C /Users/josep/projects/qdrant status --short
 ```
 

@@ -25,7 +25,7 @@ Contents:
 
 ## Purpose and evidence labels
 
-Assess whether a decision model such as TypeSafe's Jev could simplify the review brain, improve consistency, and reduce repeated work across flows, skills, agents, and MCP integrations.
+Assess whether a decision model such as TypeSafe's Jev could simplify the agent brain, improve consistency, and reduce repeated work across flows, skills, agents, and MCP integrations.
 
 The original recommendation is to pilot intent-aware flow selection, followed by progressive skill selection. Treat that recommendation as a hypothesis to evaluate, rather than an accepted architecture decision.
 
@@ -223,7 +223,7 @@ A useful response would identify factual corrections, rank opportunities, compar
 
 ## Applied premise snapshot
 
-The audit used the active premises returned for repository `qdrant-review-brain`, scope `personal`. The connected MCP rejected the call because it was stale, so the CLI supplied the list. These quotations record the audit's constraints; current authoritative rules remain in [the premise store](../memory/premises/).
+The audit used the active premises returned for repository `agent-brain`, scope `personal`. The connected MCP rejected the call because it was stale, so the CLI supplied the list. These quotations record the audit's constraints; current authoritative rules remain in [the premise store](../memory/premises/).
 
 | ID | Strength | Exact rule text |
 | --- | --- | --- |

@@ -3,7 +3,7 @@
   "args": [
     "-y",
     "chrome-devtools-mcp@1.10.1",
-    "--user-data-dir=${HOME}/.local/share/qdrant-review-brain/chrome-profile",
+    "--user-data-dir=${HOME}/.local/share/agent-brain/chrome-profile",
     "--no-usage-statistics",
     "--no-performance-crux",
     "--redact-network-headers",

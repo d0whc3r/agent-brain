@@ -1,4 +1,4 @@
-# Qdrant review brain
+# Agent brain
 
 A personal store of review rules and workflows for Claude Code, Codex, and OpenCode. Scopes keep work and personal practices apart.
 

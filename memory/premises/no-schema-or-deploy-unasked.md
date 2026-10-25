@@ -8,7 +8,7 @@ repos:
 status: candidate
 source: memory/decisions/2026-10-23-harvest.md
 seen:
-  - 2026-10-23 qdrant-review-brain correction
+  - 2026-10-23 agent-brain correction
 ---
 
 Why: Both are hard to undo and affect other people.

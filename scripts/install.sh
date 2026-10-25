@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install or update the review brain for the current user.
+# Install or update the agent brain for the current user.
 # Safe to run again: each step replaces what an earlier run created.
 #
 #   BRAIN_BIN_DIR    directory for the brain command (default: $HOME/.local/bin)
@@ -11,7 +11,7 @@ set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 bin_dir="${BRAIN_BIN_DIR:-$HOME/.local/bin}"
-profile="$HOME/.local/share/qdrant-review-brain/chrome-profile"
+profile="$HOME/.local/share/agent-brain/chrome-profile"
 cd "$root"
 
 step "Check tools"

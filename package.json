@@ -1,5 +1,5 @@
 {
-  "name": "qdrant-review-brain",
+  "name": "agent-brain",
   "private": true,
   "bin": {
     "brain": "./bin/brain.mjs"

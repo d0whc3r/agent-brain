@@ -28,7 +28,7 @@ The installer registers the session premises hook for Claude Code, Codex, and Op
 UI reviews use the user MCP server `chrome-devtools`. Its [snippet](../mcp/snippets/chrome-devtools.json) uses a persistent profile for test logins:
 
 ```text
-$HOME/.local/share/qdrant-review-brain/chrome-profile
+$HOME/.local/share/agent-brain/chrome-profile
 ```
 
 The profile stays outside the repo and the Obsidian vault. UI reviews use this profile instead of the daily Chrome profile.
@@ -48,7 +48,7 @@ Use `brain-premises` for rule management. Its initialization instructions descri
 Search can narrow discovery without mixing work and personal rules:
 
 ```bash
-brain premise search commit --repo qdrant-review-brain --scope personal --status active
+brain premise search commit --repo agent-brain --scope personal --status active
 ```
 
 The equivalent MCP call is `premise_search` with `query`, `repo`, `scope`, and optional `status`. Omitting `status` searches active and candidate premises. Search matches a case-insensitive substring in the text or ID; it does not translate or perform semantic search. Load the complete applicable rules with `premise_list` before work or review, regardless of search results.

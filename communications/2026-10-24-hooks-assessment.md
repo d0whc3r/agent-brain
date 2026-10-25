@@ -146,7 +146,7 @@ H3 reuses an existing, tested script. Codex moves from "the model runs `brain sc
 
 H4 enforces the most central premise, but `Stop` fires at the end of every turn, including conversation turns. Three conditions narrow it: a DoD file for the branch, stale evidence, and a completion claim in the last message. It blocks once per tree fingerprint and exits when `stop_hook_active` is `true`. In Claude Code, it can live in the frontmatter of the `brain-next` skill, so it registers only after a flow starts. In Codex, it must be global.
 
-An alternative for H4 is a `done:` command field in each flow, with a state file that names the active flow. The `Stop` hook would run the command of that flow. This assessment does not recommend it now. Most flows already end in `brain dod lint --done`, and the standing DoD of each repository holds the other checks, such as `npm run check` in [the brain standing DoD](../dod/qdrant-review-brain.md). The DoD already acts as the completion check of each flow.
+An alternative for H4 is a `done:` command field in each flow, with a state file that names the active flow. The `Stop` hook would run the command of that flow. This assessment does not recommend it now. Most flows already end in `brain dod lint --done`, and the standing DoD of each repository holds the other checks, such as `npm run check` in [the brain standing DoD](../dod/agent-brain.md). The DoD already acts as the completion check of each flow.
 
 H5 moves the consent step of `review-branch` into the harness. A plain `permissions.ask` rule for `brain dod run` would also ask in the user's own branches, so the hook adds a worktree condition.
 
@@ -223,7 +223,7 @@ A useful response would correct facts, rank the cases, compare each one with a s
 
 ## Applied premise snapshot
 
-The assessment used the active premises that the SessionStart hook printed for repository `qdrant-review-brain`, scope `personal`. These quotations record the constraints of the assessment. Current rules remain in [the premise store](../memory/premises/).
+The assessment used the active premises that the SessionStart hook printed for repository `agent-brain`, scope `personal`. These quotations record the constraints of the assessment. Current rules remain in [the premise store](../memory/premises/).
 
 | ID | Strength | Exact rule text |
 | --- | --- | --- |

@@ -1,4 +1,4 @@
-# Standing DoD: qdrant-review-brain
+# Standing DoD: agent-brain
 
 Every task in this repo keeps these criteria. `brain dod init` copies them into the DoD of the task.
 

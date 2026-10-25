@@ -1,4 +1,4 @@
-# Personal Qdrant review brain
+# Personal agent brain
 
 Date: 2026-10-23  
 Status: approved 2026-10-23  
@@ -106,7 +106,7 @@ Josep chose A on 2026-10-23, and limited it to himself.
 
 These are builder defaults. Josep can override them when he reviews this doc.
 
-1. **Repo path:** `/Users/josep/projects/qdrant-review-brain`. It sits next to other personal projects. It does not sit inside `/Users/josep/projects/qdrant`, because that tree is the team workspace.
+1. **Repo path:** `/Users/josep/projects/agent-brain`. It sits next to other personal projects. It does not sit inside `/Users/josep/projects/qdrant`, because that tree is the team workspace.
 2. **Git remote:** none in the first slice. Local commits only. Push waits for a separate ask.
 3. **First slice has no stop hook.** A hook on every Claude session would also see job-search sessions and other trees. Session notes come from `/learn` and from the review command. A later slice can add a hook limited to `/Users/josep/projects/qdrant`, still with no skill rewrite.
 4. **Review does not edit code.** `/review-brain` writes findings. A fix waits for a separate ask, in the tool Josep is already using.
@@ -116,7 +116,7 @@ These are builder defaults. Josep can override them when he reviews this doc.
    - OpenCode reads `~/.agents/skills`, `~/.claude/skills`, and `~/.config/opencode/skills` ([OpenCode skills docs](https://opencode.ai/docs/skills/)). Prefer one path. If the probe shows `~/.agents/skills`, link there and skip the OpenCode config directory, so `dotfiles/install.sh` does not own these skills.
    - Codex reads `~/.codex/skills`. Link there. If the probe shows Codex also reads `~/.agents/skills`, skip the Codex link and record that in the repo README.
 7. **Do not edit** `/Users/josep/projects/qdrant/AGENTS.md`, `dotfiles/agents/`, or `dotfiles/.agents/skills/`.
-8. **Engram** stores the same decision, with topic key `qdrant-review-brain/<slug>`. The markdown file is the source. Engram is the recall index.
+8. **Engram** stores the same decision, with topic key `agent-brain/<slug>`. The markdown file is the source. Engram is the recall index.
 9. **Pattern rule:** three similar premises are enough for a skill draft. One `always` or `never` correction becomes a premise at once, so the next review loads it. It does not become a skill until the pattern rule is met, or until Josep asks for a skill. The draft still waits for accept.
 10. **Obsidian:** open the repo folder as a vault. No plugin is required for the first slice.
 11. **Premises are markdown files** in `memory/premises/`. A small custom MCP and a CLI read and write those files. Delete moves a premise to `memory/dropped/`. The active list no longer returns it. The file remains for undo.
@@ -128,7 +128,7 @@ These are builder defaults. Josep can override them when he reviews this doc.
 ### Repo layout
 
 ```
-qdrant-review-brain/
+agent-brain/
   README.md
   AGENTS.md
   skills/active/          # tools load these, via links
@@ -238,11 +238,11 @@ Both servers can do that:
 
 Choice: Chrome DevTools MCP. The review job is to see the page and keep the test login. Playwright stays a later slice if a check must repeat headless or run outside Chrome.
 
-Profile path: `$HOME/.local/share/qdrant-review-brain/chrome-profile`. It sits outside the git repo and outside the Obsidian vault, so cookies and tokens are not notes and are not commits.
+Profile path: `$HOME/.local/share/agent-brain/chrome-profile`. It sits outside the git repo and outside the Obsidian vault, so cookies and tokens are not notes and are not commits.
 
 Flags:
 
-- `--user-data-dir=$HOME/.local/share/qdrant-review-brain/chrome-profile`
+- `--user-data-dir=$HOME/.local/share/agent-brain/chrome-profile`
 - `--no-usage-statistics`
 - `--no-performance-crux` so a staging URL is not sent to the Chrome UX report
 - `--redact-network-headers`
@@ -319,7 +319,7 @@ A README in the brain repo records the probe result: which path each tool read.
 
 ### Obsidian
 
-Open `/Users/josep/projects/qdrant-review-brain` as a vault. Folders match the repo. A decision note links to the pattern note. A pattern note links to the draft or active skill. No Dataview plugin in the first slice. Wikilinks are enough.
+Open `/Users/josep/projects/agent-brain` as a vault. Folders match the repo. A decision note links to the pattern note. A pattern note links to the draft or active skill. No Dataview plugin in the first slice. Wikilinks are enough.
 
 ## First slice
 
@@ -354,7 +354,7 @@ The slice is done when all of these are true:
 5. `/accept-skill` is not run during verification unless Josep asks. The README shows the command.
 6. `brain premise add` writes a file under `memory/premises/`. `brain premise rm` moves it to `memory/dropped/`. `brain premise list` no longer shows it.
 7. Each tool lists `premise_list` from `brain-premises`, a screenshot tool from `chrome-devtools`, and the Obsidian MCP when Obsidian is open.
-8. The Chrome profile path is `$HOME/.local/share/qdrant-review-brain/chrome-profile`, and that path is not inside the git repo.
+8. The Chrome profile path is `$HOME/.local/share/agent-brain/chrome-profile`, and that path is not inside the git repo.
 9. `git status` in `/Users/josep/projects/qdrant` is clean of brain files.
 10. `git remote -v` in the brain repo prints no remote.
 11. `AGENTS.md` in the brain repo matches the text in this design.

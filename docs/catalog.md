@@ -36,7 +36,7 @@ Every part the brain installs carries a prefix, so a session shows what came fro
 
 Skills, agents, and flows find the brain with `brain root` and a scope root with `brain scope`. `scripts/check-paths.sh` fails when one of them names an absolute home path.
 
-The install writes a receipt to `~/.local/share/qdrant-review-brain/installed.txt`. `brain installed` prints it. A later install prints `removed` for each item that the new version dropped and removes its link. The uninstall removes each item in the receipt, then scans for links into the checkout that an install without a receipt left.
+The install writes a receipt to `~/.local/share/agent-brain/installed.txt`. `brain installed` prints it. A later install prints `removed` for each item that the new version dropped and removes its link. The uninstall removes each item in the receipt, then scans for links into the checkout that an install without a receipt left.
 
 ## The map
 

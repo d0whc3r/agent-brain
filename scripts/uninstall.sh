@@ -11,7 +11,7 @@ set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 bin_dir="${BRAIN_BIN_DIR:-$HOME/.local/bin}"
-profile="$HOME/.local/share/qdrant-review-brain/chrome-profile"
+profile="$HOME/.local/share/agent-brain/chrome-profile"
 cd "$root"
 
 step "Remove what the install receipt lists"

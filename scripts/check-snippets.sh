@@ -23,7 +23,7 @@ need() {
 
 need "--no-usage-statistics"
 need "--redact-network-headers"
-need '${HOME}/.local/share/qdrant-review-brain/chrome-profile'
+need '${HOME}/.local/share/agent-brain/chrome-profile'
 
 if grep -F -q -e "@latest" "$chrome"; then
   fail "$chrome uses @latest. Pin a version"

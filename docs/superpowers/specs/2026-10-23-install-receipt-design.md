@@ -34,7 +34,7 @@ The user chose name prefixes in addition to the receipt. This replaces the rejec
 
 An install receipt is a text file that lists what `scripts/install.sh` put on disk for this user. Josep wants that file so a later install or uninstall can name an agent or a skill that a new version no longer has. The scripts can delete a link that still points at this repo. They cannot name an item that is gone from the repo and gone from disk, because they keep no record of the previous install.
 
-This spec adds one rule to the [brain design](2026-10-23-qdrant-review-brain-design.md). It does not change that design. The scripts do not write the receipt yet.
+This spec adds one rule to the [brain design](2026-10-23-agent-brain-design.md). It does not change that design. The scripts do not write the receipt yet.
 
 ## Goals
 
@@ -54,7 +54,7 @@ A run is a failure when it deletes a link that points outside this checkout. A r
 
 ## Constraints
 
-The receipt lives at `$HOME/.local/share/qdrant-review-brain/installed.txt`, next to the Chrome profile and outside the git repo. Install writes it with mode `0600`, and only after the link, hook, and MCP steps succeed. A failed install leaves the previous file in place.
+The receipt lives at `$HOME/.local/share/agent-brain/installed.txt`, next to the Chrome profile and outside the git repo. Install writes it with mode `0600`, and only after the link, hook, and MCP steps succeed. A failed install leaves the previous file in place.
 
 One file serves one user. The first field of the first line is `root`, and the second field is the absolute path of the checkout that wrote the file. Uninstall follows the item lines only when that root is the checkout that is running the script.
 
@@ -85,7 +85,7 @@ The type is the prefix. The example token `d0w` is not part of the format.
 The file is UTF-8. Each line has fields split by one tab. The writer does not use a colon as a separator. A blank line is an error. The field order is type, name, then path or tool.
 
 ```
-root	/Users/josep/projects/qdrant-review-brain
+root	/Users/josep/projects/agent-brain
 agents	brain-reviewer	/Users/josep/.claude/agents/brain-reviewer.md
 skills	review-brain	/Users/josep/.claude/skills/review-brain
 skills	review-brain	/Users/josep/.agents/skills/review-brain
