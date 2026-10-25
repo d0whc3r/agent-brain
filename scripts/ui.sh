@@ -69,7 +69,9 @@ step() {
 # a step with one check or note prints it there. A failed step prints its lines below.
 end_step() {
   if [ "$step_open" -eq 0 ]; then
-    return
+    # In bash 4.4 to 5.2, a bare return in a function that the EXIT trap calls returns the failed
+    # status, and set -e then stops on_exit before it prints the failed step.
+    return 0
   fi
   step_open=0
   if [ "$tty" -eq 1 ]; then
