@@ -4,29 +4,24 @@ A personal store of review rules and workflows for Claude Code, Codex, and OpenC
 
 Premises are rules. Skills are workflows. Engram is the session log.
 
+Contents:
+
+- [Requirements](#requirements)
+- [Install](#install)
+- [Use](#use)
+- [Update](#update)
+- [Remove](#remove)
+- [Documentation](#documentation)
+
 ## Requirements
 
-- Node 20 or later, and git.
-- The GitHub CLI `gh`, logged in as `d0whc3r`. Without `gh`, set `GITHUB_TOKEN` to a token that can read the repo.
+- Node 24 or later.
+- git, with read access to the `d0whc3r/agent-brain` repo.
 - Claude Code, Codex, or OpenCode.
 
 ## Install
 
-Run this command:
-
-```bash
-curl -fsSL -H "Authorization: Bearer $(gh auth token -u d0whc3r 2>/dev/null || echo "${GITHUB_TOKEN:-}")" \
-  https://raw.githubusercontent.com/d0whc3r/agent-brain/master/install | bash
-```
-
-The command clones the repo into `~/.local/share/agent-brain/repo`, then runs `scripts/install.sh`. To use another directory, put `BRAIN_DIR` before `bash`:
-
-```bash
-curl -fsSL -H "Authorization: Bearer $(gh auth token -u d0whc3r 2>/dev/null || echo "${GITHUB_TOKEN:-}")" \
-  https://raw.githubusercontent.com/d0whc3r/agent-brain/master/install | BRAIN_DIR=~/agent-brain bash
-```
-
-To install from a clone, run:
+Clone the repo, then run the install script:
 
 ```bash
 git clone https://github.com/d0whc3r/agent-brain.git ~/.local/share/agent-brain/repo
@@ -34,7 +29,7 @@ cd ~/.local/share/agent-brain/repo
 scripts/install.sh
 ```
 
-The commands on this page use `~/.local/share/agent-brain/repo`. Replace that path when you set `BRAIN_DIR`.
+To use another directory, clone into it, and use that path in the commands on this page.
 
 After the install:
 
@@ -58,9 +53,7 @@ When a session opens in a git repo, the brain hook prints the active premises fo
 
 ## Update
 
-Run the install command again. It pulls the repo, then installs again.
-
-To update a clone by hand, run:
+Pull the repo, then run the install script again:
 
 ```bash
 cd ~/.local/share/agent-brain/repo
