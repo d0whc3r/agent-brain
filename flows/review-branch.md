@@ -1,13 +1,13 @@
 ---
 name: review-branch
 description: Review the branch or PR of another author with one agent per lens, then verify the findings.
-skills: [brain-reviewer, brain-tp-differential-review, brain-tp-doubt-driven-development]
+skills: [brain-tp-differential-review, brain-tp-doubt-driven-development]
 agents: [brain-reviewer]
 mcp: [brain-premises]
 model: opus
 ---
 
-1. Get the branch or the PR number from the user. Run `git fetch origin`. For a PR, check it out in a worktree next to the repo: `git worktree add ../<repo>-review-<n> origin/<branch>`. Keep the working tree of the user as it is.
+1. Get the branch or the PR number from the user. Keep the working tree of the user as it is. For a PR, fetch its head from the base repo, because the head branch of a fork is not on `origin`: `git fetch origin pull/<n>/head`, then `git worktree add --detach ../<repo>-review-<n> FETCH_HEAD`. Read the base and head commits with `gh pr view <n> --json baseRefOid,headRefOid`. For a branch, run `git fetch origin`, then `git worktree add --detach ../<repo>-review-<slug> origin/<branch>`.
 2. Run `brain scope` in the worktree, and read the PR description and the linked ticket. Run `brain dod init` in the worktree, and replace its placeholder criterion with the DoD or the test plan of the PR, in the form of `templates/dod.md`. When the PR has none, delete the placeholder: the review reports the missing DoD. Before `brain dod run`, show the user the commands of the DoD and the PR diff of the files they load, such as `package.json`, the Makefile, and the tests, because the commands run code from the PR with the credentials of the user. Run it only after the user agrees.
 3. Run the `brain-reviewer` agent once per lens, in parallel when the tool allows it. In Codex and OpenCode, run the lenses one after another in this session. Give each lens the PR number, the base and head commits, the PR description, the ticket summary, and the worktree path for `brain dod lint --cwd`, as `brain-tp-requesting-code-review` describes.
    - `premises` with opus.

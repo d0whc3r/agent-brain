@@ -5,6 +5,7 @@ strength: always
 scope: qdrant
 repos:
   - qdrant-cloud-cluster-service
+  - qdrant-cloud-cluster-api
 status: candidate
 source: ""
 seen:

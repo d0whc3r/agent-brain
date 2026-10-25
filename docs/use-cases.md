@@ -78,7 +78,7 @@ User: "Review this diff." "Revisa este cambio." "Look at the branch." "Is this P
 
 You load the `brain-reviewer` skill. It runs the agent, which calls `premise_list` for the repo. You do not edit the diff.
 
-With more than one active worktree, `self-review` asks whether to review only the current one, all of them, or the ones the user names. A stacked worktree is reviewed against its parent.
+When the user asks to review the branch before a PR, run the `self-review` flow instead. With more than one active worktree, it asks whether to review only the current one, all of them, or the ones the user names. A stacked worktree is reviewed against its parent.
 
 ## Define when a task is done
 
@@ -90,7 +90,7 @@ You load `brain-dod` and follow it. Before a task changes files, you write the D
 
 User: "Check the page on localhost:3000." "The layout looks wrong. Look at it."
 
-You load `brain-reviewer`. You open the URL with the `chrome-devtools` MCP server, not `plugin:ecc:chrome-devtools`. You take one screenshot and read the console. You do not edit the diff unless the user asks for a fix.
+You open the URL in this session with the `chrome-devtools` MCP server, not `plugin:ecc:chrome-devtools`. You take one screenshot and read the console. The `brain-reviewer` agent has no browser tools, so you load `brain-reviewer` only when the user also asks for a review of the diff. You do not edit the code unless the user asks for a fix.
 
 ## Keep a rule apart by scope
 
@@ -129,7 +129,7 @@ You run `brain premise rm ID`. You do not delete the markdown file by hand. You 
 
 User: "These keep coming up. Make a skill." "What can become a skill?"
 
-You load `brain-garden` and follow it. You write only under `skills/drafts/`. You stop and tell the user the draft path.
+You load `brain-garden` and follow it. You write the draft under `skills/drafts/` and its pattern note in `memory/patterns/`. You stop and tell the user the draft path.
 
 ## Accept a draft
 
@@ -141,13 +141,13 @@ You load `brain-accept-skill`. You run `brain accept-skill NAME`. You show `git 
 
 User: "Is there a skill for Go context cancellation?"
 
-You load `find-skills` from `.agents/skills/find-skills/SKILL.md`. You show the add command. You do not install it unless the user asks.
+You load `brain-tp-find-skills`. You show the add command. You do not install it unless the user asks.
 
 ## Write a new skill
 
 User: "Write a skill for our proto field numbers."
 
-You load `skill-creator` from `.agents/skills/skill-creator/SKILL.md`. You write the draft under `skills/drafts/`. You do not edit `skills/active/`.
+You load `brain-tp-skill-creator`. You write the draft under `skills/drafts/` in the brain, the path that `brain root` prints. You do not edit `skills/active/`.
 
 ## Import rules from memory
 
@@ -163,9 +163,9 @@ You run `brain premise stats`. You show each `unused`, `stale`, `noisy`, and `id
 
 ## Audit the workspace config
 
-User: "Do the repo rules contradict the brain?" "Audit the workspace." "Did any repo change its AGENTS.md?"
+User: "Do the repo rules contradict the brain?" "Audit the workspace."
 
-You load `brain-workspace-audit`. You run `brain workspace check`. You report drift, broken skill links, and rules that contradict, duplicate, or miss a premise. You do not edit a team repo.
+You load `brain-workspace-audit`. You run `brain workspace check`. You report broken skill links, version drift, name collisions, and rules that contradict, duplicate, or miss a premise. You do not edit a team repo.
 
 ## Check repo skills against the brain
 

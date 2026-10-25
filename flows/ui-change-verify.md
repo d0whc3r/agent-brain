@@ -9,7 +9,7 @@ mcp: [chrome-devtools]
 model: sonnet
 ---
 
-1. Run `git add -N` on each new file of the change, so `fix:branch` sees it.
+1. `fix:branch` reads the git diff, so it skips a new untracked file. For each new file of the change, add a criterion to the DoD with the check `pnpm run lint --fix <file> && pnpm run format <file>`, as the premise `cloud-ui-lint-fix-branch` says.
 2. When the DoD has no criterion for the tests of the touched directories, add one. Its command uses `--run`, so vitest does not wait in watch mode.
 3. When the DoD has no criterion for the changed page, add a manual one: open the page in the user MCP server `chrome-devtools`, take one screenshot, and read the console.
 4. Run `brain dod run`. The standing DoD of qdrant-cloud-ui runs `pnpm fix:branch` and `pnpm run type-check`. Run it again when it says that the checks changed files.

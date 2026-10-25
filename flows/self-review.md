@@ -3,7 +3,7 @@ name: self-review
 description: Review your own branch in a fresh context before you open the PR.
 branch: feature
 pr: none
-skills: [brain-reviewer, brain-tp-requesting-code-review, brain-worktrees, brain-dod]
+skills: [brain-tp-requesting-code-review, brain-worktrees, brain-dod]
 agents: [brain-reviewer]
 mcp: [brain-premises]
 model: opus

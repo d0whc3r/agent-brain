@@ -19,12 +19,12 @@ The user asks in chat. "What can become a skill?" is enough. You write the draft
 4. Write `skills/drafts/<name>/SKILL.md` from `templates/skill.md`. Give it a kebab-case `name` that starts with `brain-`, and a description that says what the skill does and when to use it.
 5. Set each used decision status to `drafted`.
 6. Write a pattern note in `memory/patterns/<name>.md` from `templates/pattern.md`. List the premise ids and the draft name.
-7. Report the draft path and the premise ids. Tell the user to run `/brain-accept-skill <name>` after reading the draft.
+7. Report the draft path and the premise ids. Ask the user to read the draft, and to name it in chat to accept it.
 
 When no cluster has three premises, report the largest cluster and stop.
 
 ## Limits
 
-Put new files only under skills/drafts.
+Put a new skill only under skills/drafts. Besides the draft, write only the pattern note in memory/patterns and the status of each used decision note.
 
 Do not edit skills/active. Do not commit. Do not push.

@@ -34,7 +34,7 @@ The user chose name prefixes in addition to the receipt. This replaces the rejec
 
 An install receipt is a text file that lists what `scripts/install.sh` put on disk for this user. Josep wants that file so a later install or uninstall can name an agent or a skill that a new version no longer has. The scripts can delete a link that still points at this repo. They cannot name an item that is gone from the repo and gone from disk, because they keep no record of the previous install.
 
-This spec adds one rule to the [brain design](2026-10-23-agent-brain-design.md). It does not change that design. The scripts do not write the receipt yet.
+This spec adds one rule to the [brain design](2026-10-23-agent-brain-design.md). It does not change that design. When this spec was written, the scripts did not write a receipt.
 
 ## Goals
 

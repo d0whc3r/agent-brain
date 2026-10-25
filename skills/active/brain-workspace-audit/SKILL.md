@@ -1,6 +1,6 @@
 ---
 name: brain-workspace-audit
-description: "Audit the agent config of the repos in each brain scope root (AGENTS.md, CLAUDE.md, skills, agents, commands) against the brain. Finds drift since the last scan, broken skill links, version drift of shared skills, name collisions, and rules that contradict, duplicate, or miss a brain premise. Use when the user asks for a workspace audit, asks whether repo skills match or drift from the brain, asks about incongruencias or contradicciones, asks which skill copy is newer, or after brain workspace check reports changes."
+description: "Audit the agent config of the repos in each brain scope root (AGENTS.md, CLAUDE.md, skills, agents, commands) against the brain. Finds broken skill links, version drift of shared skills, name collisions, and rules that contradict, duplicate, or miss a brain premise. Use when the user asks for a workspace audit, asks whether repo skills match or drift from the brain, asks about incongruencias or contradicciones, asks which skill copy is newer, or after brain workspace check reports changes."
 metadata:
   opencode/slash: "true"
 ---

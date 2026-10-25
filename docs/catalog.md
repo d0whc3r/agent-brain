@@ -27,7 +27,7 @@ Contents:
 
 ## Names
 
-Every part the brain installs carries a prefix, so a session shows what came from the brain:
+Every skill and agent that the brain installs, and its premise MCP server, carries a prefix, so a session shows what came from the brain. The `chrome-devtools` MCP server keeps its upstream name.
 
 | Prefix | Parts |
 | --- | --- |
@@ -96,13 +96,13 @@ These skills live in `skills/active/`. The install links them, and the third-par
 | `brain-accept-skill` | Moves a draft to `skills/active/`, commits that move, and refreshes the links | "Accept the go-error-wrapping draft." | One commit in this repo. No push. |
 | `brain-worktrees` | Lists the worktrees with state and parent, plans a split of one branch into reviewable PRs, applies the plan you approve, and cleans merged worktrees | "Split this branch into PRs." "¿Qué worktrees tengo?" "Limpia los worktrees mergeados." | Worktrees and a plan in `memory/splits/`, only after you approve. No commit. |
 | `brain-dod` | Defines the Definition of Done of a task before it changes files, with the standing criteria of the repo, and closes it with `brain dod run` and `brain dod lint --done` | "Define the DoD." "¿Cuándo está terminado esto?" "Is this done?" | The DoD file of the branch. `dod/<repo>.md` only after you agree. |
-| `brain-workspace-audit` | Compares the agent config of the repos in each scope root with the brain: drift, broken links, version drift, name collisions, and rule contradictions. It compares a repo only with the premises of its own scope. | "Do the repo rules contradict the brain?" "Do the repo skills match the brain?" | An audit note, and brain changes you approve. Never a team repo. |
+| `brain-workspace-audit` | Compares the agent config of the repos in each scope root with the brain: broken links, version drift, name collisions, and rule contradictions. It compares a repo only with the premises of its own scope. | "Do the repo rules contradict the brain?" "Do the repo skills match the brain?" | An audit note, and brain changes you approve. Never a team repo. |
 
 ### The review in detail
 
 1. It runs `brain scope` for the repo name and its scope.
 2. It calls `premise_list` for that repo and scope.
-3. It reads the third-party skills whose kind matches the changed files: `go`, `proto`, `python`, `ui`, and always `review`.
+3. It reads the third-party skills whose kind matches the changed files, as `kindsOf` in `lib/flows.mjs` maps them, and always `review`. [Third-party skills](#third-party-skills) lists the kinds.
 4. It reviews, then tries to prove each finding wrong. It drops a finding when the input cannot reach the code or when the problem is older than the diff. It reports how many findings it dropped.
 5. It checks a finding that depends on library behavior against the official docs, with `brain-tp-source-driven-development`.
 6. It reports code smells from a baseline of 12 (after Fowler, via mattpocock/skills) as "possible" notes, never as findings. `brain-tp-code-simplification` shapes the fix.
@@ -181,7 +181,7 @@ The repo keeps every third-party skill once, in `.agents/skills/`, in the open A
 
 `brain-tp-web-design-guidelines` downloads its rules from GitHub each time it runs, so its rules can change between reviews.
 
-Two internal skills help with skills: `find-skills` finds a third-party skill, and `skill-creator` writes and validates one. Say "Is there a skill for Go context cancellation?" or "Write a skill for our proto field numbers." A new skill goes to `skills/drafts/`.
+Two internal skills help with skills: `brain-tp-find-skills` finds a third-party skill, and `brain-tp-skill-creator` writes and validates one. Say "Is there a skill for Go context cancellation?" or "Write a skill for our proto field numbers." A new skill goes to `skills/drafts/`.
 
 Add a skill to the catalog with `brain skills add owner/repo --skill NAME --kind KIND`. Update the copies with `pnpm skills:update`. It also downloads the `../../references/` files that `addyosmani/agent-skills` skills link into `.agents/references/`, and `npm run check` fails when one is missing.
 
@@ -210,9 +210,9 @@ Pass at least one `--repo` when you add a premise. Use `--repo "*"` for every re
 
 Updates and deletes keep the Markdown body and additional Obsidian metadata. If you reuse an ID, deletion keeps both archived versions in `memory/dropped/`.
 
-`list`, `stats`, reviews, and the session hook skip a premise file that `add` would reject, such as a file with `status: Active` or with `repo:` in place of `repos:`. The session hook names each skipped file. Fix the file with `brain premise update`, then run `brain premise check`.
+`list`, `stats`, reviews, and the session hook skip a premise file that `add` would reject, such as a file with `status: Active` or with `repo:` in place of `repos:`. The session hook names each skipped file. Fix a field with `brain premise update`. `update` cannot replace the `seen` entries, so fix a bad `seen` entry by hand in the file. Then run `brain premise check`.
 
-`brain premise stats` reads the `applied` and `rejected` lists in `memory/sessions/`. It marks a rule `unused` when no review applies it, or `stale` after 90 days without use. It marks a rule `noisy` after at least two rejections, when rejections equal or exceed applications.
+`brain premise stats` reads the `applied` and `rejected` lists in `memory/sessions/`.
 
 ### Next steps
 
@@ -243,7 +243,7 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 
 | Command                | What it does                                                         |
 | ---------------------- | -------------------------------------------------------------------- |
-| `npm run check`        | Tests, `brain skills check`, and the four checks in `scripts/`       |
+| `npm run check`        | Each check of the `check` script in `package.json`                   |
 | `scripts/install.sh`   | Install or update the whole setup                                    |
 | `scripts/uninstall.sh` | Remove the setup. Keeps the repo, the notes, and the Chrome profile. |
 
@@ -258,7 +258,7 @@ Both scripts take `--dry-run`, which prints the changes and writes nothing, and 
 | Engram | `mem_save`, `mem_search`, and more | The session log. `brain-harvest` reads it. The markdown notes stay the source for rules. |
 | Atlassian | Jira and Confluence | The `start-ticket` flow reads the issue. |
 
-The install registers `brain-premises` and `chrome-devtools` in Claude Code and Codex from `mcp/snippets/`. OpenCode reads them from dotfiles. Obsidian waits for `mcp/snippets/obsidian.url` and `mcp/snippets/obsidian.key`.
+The install registers `brain-premises` and `chrome-devtools` in Claude Code and Codex from `mcp/snippets/`. OpenCode reads them from dotfiles. The install does not register the optional Obsidian MCP. [Its setup notes](../mcp/snippets/obsidian.md) describe the manual setup.
 
 ## Hooks and settings
 

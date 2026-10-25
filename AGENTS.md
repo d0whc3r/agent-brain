@@ -77,7 +77,7 @@ The test: every changed line traces to the request.
 The user talks in natural language. You run `brain` and the review steps. Do not ask the user to type a slash command. Read `docs/use-cases.md` when the request matches a case there.
 
 - This repo is the user's. It is not a team repo. Do not edit the `AGENTS.md` at the `qdrant` scope root.
-- Do not learn from the copy directories named in that workspace file. Do not modify the engine repo `qdrant/`.
+- Do not take code patterns from the copy directories that the `AGENTS.md` at the `qdrant` scope root names. Do not modify the engine repo `qdrant/`.
 - Before a review, call `premise_list` for the repo and its scope. `brain scope` prints both. Apply every active `always` and `never` premise. Quote each one you applied.
 - Add a premise with `brain premise add` or `premise_add`. Change its fields with `brain premise update` or `premise_update`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.
 - Store a rule only when it is important. An explicit ask becomes an active premise. Any other correction or defect class becomes a candidate, and `brain premise seen` counts each repeat. Ephemeral facts go nowhere. The `brain-learn` skill has the table and the thresholds.

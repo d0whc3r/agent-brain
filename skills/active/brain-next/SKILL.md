@@ -21,8 +21,8 @@ The brain keeps the usual tasks as flows in `flows/` under `brain root`. This sk
 
 1. Read the flow file.
 2. Load each skill in `skills` with the Skill tool.
-3. Run each agent in `agents` by name with the Agent tool, and pass the flow `model`.
-4. Use the MCP servers in `mcp`. When a server is not connected, say so and stop that step.
+3. Run an agent of `agents` only at the step that names it, by name with the Agent tool, with the flow `model`. When the tool cannot run a subagent, follow the agent file in `agents/` under `brain root` in this session.
+4. Use the MCP servers in `mcp`. A name such as `claude_ai_Atlassian` is the Claude Code name of the server. In another tool, use the connected server that has the same tools. When no such server is connected, say so and stop that step.
 5. A `workflow` field names a saved workflow. Run it only when the user asks for a workflow in this turn.
 6. Follow the steps in order. The active premises for the repo apply to every step.
 7. End with the check that the flow names as done, and its result.

@@ -108,7 +108,7 @@ The new line is the proof.
 | "Confirm the proto is the source. Do not touch qdrant/." | Reviews the proto diff and leaves the engine repo alone |
 | "These three rules keep coming up. Make a skill." | Writes a draft under `skills/drafts/` and stops |
 | "That draft is good. Make go-error-wrapping active." | Runs `brain accept-skill` and shows the commit. It does not push |
-| "Is there a skill for Go context cancellation?" | Loads `find-skills` and shows the add command. It does not install |
+| "Is there a skill for Go context cancellation?" | Loads `brain-tp-find-skills` and shows the add command. It does not install |
 | "Update the third-party skills." | Runs `pnpm skills:update` and shows the diff |
 | "Do the repo skills match the brain?" | Runs `brain workspace check` and quotes each conflict |
 
@@ -119,7 +119,7 @@ Full phrases and the commands the agent must run are in [use-cases.md](use-cases
 - Say the outcome. "Review this" and "remember this" are enough.
 - Name the repo only when the chat is not already inside it.
 - A missing premise is a missing rule. The agent must not invent one.
-- Do not open a copy directory. The session hook ignores names that contain `-copy`.
+- A copy directory gets the premises of the repo it was cloned from. The agent does not take code patterns from a copy.
 - Run `scripts/install.sh` again after the agent accepts a skill. That refreshes the links.
 
 ## 7. When you want the file, not the chat
