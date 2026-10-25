@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Clone or update the agent brain, then run scripts/install.sh.
+#
+#   curl -fsSL -H "Authorization: Bearer $(gh auth token -u d0whc3r 2>/dev/null || echo "${GITHUB_TOKEN:-}")" \
+#     https://raw.githubusercontent.com/d0whc3r/agent-brain/master/install | bash
+#
+#   BRAIN_DIR      checkout directory (default: $HOME/.local/share/agent-brain/repo)
+#   GITHUB_TOKEN   token with read access to the repo, when gh is not logged in as d0whc3r
+set -euo pipefail
+
+# Bash runs main only after curl sent the whole file.
+main() {
+  local repo=d0whc3r/agent-brain
+  local dir="${BRAIN_DIR:-$HOME/.local/share/agent-brain/repo}"
+  if ! command -v git >/dev/null 2>&1; then
+    echo "git not found. Install git, then run this command again." >&2
+    exit 1
+  fi
+  local token
+  token="$(gh auth token -u d0whc3r 2>/dev/null || echo "${GITHUB_TOKEN:-}")"
+  if [ -z "$token" ]; then
+    echo "no GitHub token. Run gh auth login, or set GITHUB_TOKEN." >&2
+    exit 1
+  fi
+  # The environment passes the token to git, so it stays out of .git/config and the process list.
+  # The global config is skipped: an insteadOf rule there can send github.com to SSH.
+  export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.extraHeader
+  GIT_CONFIG_VALUE_0="Authorization: Basic $(printf 'x-access-token:%s' "$token" | base64 | tr -d '\n')"
+  export GIT_CONFIG_VALUE_0
+  if [ -d "$dir/.git" ]; then
+    git -C "$dir" pull --ff-only
+  else
+    git clone "https://github.com/$repo.git" "$dir"
+  fi
+  unset GIT_CONFIG_GLOBAL GIT_CONFIG_COUNT GIT_CONFIG_KEY_0 GIT_CONFIG_VALUE_0
+  exec bash "$dir/scripts/install.sh"
+}
+
+main "$@"
