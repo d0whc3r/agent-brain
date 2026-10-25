@@ -5,7 +5,7 @@ scopes: [qdrant]
 branch: main
 dirty: false
 mcp: [claude_ai_Atlassian]
-skills: [brain-tp-grilling, brain-tp-planning-and-task-breakdown]
+skills: [brain-tp-grilling, brain-tp-planning-and-task-breakdown, brain-dod]
 model: opus
 ---
 
@@ -15,6 +15,6 @@ model: opus
 4. Grill the open decisions with `brain-tp-grilling`: one round of questions at a time, each with a recommended answer. Look up facts yourself.
 5. Propose a short plan with `brain-tp-planning-and-task-breakdown`, one task per repo, and the branch name `feat/josep/<KEY>_<slug>`.
 6. Ask whether to work in this checkout or in a worktree. Create the branch only after the user agrees.
-7. On the new branch, run `brain dod init --title <KEY>`. Write one criterion per acceptance criterion of the ticket, as `templates/dod.md` describes. When you cannot find a check or a pass condition, ask the user, with a recommended answer. Run `brain dod lint` until it prints `ok`, and show the DoD to the user for approval.
+7. On the new branch, define the DoD with `brain-dod`, with the title `<KEY>` and one criterion per acceptance criterion of the ticket. In a worktree, or for a second repo, pass its path as `--cwd`.
 
 Done when the branch exists, the plan is in the chat, and the user approved a DoD that `brain dod lint` accepts.

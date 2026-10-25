@@ -82,9 +82,9 @@ With more than one active worktree, `self-review` asks whether to review only th
 
 ## Define when a task is done
 
-User: "Define the DoD." "¿Cuándo está terminado esto?" "Is this done?"
+User: "Define the DoD." "Define el DoD." "When is this done?" "¿Cuándo está terminado esto?" "Is this done?"
 
-You run `brain dod path`. When the file does not exist, you run `brain dod init` and write one criterion per requirement, as `templates/dod.md` describes. You ask the user for a missing check or pass condition, with a recommended answer. To close the task, you run `brain dod run` and `brain dod lint --done`. You say that the task is done only when the lint prints `ok`.
+You load `brain-dod` and follow it. Before a task changes files, you write the DoD of the branch, one criterion per requirement, and ask the user to approve it. To close the task, you run `brain dod run` and `brain dod lint --done`. You say that the task is done only when the lint prints `ok`.
 
 ## Review a page in the browser
 

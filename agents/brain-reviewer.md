@@ -52,7 +52,7 @@ Contents:
 
 ## Definition of Done
 
-The prompt names the repo or the worktree of the branch. `brain dod path --cwd <dir>` prints its DoD file. Without a DoD, report a required finding: the change has no verifiable Definition of Done. Propose criteria from the description and the ticket, in the form of `templates/dod.md`.
+The prompt names the repo or the worktree of the branch. `brain dod path --cwd <dir>` prints its DoD file. The DoD lives in the git dir of the author and is never committed. On your own branch, a missing DoD is a required finding: the change has no verifiable Definition of Done, and the fix is the Define section of the `brain-dod` skill, in the main session. On a PR or a branch of another author, the `review-branch` flow writes the DoD from the test plan of the PR in the review worktree. Without that DoD file, judge the test plan as the verification story above, because the DoD of the author never reaches the review checkout. In both cases, propose criteria from the description and the ticket, in the form of `templates/dod.md`.
 
 1. Run `brain dod lint --cwd <dir>`. Report each problem it prints as a required finding, because the DoD itself is vague or incomplete.
 2. Run `brain dod lint --done --cwd <dir>`. On your own branch, report each new problem as a required finding. On a PR or a branch of another author, report the result in Context only, because that evidence comes from the review checkout, not from the change.
@@ -61,7 +61,7 @@ The prompt names the repo or the worktree of the branch. `brain dod path --cwd <
    - Each check can fail. A criterion whose check passes without the change is a finding: name the change that the check does not catch.
    - A change that handles input has a criterion for an error path.
    - Manual evidence names what was seen, such as a screenshot path or the text on the page.
-4. Do not run `brain dod run`. It writes the DoD file, and its commands can change files.
+4. Do not run `brain dod init` or `brain dod run`. Both write the DoD file, and the commands of `brain dod run` can change files.
 
 ## Lenses
 
@@ -96,18 +96,18 @@ Keep a finding only when it survives every check above. Report the number of fin
 
 ## Structural blockers
 
-Check the diff for the presumptive blockers that `brain-tp-code-review-and-quality` lists, and for a new conditional added to an unrelated flow. Report each one as a finding with a named remedy from the Structural Remedies section of that skill. Give it no prefix when the diff makes the structure worse, and `Consider:` otherwise. For a near-duplicate, name the existing helper with its path.
+Check the diff for the presumptive blockers that `brain-tp-code-review-and-quality` lists, and for a new conditional added to an unrelated flow. Report each one as a finding with a named remedy from the Structural Remedies section of that skill. Give it no prefix when the diff makes the structure worse, and `Consider:` otherwise. For new code that does the same job under the same rule as an existing helper, name the helper with its path.
 
 ## Smell baseline
 
-Check the diff for these smells even when the repo documents no standard. Each one is a heuristic, so report it as "possible <smell>" in the simplify section, never as a finding. A documented repo standard or a premise wins over a smell, and so does anything a linter already enforces. Use `brain-tp-code-simplification` for the fix. A copy of a helper that the repo already has is a structural blocker, not a smell.
+Check the diff for these smells even when the repo documents no standard. Each one is a heuristic, so report it as "possible <smell>" in the simplify section, never as a finding. A documented repo standard or a premise wins over a smell, and so does anything a linter already enforces. Use `brain-tp-code-simplification` for the fix. A second version of a helper that the repo already has for the same rule is a structural blocker. Code that only looks like other code stays a smell.
 
 The signal tables of `brain-tp-code-simplification` count as measurements: nesting of three levels or more, a function of 50 lines or more, boolean flag parameters, generic names, redundant type assertions, and comments that say what the code does.
 
 Dead code is a note too: an unused variable, an unreachable branch, a commented-out block, or code that the diff left with no caller. List it and ask before removal, as the Dead Code Hygiene section of `brain-tp-code-review-and-quality` describes.
 
 - Mysterious name: the name does not say what the thing does or holds.
-- Duplicated code: the same logic shape appears in more than one place in the diff.
+- Duplicated code: the same logic shape appears in three or more places. Two copies of one rule break `one-place-per-rule`, so report them as a finding.
 - Feature envy: a function reads another object's data more than its own.
 - Data clumps: the same few fields or parameters travel together.
 - Primitive obsession: a string or number stands in for a domain concept.
@@ -158,7 +158,7 @@ Approve | Request changes: <one line>
 
 Quote each premise you applied. Put findings first, with file and line. Give each finding a severity prefix, and order the findings by leverage, as Step 4 of `brain-tp-code-review-and-quality` describes. Tag a finding with the premise id that produced it, as `(premise: <id>)`. Drop a simplify or performance note that has no measurement and no concrete duplication. End the findings with `Dropped after verification: N`.
 
-Approve when the change improves the health of the code and no `Critical:` or required finding is left, as the approval standard of `brain-tp-code-review-and-quality` describes. A missing DoD, a DoD that fails `brain dod lint`, or, on your own branch, a DoD that fails `brain dod lint --done` leaves required findings, so the verdict is Request changes. A lens gives the verdict for its focus only.
+Approve when the change improves the health of the code and no `Critical:` or required finding is left, as the approval standard of `brain-tp-code-review-and-quality` describes. A missing DoD on your own branch, a DoD that fails `brain dod lint`, or, on your own branch, a DoD that fails `brain dod lint --done` leaves required findings, so the verdict is Request changes. A lens gives the verdict for its focus only.
 
 ## Session note
 

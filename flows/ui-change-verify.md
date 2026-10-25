@@ -4,6 +4,7 @@ description: Lint, type-check, test, and look at a qdrant-cloud-ui change before
 scopes: [qdrant]
 repos: [qdrant-cloud-ui]
 kinds: [ui]
+skills: [brain-dod]
 mcp: [chrome-devtools]
 model: sonnet
 ---

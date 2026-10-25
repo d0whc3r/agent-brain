@@ -162,7 +162,11 @@ test("TestDocsLinkSectionsFromContents", async () => {
     ["-C", repo, "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "*.md"],
     { encoding: "utf8" },
   );
-  const paths = listed.split("\0").filter((path) => path !== "" && !path.startsWith(".agents/"));
+  // The index still lists a file that the work tree deleted until someone stages the delete.
+  const deleted = new Set(
+    execFileSync("git", ["-C", repo, "ls-files", "-z", "--deleted", "--", "*.md"], { encoding: "utf8" }).split("\0"),
+  );
+  const paths = listed.split("\0").filter((path) => path !== "" && !path.startsWith(".agents/") && !deleted.has(path));
   const results = await Promise.all(
     paths.map(async (path) => contentsProblems(path, await readFile(join(repo, path), "utf8"))),
   );

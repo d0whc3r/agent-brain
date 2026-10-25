@@ -41,6 +41,7 @@ required=(
   agents/brain-reviewer.md
   templates/agent-skill.md
   skills/active/brain-worktrees/SKILL.md
+  skills/active/brain-dod/SKILL.md
   skills/drafts/example-draft/SKILL.md
   scripts/fixtures/dropped-premise.md
 )
