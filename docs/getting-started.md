@@ -45,9 +45,9 @@ Start a new chat after install. The old chat does not see the new skills.
 
 OpenCode reads MCP servers and `AGENTS.md` from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`, and paste `templates/agent-instructions.md` into that `AGENTS.md`. The install tells you when one of them is missing or out of date. The skills still load, because OpenCode reads `~/.agents/skills`.
 
-To remove the setup, run `scripts/uninstall.sh`. It also takes `--dry-run`. It keeps the repo, the notes, and the Chrome profile. It lists the `.brain-bak` copies of your config files. Add `--remove-backups` to remove them too.
+To remove the setup, run `scripts/uninstall.sh`. It also takes `--dry-run`. It removes the trust that Codex keeps in `~/.codex/config.toml` for the checkout and for the session hook. It keeps the repo, the notes, and the Chrome profile. It lists the `.brain-bak` copies of your config files. Add `--remove-backups` to remove them too.
 
-When you move the checkout, run the install or the uninstall from the new place. Both replace or remove the links of the old place.
+When you move the checkout, run the install or the uninstall from the new place. Both replace or remove the links of the old place, and remove the Codex trust of the old place. The install never adds a Codex trust. You give it in Codex.
 
 The install records each item in `~/.local/share/agent-brain/installed.txt`, and `brain installed` prints it. The decision is in [the install receipt spec](superpowers/specs/2026-10-23-install-receipt-design.md).
 

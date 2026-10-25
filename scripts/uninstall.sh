@@ -10,7 +10,8 @@
 #
 # It removes the skill, agent, and brain command links, the MCP servers in Claude Code and
 # Codex, the session premises hook, the git confirmation rules, and the brain instructions in
-# ~/.codex/AGENTS.md. It also removes the dead brain links of a checkout that moved.
+# ~/.codex/AGENTS.md. It removes the Codex trust of this checkout and of the brain hook. It also
+# removes the dead brain links and the Codex project trust of a checkout that moved.
 #
 # Environment:
 #   BRAIN_BIN_DIR   directory of the brain command (default: $HOME/.local/bin)
@@ -95,6 +96,8 @@ if [ "$dry_run" -eq 1 ]; then
   printf 'Dry run: nothing changes.\n'
 fi
 printf '\n'
+# The receipt names the checkout of the last install. Step 1 removes the receipt.
+old_root="$(receipt_root)"
 
 step "Remove links"
 # bash 3.2 does not stop on a missing input file, so check it first.
@@ -149,6 +152,11 @@ if command -v claude >/dev/null 2>&1; then
 else
   skip "claude not found. Skipped."
 fi
+
+# Codex keys the trust of a hook by its place in ~/.codex/hooks.json, so this step runs while the
+# brain hook is still there.
+step "Remove the Codex trust"
+apply trust node scripts/setup-config.mjs codex-trust-remove "$old_root"
 
 step "Remove the session premises hooks"
 apply hook node scripts/setup-config.mjs hooks-remove

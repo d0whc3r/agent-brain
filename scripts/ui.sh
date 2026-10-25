@@ -221,6 +221,12 @@ show_warnings() {
   done
 }
 
+# receipt_root prints the checkout of the last install, from the install receipt. Run it from
+# the checkout. lib/receipt.mjs needs no dependency, so it runs before the dependencies install.
+receipt_root() {
+  node --input-type=module -e 'const r = await (await import("./lib/receipt.mjs")).readReceipt(); process.stdout.write(r?.root ?? "")'
+}
+
 # dead_brain_link is true for a brain link whose target is gone: the checkout moved, or a new
 # version dropped the item.
 dead_brain_link() {

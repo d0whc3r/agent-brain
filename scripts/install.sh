@@ -9,8 +9,9 @@
 #
 # It links the brain command, the skills, and the agents, registers the MCP servers in
 # Claude Code and Codex, adds the session premises hook and the git confirmation rules, and
-# adds the brain instructions to ~/.codex/AGENTS.md. A changed config file keeps a .brain-bak
-# copy. scripts/uninstall.sh removes all of it.
+# adds the brain instructions to ~/.codex/AGENTS.md. After a checkout move, it removes the links
+# and the Codex project trust of the old place. A changed config file keeps a .brain-bak copy.
+# scripts/uninstall.sh removes all of it.
 #
 # Environment:
 #   BRAIN_BIN_DIR   directory for the brain command (default: $HOME/.local/bin)
@@ -48,11 +49,10 @@ printf 'Installing the agent brain from %s\n' "$(short "$root")"
 if [ "$dry_run" -eq 1 ]; then
   printf 'Dry run: nothing changes.\n'
 fi
-# The receipt names the checkout of the last install. lib/receipt.mjs needs no dependency, so it
-# runs before the dependencies are installed. Without node, step 1 stops the install.
+# The receipt names the checkout of the last install. Without node, step 1 stops the install.
 old_root=''
 if command -v node >/dev/null 2>&1; then
-  old_root="$(node --input-type=module -e 'const r = await (await import("./lib/receipt.mjs")).readReceipt(); process.stdout.write(r?.root ?? "")')"
+  old_root="$(receipt_root)"
 fi
 if [ -n "$old_root" ] && [ "$old_root" != "$root" ]; then
   if [ -e "$old_root" ]; then
@@ -188,6 +188,10 @@ apply guard node scripts/setup-config.mjs guard-add
 
 step "Register MCP servers in Codex"
 apply mcp node scripts/setup-config.mjs codex-add
+
+# Codex writes the trust of a project when the user gives it. The install never adds one.
+step "Remove the Codex trust of a moved checkout"
+apply trust node scripts/setup-config.mjs codex-trust-clean "$old_root"
 
 step "Add the brain instructions to Codex"
 apply instructions node scripts/setup-config.mjs instructions-add "$HOME/.codex/AGENTS.md"

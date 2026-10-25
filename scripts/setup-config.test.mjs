@@ -63,7 +63,7 @@ test("TestCodexTables", () => {
     "",
   ].join("\n");
 
-  const out = dropTables(text, ["brain-premises"]);
+  const out = dropTables(text, ["mcp_servers.brain-premises"]);
   assert.equal(out.includes("brain-premises"), false);
   assert.equal(out.includes("[mcp_servers.keep]"), true);
   assert.equal(out.includes("[features]"), true);
@@ -78,9 +78,11 @@ test("TestCodexTables", () => {
 test("TestDropKeepsOtherTomlTables", () => {
   const removed = '[mcp_servers.brain-premises] # old server\ncommand = "old"\n';
   const kept = '[features] # user settings\nx = true\n\n[[agents]]\nname = "kept"\n';
-  assert.equal(dropTables(removed + kept, ["brain-premises"]), kept);
+  assert.equal(dropTables(removed + kept, ["mcp_servers.brain-premises"]), kept);
   assert.equal(
-    dropTables(removed.replace(" # old server", "") + kept.slice(kept.indexOf("[[agents]]")), ["brain-premises"]),
+    dropTables(removed.replace(" # old server", "") + kept.slice(kept.indexOf("[[agents]]")), [
+      "mcp_servers.brain-premises",
+    ]),
     '[[agents]]\nname = "kept"\n',
   );
 });
@@ -318,4 +320,62 @@ test("TestSetupConfigPrintsUsage", async (t) => {
     assert.ok(result.stderr.startsWith("usage: setup-config.mjs "), result.stderr);
   }
   assert.deepEqual(await readdir(home), []);
+});
+
+const table = (key, line) => `[${key}]\n${line}\n`;
+
+// trustHome writes a Codex config with the trust of this checkout, of a gone old checkout, of a
+// live other checkout, of a dead project that is not a brain, and of the brain hook at 1:0.
+async function trustHome(t) {
+  const box = await configHome(t);
+  const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/u, "");
+  const hooks = join(box.home, ".codex", "hooks.json");
+  const live = join(box.home, "live");
+  const dirs = { root, gone: join(box.home, "gone"), live, dead: "/nowhere/other-app" };
+  const brain = { type: "command", command: "node /x/bin/session-premises.mjs", timeout: 10 };
+  const herdr = { type: "command", command: "herdr-state", timeout: 10 };
+  await mkdir(live, { recursive: true });
+  await mkdir(dirname(hooks));
+  await writeFile(hooks, JSON.stringify({ hooks: { SessionStart: [{ hooks: [herdr] }, { hooks: [brain] }] } }));
+  const projects = Object.values(dirs).map((dir) =>
+    table(`projects.${JSON.stringify(dir)}`, 'trust_level = "trusted"'),
+  );
+  const hook = (n) => table(`hooks.state."${hooks}:session_start:${n}:0"`, `trusted_hash = "sha256:${n}"`);
+  const text = ["[features]\nhooks = true\n", ...projects, "[hooks.state]\n", hook(0), hook(1)].join("\n");
+  const path = join(box.home, ".codex", "config.toml");
+  await writeFile(path, text);
+  return { ...box, dirs, path, text, hook };
+}
+
+test("TestCodexTrustRemoveKeepsOtherProjects", async (t) => {
+  const { dirs, dryRun, invoke, path, text, hook } = await trustHome(t);
+  const lines = (status, prep) =>
+    [`trusted project ${dirs.root}`, `trusted project ${dirs.gone}`, "trust of the session premises hook"]
+      .map((label) => `${status} ${label} ${prep} ${path}\n`)
+      .join("");
+
+  assert.equal(dryRun("codex-trust-remove", dirs.gone), lines("removed", "from"));
+  assert.equal(await readFile(path, "utf8"), text, "a dry run writes nothing");
+  assert.equal(invoke("codex-trust-remove", dirs.gone), lines("removed", "from"));
+
+  const after = await readFile(path, "utf8");
+  assert.doesNotMatch(after, new RegExp(`${dirs.root}"|${dirs.gone}"|:session_start:1:0`, "u"));
+  for (const kept of [dirs.live, dirs.dead, "[features]", "[hooks.state]\n", hook(0)]) {
+    assert.ok(after.includes(kept), kept);
+  }
+  assert.equal(await readFile(`${path}.brain-bak`, "utf8"), text);
+  assert.equal(invoke("codex-trust-remove", dirs.gone), lines("unchanged", "in"));
+});
+
+test("TestCodexTrustCleanRemovesOnlyAGoneCheckout", async (t) => {
+  const { dirs, invoke, path, text } = await trustHome(t);
+
+  assert.equal(invoke("codex-trust-clean"), "");
+  assert.equal(invoke("codex-trust-clean", dirs.live), "", "the trust of a live checkout stays");
+  assert.equal(invoke("codex-trust-clean", dirs.root), "", "install never touches the trust of this checkout");
+  assert.equal(await readFile(path, "utf8"), text);
+
+  assert.equal(invoke("codex-trust-clean", dirs.gone), `removed trusted project ${dirs.gone} from ${path}\n`);
+  const gone = `[projects."${dirs.gone}"]\ntrust_level = "trusted"\n\n`;
+  assert.equal(await readFile(path, "utf8"), text.replace(gone, ""));
 });
