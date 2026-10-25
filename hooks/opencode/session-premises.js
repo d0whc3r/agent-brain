@@ -10,17 +10,22 @@ const brainRoot = join(here, "..", "..");
 const script = join(brainRoot, "bin", "session-premises.mjs");
 const cache = new Map();
 
-// runPremises feeds the session directory to the shared script. A non-zero exit fails open.
+// runPremises feeds the session directory to the shared script. A non-zero exit rejects with
+// the stderr of the script.
 function runPremises(cwd) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [script], { stdio: ["pipe", "pipe", "ignore"] });
+    const child = spawn(process.execPath, [script], { stdio: ["pipe", "pipe", "pipe"] });
     let out = "";
+    let stderr = "";
     const timer = setTimeout(() => {
       child.kill();
       reject(new Error("session-premises timed out"));
     }, 8000);
     child.stdout.on("data", (chunk) => {
       out += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
     });
     child.on("error", (err) => {
       clearTimeout(timer);
@@ -31,17 +36,28 @@ function runPremises(cwd) {
       if (code === 0) {
         resolve(out);
       } else {
-        reject(new Error(`session-premises exited ${code}`));
+        reject(new Error(`session-premises exited ${code}: ${stderr.trim()}`));
       }
     });
     child.stdin.end(JSON.stringify({ cwd }));
   });
 }
 
+// markerTime returns the mtime of path, or 0 when path does not exist. Any other error throws.
+export async function markerTime(path) {
+  try {
+    return (await stat(path)).mtimeMs;
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      return 0;
+    }
+    throw err;
+  }
+}
+
 // loadPremiseText caches one directory until the premise folder changes.
 export async function loadPremiseText(cwd, run = runPremises) {
-  const marker = join(brainRoot, "memory", "premises");
-  const mtime = (await stat(marker).catch(() => null))?.mtimeMs ?? 0;
+  const mtime = await markerTime(join(brainRoot, "memory", "premises"));
   const hit = cache.get(cwd);
   if (hit && hit.mtime === mtime) {
     return hit.text;
@@ -68,8 +84,9 @@ export async function attach(ctx, load = loadPremiseText) {
         event.system = [];
       }
       event.system.push({ type: "text", text });
-    } catch {
+    } catch (err) {
       // Fail open. A premise lookup must not stop the turn.
+      console.error("brain session-premises:", err);
     }
   });
 }

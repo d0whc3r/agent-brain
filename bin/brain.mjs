@@ -22,9 +22,11 @@ const usageText = `usage:
   brain premise seen ID --repo name --origin correction|defect [--date YYYY-MM-DD]
   brain premise promote ID
   brain premise show ID
+  brain premise update ID [--text TEXT] [--strength always|never|prefer] [--scope name|"*"] [--repo name ...] [--source path] [--status active|candidate]
   brain premise rm ID
   brain premise search QUERY [--repo name] [--scope name] [--status active|candidate]
   brain premise stats
+  brain premise check
   brain root
   brain scope [--cwd DIR]
   brain installed [write --bin-dir DIR [--target PATH ...] [--claude] | remove]

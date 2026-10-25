@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -155,6 +155,57 @@ test("cli", { concurrency: 1 }, async (suite) => {
     assert.equal(result.code, 1, result.stderr);
     result = await invoke(["premise", "show"]);
     assert.equal(result.code, 1, result.stderr);
+  });
+
+  await suite.test("TestCLIShowUpdateCheck", async (t) => {
+    const root = await mkdtemp(join(tmpdir(), "brain-"));
+    t.after(() => rm(root, { recursive: true, force: true }));
+    const previous = process.env.BRAIN_ROOT;
+    process.env.BRAIN_ROOT = root;
+    t.after(() => {
+      if (previous === undefined) {
+        delete process.env.BRAIN_ROOT;
+        return;
+      }
+      process.env.BRAIN_ROOT = previous;
+    });
+
+    let result = await invoke(["premise", "add", "Old rule", "--strength", "always", "--scope", "*", "--repo", "*"]);
+    assert.equal(result.code, 0, result.stderr);
+    const path = join(root, "memory", "premises", "old-rule.md");
+    await writeFile(path, `${await readFile(path, "utf8")}\nWhy: a reason.\n\nSkip generated files.\n`);
+    const body = "\nWhy: a reason.\n\nSkip generated files.\n";
+    result = await invoke(["premise", "show", "old-rule"]);
+    assert.equal(result.stdout, `old-rule\t*\talways\tOld rule\n${body}`);
+
+    result = await invoke(["premise", "update", "old-rule"]);
+    assert.equal(result.code, 1);
+    assert.match(result.stderr, /at least one/u);
+    result = await invoke(["premise", "update", "old-rule", "--strength", "maybe"]);
+    assert.equal(result.code, 2);
+    assert.match(result.stderr, /strength/u);
+    result = await invoke(["premise", "update", "old-rule", "--text", "New rule", "--repo", "repo-b"]);
+    assert.equal(result.code, 0, result.stderr);
+    assert.equal((await invoke(["premise", "show", "old-rule"])).stdout, `old-rule\t*\talways\tNew rule\n${body}`);
+    assert.equal((await invoke(["premise", "list", "--repo", "repo-c"])).stdout, "");
+    assert.deepEqual(await invoke(["premise", "check"]), { code: 0, stdout: "ok: 1 premises\n", stderr: "" });
+
+    // A hand edit with a typo hides the premise from list and stats, and check names it.
+    await writeFile(path, (await readFile(path, "utf8")).replace("status: active", "status: Active"));
+    const warn = t.mock.method(process.stderr, "write", () => true);
+    assert.equal((await invoke(["premise", "list"])).stdout, "");
+    assert.equal((await invoke(["premise", "stats"])).stdout, "");
+    warn.mock.restore();
+    result = await invoke(["premise", "check"]);
+    assert.equal(result.code, 1);
+    assert.equal(
+      result.stdout,
+      'old-rule.md: status must be active or candidate, not "Active". Use delete to drop a premise\n',
+    );
+
+    result = await invoke(["premise", "update", "old-rule", "--status", "active"]);
+    assert.equal(result.code, 0, result.stderr);
+    assert.equal((await invoke(["premise", "check"])).code, 0);
   });
 
   await suite.test("TestMCPStdio", async () => {
