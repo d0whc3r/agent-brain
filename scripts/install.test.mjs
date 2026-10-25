@@ -363,7 +363,7 @@ test("TestInstallStopsWithoutNode", async (t) => {
   const { code, stderr } = run(box, "install.sh");
 
   assert.equal(code, 1);
-  assert.match(stderr, /✗ node not found. Install node 20 or later.\n/u);
+  assert.match(stderr, /✗ node not found. Install node 24 or later.\n/u);
   assert.match(stderr, /✗ Step 1\/13 failed: Check tools\n/u);
   assert.match(stderr, new RegExp(`run ${join(box.root, "scripts", "install.sh")} again`, "u"));
   assert.deepEqual(await readdir(box.home), []);
@@ -377,7 +377,7 @@ test("TestInstallStopsOnOldNode", async (t) => {
   const { code, stderr } = run(box, "install.sh");
 
   assert.equal(code, 1);
-  assert.match(stderr, /✗ node 20 or later is required. Found v18.0.0.\n/u);
+  assert.match(stderr, /✗ node 24 or later is required. Found v18.0.0.\n/u);
   assert.deepEqual(await readdir(box.home), []);
 });
 

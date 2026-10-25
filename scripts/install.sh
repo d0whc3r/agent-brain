@@ -65,11 +65,11 @@ printf '\n'
 
 step "Check tools"
 if ! command -v node >/dev/null 2>&1; then
-  fail "node not found. Install node 20 or later."
+  fail "node not found. Install node 24 or later."
 fi
 major="$(node -p 'process.versions.node.split(".")[0]')"
-if [ "$major" -lt 20 ]; then
-  fail "node 20 or later is required. Found $(node --version)."
+if [ "$major" -lt 24 ]; then
+  fail "node 24 or later is required. Found $(node --version)."
 fi
 pass "node $(node --version)"
 
