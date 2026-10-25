@@ -2,13 +2,26 @@
 
 // Edit the user config files that install.sh and uninstall.sh manage.
 // Each command is safe to run twice. A file write keeps a .brain-bak copy.
+// Each command prints one status line for each brain entry. BRAIN_DRY_RUN=1 writes nothing.
 
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { applyHooks, parseJson, removeHooks, setCodexHook, setHook } from "../hooks/install.mjs";
+import {
+  applyHooks,
+  editEntry,
+  entryStatus,
+  hookMarker,
+  jsonChange,
+  parseJson,
+  removeHooks,
+  setCodexHook,
+  setHook,
+  writeConfig,
+  writeEntryStatus,
+} from "../hooks/install.mjs";
 
 export { setCodexHook, setHook };
 
@@ -126,28 +139,35 @@ export function tomlTable(name, server) {
   return lines.join("\n");
 }
 
-// edit applies change to the text of path and prints whether the file changed. A missing file
-// starts as initial, or stays missing when initial is undefined, as a remove needs.
-function edit(path, change, initial) {
-  const exists = existsSync(path);
-  const before = exists ? readFileSync(path, "utf8") : initial;
-  const after = before === undefined ? before : change(before);
-  if (after !== before) {
-    mkdirSync(dirname(path), { recursive: true });
-    if (exists) {
-      copyFileSync(path, `${path}.brain-bak`);
-    }
-    // Write in place so a symlinked config file stays a symlink.
-    writeFileSync(path, after, { mode: 0o600 });
-  }
-  process.stdout.write(`${after === before ? "unchanged" : "updated"} ${path}\n`);
+// editSettings edits one brain entry in ~/.claude/settings.json. add creates the file.
+function editSettings(home, add, entry) {
+  const path = join(home, ".claude", "settings.json");
+  editEntry(path, { ...entry, add, change: jsonChange(path, entry.change), initial: add ? "{}" : undefined });
   return 0;
 }
 
-// editSettings applies change to the JSON of ~/.claude/settings.json. add creates the file.
-function editSettings(home, add, change) {
-  const path = join(home, ".claude", "settings.json");
-  return edit(path, (text) => `${JSON.stringify(change(parseJson(path, text)), null, 2)}\n`, add ? "{}" : undefined);
+const hookEntry = (command) => ({
+  change: (settings) => setHook(settings, command),
+  has: (text) => text.includes(hookMarker),
+  label: "session premises hook",
+});
+
+const guardEntry = (add) => ({
+  change: (settings) => setGuards(settings, add),
+  has: (text) => guardRules.some((rule) => text.includes(rule)),
+  label: "git confirmation rules",
+});
+
+// editInstructions sets the brain block in a global instruction file. An empty block removes it.
+function editInstructions(path, block) {
+  editEntry(path, {
+    change: (text) => setBlock(text, block),
+    has: (text) => text.includes(blockStart),
+    add: block !== "",
+    label: "brain instructions",
+    initial: block ? "" : undefined,
+  });
+  return 0;
 }
 
 // writeOpencodeAgents rebuilds the OpenCode copies of the agents. install.sh links them.
@@ -163,19 +183,41 @@ function writeOpencodeAgents() {
 }
 
 // editCodex removes the brain MCP server tables from ~/.codex/config.toml, then adds them
-// back when add is true.
+// back when add is true. It prints one status line for each server.
 function editCodex(vars, add) {
-  return edit(
-    join(vars.home, ".codex", "config.toml"),
-    (text) => {
-      let out = dropTables(text, servers).trimEnd();
-      if (add) {
-        out += `${out ? "\n\n" : ""}${servers.map((name) => tomlTable(name, render(name, vars))).join("\n\n")}`;
-      }
-      return out ? `${out}\n` : "";
-    },
-    add ? "" : undefined,
+  const path = join(vars.home, ".codex", "config.toml");
+  const initial = add ? "" : undefined;
+  const before = existsSync(path) ? readFileSync(path, "utf8") : initial;
+  const tables = servers.map((name) => tomlTable(name, render(name, vars)));
+  const statuses = servers.map((name, i) =>
+    entryStatus(before !== undefined && hasTable(before, name), add, !before?.includes(tables[i])),
   );
+  for (const [i, name] of servers.entries()) {
+    writeEntryStatus(statuses[i], `MCP server ${name}`, path);
+  }
+  if (statuses.every((status) => status === "unchanged")) {
+    return 0;
+  }
+  let out = dropTables(before, servers).trimEnd();
+  if (add) {
+    out += `${out ? "\n\n" : ""}${tables.join("\n\n")}`;
+  }
+  writeConfig(path, out ? `${out}\n` : "");
+  return 0;
+}
+
+function hasTable(text, name) {
+  return text.split("\n").some((line) => line.trim().startsWith(`[mcp_servers.${name}]`));
+}
+
+// claudeMcpState compares the server that Claude Code stores in ~/.claude.json with the snippet.
+function claudeMcpState(name, vars) {
+  const path = join(vars.home, ".claude.json");
+  const current = existsSync(path) ? parseJson(path, readFileSync(path, "utf8")).mcpServers?.[name] : undefined;
+  if (current === undefined) {
+    return "missing";
+  }
+  return JSON.stringify(current) === JSON.stringify(render(name, vars)) ? "same" : "different";
 }
 
 // Each command takes its argument and the paths, and returns the exit code.
@@ -186,18 +228,20 @@ const commands = {
     process.stdout.write(`${JSON.stringify(render(arg, vars))}\n`);
     return 0;
   },
-  "hook-add": (arg, vars) => editSettings(vars.home, true, (settings) => setHook(settings, arg)),
-  "hook-remove": (_arg, vars) => editSettings(vars.home, false, (settings) => setHook(settings, "")),
+  "claude-mcp-state": (arg, vars) => {
+    process.stdout.write(`${claudeMcpState(arg, vars)}\n`);
+    return 0;
+  },
+  "hook-add": (arg, vars) => editSettings(vars.home, true, hookEntry(arg)),
+  "hook-remove": (_arg, vars) => editSettings(vars.home, false, hookEntry("")),
   "hooks-apply": (_arg, vars) => applyHooks(vars.home, vars.root),
   "hooks-remove": (_arg, vars) => removeHooks(vars.home, vars.root),
-  "guard-add": (_arg, vars) => editSettings(vars.home, true, (settings) => setGuards(settings, true)),
-  "guard-remove": (_arg, vars) => editSettings(vars.home, false, (settings) => setGuards(settings, false)),
+  "guard-add": (_arg, vars) => editSettings(vars.home, true, guardEntry(true)),
+  "guard-remove": (_arg, vars) => editSettings(vars.home, false, guardEntry(false)),
   "opencode-agents": () => writeOpencodeAgents(),
-  "instructions-add": (arg) => {
-    const block = readFileSync(join(root, "templates", "agent-instructions.md"), "utf8");
-    return edit(arg, (text) => setBlock(text, block), "");
-  },
-  "instructions-remove": (arg) => edit(arg, (text) => setBlock(text, "")),
+  "instructions-add": (arg) =>
+    editInstructions(arg, readFileSync(join(root, "templates", "agent-instructions.md"), "utf8")),
+  "instructions-remove": (arg) => editInstructions(arg, ""),
   "codex-add": (_arg, vars) => editCodex(vars, true),
   "codex-remove": (_arg, vars) => editCodex(vars, false),
 };
@@ -206,7 +250,7 @@ function main(args) {
   const [cmd, arg] = args;
   if (!Object.hasOwn(commands, cmd)) {
     process.stderr.write(
-      "usage: setup-config.mjs claude-json NAME | hook-add COMMAND | hook-remove | hooks-apply | hooks-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
+      "usage: setup-config.mjs claude-json NAME | claude-mcp-state NAME | hook-add COMMAND | hook-remove | hooks-apply | hooks-remove | guard-add | guard-remove | codex-add | codex-remove | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
     );
     return 1;
   }

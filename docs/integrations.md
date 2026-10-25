@@ -17,7 +17,7 @@ Contents:
 
 [The snippet files](../mcp/snippets/) define the MCP servers. [setup-config.mjs](../scripts/setup-config.mjs) expands `${HOME}` and `${BRAIN_ROOT}` when the installer registers each server.
 
-The installer creates missing Claude Code and Codex configuration files. Before changing an existing file, it saves a `.brain-bak` copy. Repeating the install produces the same configuration and preserves links to configuration files.
+The installer creates missing Claude Code and Codex configuration files. Before changing an existing file, it saves a `.brain-bak` copy. `scripts/uninstall.sh --remove-backups` removes those copies. Repeating the install produces the same configuration and preserves links to configuration files.
 
 OpenCode reads its MCP configuration from dotfiles. Add `brain-premises` and `chrome-devtools` there from the snippet files.
 

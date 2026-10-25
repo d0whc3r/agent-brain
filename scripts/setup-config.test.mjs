@@ -125,7 +125,9 @@ test("TestHooksApplyWritesThreeTools", async (t) => {
   assert.equal(codex.hooks.SessionStart[0].hooks[0].command, "herdr-state");
   assert.equal(codex.hooks.SessionStart[1].hooks[0].command, command);
   assert.equal(await readlink(link), fileURLToPath(new URL("../hooks/opencode/session-premises.js", import.meta.url)));
-  assert.match(first, /updated/u);
+  assert.match(first, new RegExp(`^added session premises hook to ${join(home, ".claude", "settings.json")}$`, "mu"));
+  assert.match(first, new RegExp(`^added session premises hook to ${codexHooks}$`, "mu"));
+  assert.match(first, new RegExp(`^added ${link}$`, "mu"));
 
   const claudeText = await readFile(join(home, ".claude", "settings.json"), "utf8");
   const codexText = await readFile(codexHooks, "utf8");
@@ -134,7 +136,9 @@ test("TestHooksApplyWritesThreeTools", async (t) => {
   assert.equal(await readFile(join(home, ".claude", "settings.json"), "utf8"), claudeText);
   assert.equal(await readFile(codexHooks, "utf8"), codexText);
 
-  invoke("hooks-remove");
+  const removed = invoke("hooks-remove");
+  assert.match(removed, new RegExp(`^removed session premises hook from ${codexHooks}$`, "mu"));
+  assert.match(removed, new RegExp(`^removed ${link}$`, "mu"));
   const after = JSON.parse(await readFile(codexHooks, "utf8"));
   assert.deepEqual(after.hooks.SessionStart, [{ hooks: [{ type: "command", command: "herdr-state", timeout: 10 }] }]);
   assert.equal(
@@ -172,10 +176,74 @@ async function configHome(t) {
   const home = await mkdtemp(join(tmpdir(), "brain-config-"));
   t.after(() => rm(home, { recursive: true, force: true }));
   const script = fileURLToPath(new URL("./setup-config.mjs", import.meta.url));
-  const invoke = (...args) =>
-    execFileSync(process.execPath, [script, ...args], { env: { ...process.env, HOME: home }, encoding: "utf8" });
-  return { home, invoke };
+  const call = (env, args) =>
+    execFileSync(process.execPath, [script, ...args], {
+      env: { ...process.env, HOME: home, ...env },
+      encoding: "utf8",
+    });
+  const invoke = (...args) => call({}, args);
+  const dryRun = (...args) => call({ BRAIN_DRY_RUN: "1" }, args);
+  return { home, invoke, dryRun };
 }
+
+test("TestConfigLinesNameTheEntry", async (t) => {
+  const { home, invoke } = await configHome(t);
+  const settings = join(home, ".claude", "settings.json");
+  const agents = join(home, ".codex", "AGENTS.md");
+
+  assert.equal(invoke("guard-add"), `added git confirmation rules to ${settings}\n`);
+  assert.equal(invoke("guard-add"), `unchanged git confirmation rules in ${settings}\n`);
+  assert.equal(invoke("guard-remove"), `removed git confirmation rules from ${settings}\n`);
+  assert.equal(invoke("guard-remove"), `unchanged git confirmation rules in ${settings}\n`);
+  await mkdir(dirname(agents));
+  await writeFile(agents, "# mine\n");
+  assert.equal(invoke("instructions-add", agents), `added brain instructions to ${agents}\n`);
+  await writeFile(agents, (await readFile(agents, "utf8")).replace("<!-- brain:end -->", "old\n<!-- brain:end -->"));
+  assert.equal(invoke("instructions-add", agents), `updated brain instructions in ${agents}\n`);
+  assert.equal(invoke("instructions-remove", agents), `removed brain instructions from ${agents}\n`);
+  assert.equal(await readFile(agents, "utf8"), "# mine\n");
+});
+
+test("TestCodexLinesNameEachServer", async (t) => {
+  const { home, invoke } = await configHome(t);
+  const codex = join(home, ".codex", "config.toml");
+  const each = (status, prep) =>
+    ["brain-premises", "chrome-devtools"].map((name) => `${status} MCP server ${name} ${prep} ${codex}\n`).join("");
+
+  assert.equal(invoke("codex-add"), each("added", "to"));
+  assert.equal(invoke("codex-add"), each("unchanged", "in"));
+  await writeFile(codex, (await readFile(codex, "utf8")).replace("chrome-devtools-mcp@", "chrome-devtools-mcp-old@"));
+  assert.equal(
+    invoke("codex-add"),
+    `unchanged MCP server brain-premises in ${codex}\nupdated MCP server chrome-devtools in ${codex}\n`,
+  );
+  assert.equal(invoke("codex-remove"), each("removed", "from"));
+  assert.equal(invoke("codex-remove"), each("unchanged", "in"));
+});
+
+test("TestDryRunWritesNothing", async (t) => {
+  const { home, dryRun } = await configHome(t);
+  const plugins = join(home, ".config", "opencode", "plugins");
+  await mkdir(plugins, { recursive: true });
+
+  assert.match(dryRun("hooks-apply"), /^added session premises hook to /mu);
+  assert.match(dryRun("guard-add"), /^added git confirmation rules to /u);
+  assert.match(dryRun("codex-add"), /^added MCP server brain-premises to /u);
+  assert.deepEqual(await readdir(home), [".config"]);
+  assert.deepEqual(await readdir(plugins), []);
+});
+
+test("TestClaudeMcpState", async (t) => {
+  const { home, invoke } = await configHome(t);
+  const config = join(home, ".claude.json");
+
+  assert.equal(invoke("claude-mcp-state", "brain-premises"), "missing\n");
+  const server = JSON.parse(invoke("claude-json", "brain-premises"));
+  await writeFile(config, JSON.stringify({ mcpServers: { "brain-premises": server } }));
+  assert.equal(invoke("claude-mcp-state", "brain-premises"), "same\n");
+  await writeFile(config, JSON.stringify({ mcpServers: { "brain-premises": { ...server, args: [] } } }));
+  assert.equal(invoke("claude-mcp-state", "brain-premises"), "different\n");
+});
 
 test("TestSetGuardsKeepsOtherRules", () => {
   const settings = { model: "opus", permissions: { allow: ["Read"], ask: ["Bash(rm:*)", "Bash(git push:*)"] } };
@@ -210,7 +278,9 @@ function runConfig(home, ...args) {
 test("TestHooksSayWhyTheySkip", async (t) => {
   const { home, invoke } = await configHome(t);
   const plugin = join(home, ".config", "opencode", "plugins", "brain-session-premises.js");
-  const other = "/other/checkout/hooks/opencode/session-premises.js";
+  const other = join(home, "other", "session-premises.js");
+  await mkdir(dirname(other), { recursive: true });
+  await writeFile(other, "");
 
   assert.ok(invoke("hooks-apply").includes(`skipped ${plugin} (OpenCode is not installed)\n`));
   await mkdir(dirname(plugin), { recursive: true });

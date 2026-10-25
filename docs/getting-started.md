@@ -33,19 +33,23 @@ cd <brain>
 scripts/install.sh
 ```
 
-Run it again after a pull or a skill change. That is also the update.
+Run it again after a pull or a skill change. That is also the update. Add `--dry-run` to see what would change, and `--help` to list the options.
 
 The script links `brain`, links the brain skills and the third-party skills from `.agents/skills`, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a git repo. A repo outside every scope gets only the global premises. A copy or a worktree uses the premises of the repo it was cloned from.
+
+A step that changes nothing prints one line. A step that changes something prints one line for each change. The summary counts the installed items and the changes of this run. The `Next` list shows only the steps that apply to you.
 
 The install registers that hook for Claude Code, Codex, and OpenCode. Codex does not run it until you trust it in `/hooks`.
 
 Start a new chat after install. The old chat does not see the new skills.
 
-OpenCode reads MCP servers from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`. The skills still load, because OpenCode reads `~/.agents/skills`.
+OpenCode reads MCP servers and `AGENTS.md` from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`, and paste `templates/agent-instructions.md` into that `AGENTS.md`. The install tells you when one of them is missing or out of date. The skills still load, because OpenCode reads `~/.agents/skills`.
 
-To remove the setup, run `scripts/uninstall.sh`. It keeps the repo, the notes, and the Chrome profile.
+To remove the setup, run `scripts/uninstall.sh`. It also takes `--dry-run`. It keeps the repo, the notes, and the Chrome profile. It lists the `.brain-bak` copies of your config files. Add `--remove-backups` to remove them too.
 
-The decision to record each installed item in a receipt is in [the install receipt spec](superpowers/specs/2026-10-23-install-receipt-design.md). The script does not write that file yet.
+When you move the checkout, run the install or the uninstall from the new place. Both replace or remove the links of the old place.
+
+The install records each item in `~/.local/share/agent-brain/installed.txt`, and `brain installed` prints it. The decision is in [the install receipt spec](superpowers/specs/2026-10-23-install-receipt-design.md).
 
 ## 3. How a chat works
 

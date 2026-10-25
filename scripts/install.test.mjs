@@ -10,6 +10,7 @@ import {
   readdir,
   readlink,
   realpath,
+  rename,
   rm,
   stat,
   symlink,
@@ -21,6 +22,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { ifMissing } from "../lib/io.mjs";
+import { setBlock } from "./setup-config.mjs";
 
 // These tests run install.sh and uninstall.sh in a copy of the repo, with an empty HOME and
 // stub tools on PATH, so they never touch the real checkout or the real home directory.
@@ -29,7 +31,7 @@ const repo = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/u, "");
 // The copy skips what is large or generated. node_modules comes back as a link.
 const notCopied = new Set(["node_modules", ".git", ".agents/linked", "memory/sessions"]);
 const installSteps = 13;
-const uninstallSteps = 10;
+const uninstallSteps = 8;
 const servers = ["brain-premises", "chrome-devtools"];
 
 // A stub writes its name and arguments to STUB_LOG. It exits 1 when STUB_FAIL is its name and
@@ -39,6 +41,20 @@ echo "$(basename "$0") $*" >> "$STUB_LOG"
 if [ "$STUB_FAIL" = "$(basename "$0") $2" ]; then
   exit 1
 fi
+`;
+
+// The claude stub also keeps the user MCP servers in ~/.claude.json, as Claude Code does, so a
+// second install sees them. remove fails for a server that is not there.
+const claudeStub = `${stub}exec node -e '
+const fs = require("node:fs");
+const path = process.env.HOME + "/.claude.json";
+const [, sub, , , name, json] = process.argv.slice(1);
+const config = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, "utf8")) : {};
+config.mcpServers ??= {};
+if (sub === "add-json") { config.mcpServers[name] = JSON.parse(json); }
+if (sub === "remove") { if (!config.mcpServers[name]) { process.exit(1); } delete config.mcpServers[name]; }
+fs.writeFileSync(path, JSON.stringify(config));
+' "$@"
 `;
 
 const oldNode = `#!/bin/sh
@@ -74,12 +90,13 @@ async function addTool(box, tool, text) {
     await symlink(process.execPath, join(box.stubs, "node"));
     return;
   }
-  await writeFile(join(box.stubs, tool), text ?? stub, { mode: 0o755 });
+  await writeFile(join(box.stubs, tool), text ?? (tool === "claude" ? claudeStub : stub), { mode: 0o755 });
 }
 
 // run starts the script with /bin/bash, which is bash 3.2 on macOS, and a minimal environment.
 function run(box, script, options = {}) {
-  const result = spawnSync("/bin/bash", [options.arg ?? join(box.root, "scripts", script)], {
+  const args = [options.arg ?? join(box.root, "scripts", script), ...(options.flags ?? [])];
+  const result = spawnSync("/bin/bash", args, {
     cwd: options.cwd ?? box.root,
     encoding: "utf8",
     env: { HOME: box.home, PATH: `${box.stubs}:/usr/bin:/bin`, STUB_LOG: box.log, ...options.env },
@@ -162,7 +179,7 @@ test("TestInstallSetsUpEveryTool", async (t) => {
   }
   assert.match(
     stdout,
-    new RegExp(`✓ ${skills.length * 2} skill links in ~/.claude/skills and ~/.agents/skills\n`, "u"),
+    new RegExp(`✓ added ${skills.length * 2} skill links in ~/.claude/skills and ~/.agents/skills\n`, "u"),
   );
   const agents = await agentNames(box.root);
   assert.deepEqual((await readdir(p.agents)).toSorted(), agents.map((n) => `${n}.md`).toSorted());
@@ -182,7 +199,7 @@ test("TestInstallSetsUpEveryTool", async (t) => {
   assert.match(log, /^pnpm install --frozen-lockfile --loglevel=error$/mu);
   for (const name of servers) {
     assert.match(log, new RegExp(`^claude mcp add-json -s user ${name} \\{`, "mu"));
-    assert.match(stdout, new RegExp(`✓ ${name}\n`, "u"));
+    assert.match(stdout, new RegExp(`✓ added MCP server ${name} to Claude Code\n`, "u"));
   }
 
   const receipt = await readFile(p.receipt, "utf8");
@@ -190,6 +207,11 @@ test("TestInstallSetsUpEveryTool", async (t) => {
   assert.match(receipt, /^mcp\tbrain-premises\tclaude$/mu);
   const summary = `agents ${agents.length}, bin 1, guard 1, hook 2, instructions 1, mcp 4, skills ${skills.length * 2}`;
   assert.match(stdout, new RegExp(`✓ Installed: ${summary}\n`, "u"));
+  assert.match(stdout, new RegExp(`  This run: added ${summary.replace("mcp 4, ", "mcp 4, profile 1, ")}\n`, "u"));
+  assert.match(stdout, /^\[1\/13\] Check tools: node v\d+/mu);
+  assert.match(stdout, /^ {2}1\. Start a new Claude Code, Codex, or OpenCode session/mu);
+  assert.match(stdout, /^ {2}2\. In Codex, trust the new hook once in \/hooks\.$/mu);
+  assert.doesNotMatch(stdout, /OpenCode config|opencode\/AGENTS\.md/u, "no OpenCode step without OpenCode");
   assert.equal(lines(out, /is not in PATH/u).length, 2, "the summary repeats the PATH warning");
   assert.match(out, new RegExp(`export PATH="${join(box.home, ".local", "bin")}:\\$PATH"`, "u"));
   assert.match(stdout, /- skipped OpenCode agents \(OpenCode is not installed\)/u);
@@ -209,10 +231,20 @@ test("TestInstallTwiceChangesNothing", async (t) => {
   const { stdout } = installOk(box);
 
   assert.deepEqual(await Promise.all(files.map((file) => readText(file))), before);
-  assert.doesNotMatch(stdout, /✓ (updated|removed)/u);
-  assert.match(stdout, /- unchanged ~\/.claude\/settings.json/u);
-  assert.match(stdout, /- unchanged ~\/.codex\/config.toml/u);
-  assert.match(stdout, /- unchanged ~\/.codex\/AGENTS.md/u);
+  assert.doesNotMatch(stdout, /✓ (added|updated|removed)/u);
+  for (const name of [
+    "Link brain and third-party skills",
+    "Create the Chrome profile directory",
+    "Register MCP servers in Claude Code",
+    "Ask before git commit, push, and destructive git commands",
+    "Register MCP servers in Codex",
+    "Add the brain instructions to Codex",
+  ]) {
+    assert.match(stdout, new RegExp(`\\] ${name}: no change\n`, "u"), name);
+  }
+  assert.match(stdout, /^ {2}This run: no change$/mu);
+  assert.doesNotMatch(stdout, /Next:/u, "nothing to do after a run with no change");
+  assert.doesNotMatch(await readText(box.log), /add-json[^]*add-json[^]*add-json/u, "no second add-json");
 });
 
 test("TestInstallAndUninstallKeepUserConfig", async (t) => {
@@ -269,16 +301,16 @@ test("TestInstallRemovesStaleLinksAndKeepsForeignEntries", async (t) => {
   const { stdout } = installOk(box);
 
   assert.ok(!(await exists(join(claudeSkills, "brain-gone"))));
-  assert.match(stdout, /✓ removed ~\/.claude\/skills\/brain-gone\n/u);
+  assert.match(stdout, /✓ removed 1 skill link in ~\/.claude\/skills and ~\/.agents\/skills\n/u);
   assert.ok(!(await exists(join(p.agents, "brain-old.md"))));
   assert.match(stdout, /✓ removed ~\/.claude\/agents\/brain-old.md\n/u);
-  assert.match(stdout, /✓ removed agents brain-dropped ~\/.claude\/agents\/brain-dropped.md\n/u);
+  assert.doesNotMatch(stdout, /brain-dropped/u, "a receipt item with no link is not a change");
   assert.equal(await readFile(join(claudeSkills, "brain-next", "SKILL.md"), "utf8"), "mine");
-  assert.match(stdout, /- skip ~\/.claude\/skills\/brain-next \(not a brain link\)\n/u);
+  assert.match(stdout, /- skipped ~\/.claude\/skills\/brain-next \(not a brain link\)\n/u);
   assert.equal(await readlink(join(claudeSkills, "other-tool")), "/elsewhere/skill");
   assert.equal(await readFile(join(p.agents, "mine.md"), "utf8"), "mine");
   const skills = await expectedSkills(box.root);
-  assert.match(stdout, new RegExp(`✓ ${skills.length * 2 - 1} skill links in`, "u"));
+  assert.match(stdout, new RegExp(`✓ added ${skills.length * 2 - 1} skill links in`, "u"));
 });
 
 test("TestInstallLinksOpenCodeWhenInstalled", async (t) => {
@@ -295,8 +327,10 @@ test("TestInstallLinksOpenCodeWhenInstalled", async (t) => {
     assert.match(await readFile(join(dir, `${name}.md`), "utf8"), /^mode: subagent$/mu);
   }
   assert.equal(await readlink(p.plugin), join(box.root, "hooks", "opencode", "session-premises.js"));
-  assert.match(stdout, /✓ updated ~\/.config\/opencode\/plugins\/brain-session-premises.js\n/u);
+  assert.match(stdout, /✓ added ~\/.config\/opencode\/plugins\/brain-session-premises.js\n/u);
   assert.doesNotMatch(stdout, /OpenCode is not installed/u);
+  assert.match(stdout, /\. Add brain-premises and chrome-devtools from mcp\/snippets\/ to the OpenCode config/u);
+  assert.match(stdout, /\. Paste templates\/agent-instructions.md into ~\/.config\/opencode\/AGENTS.md/u);
   assert.match(stdout, new RegExp(`✓ Installed: agents ${agents.length * 2}, bin 1, guard 1, hook 3,`, "u"));
 });
 
@@ -316,7 +350,7 @@ test("TestInstallFallsBackToNpm", async (t) => {
   const { stdout } = installOk(box);
 
   assert.match(await readText(box.log), /^npm install --no-audit --no-fund --loglevel=error$/mu);
-  assert.match(stdout, /✓ npm install\n/u);
+  assert.match(stdout, /\[2\/13\] Install dependencies: npm install\n/u);
 });
 
 test("TestInstallStopsWithoutNode", async (t) => {
@@ -401,7 +435,7 @@ test("TestInstallStopsWithoutLinkTargets", async (t) => {
   const removed = run(box, "uninstall.sh");
 
   assert.equal(removed.code, 1);
-  assert.match(removed.stderr, /✗ Step 2\/10 failed: Remove skill links\n/u);
+  assert.match(removed.stderr, /✗ Step 1\/8 failed: Remove links\n/u);
 });
 
 test("TestInstallFromAnotherFolderWithBinDirOnPath", async (t) => {
@@ -439,14 +473,24 @@ test("TestUninstallRemovesWhatInstallAdded", async (t) => {
   assertSteps(stdout, uninstallSteps);
   const skills = await expectedSkills(box.root);
   const agents = await agentNames(box.root);
+  assert.match(stdout, new RegExp(`✓ removed ${skills.length * 2} skill links\n`, "u"));
+  assert.match(stdout, new RegExp(`✓ removed ${agents.length * 2} agent links\n`, "u"));
+  assert.match(stdout, /✓ removed ~\/.local\/bin\/brain\n/u);
+  assert.match(stdout, /✓ removed session premises hook from ~\/.claude\/settings.json\n/u);
+  assert.match(stdout, /✓ removed git confirmation rules from ~\/.claude\/settings.json\n/u);
+  assert.match(stdout, /✓ removed brain instructions from ~\/.codex\/AGENTS.md\n/u);
   assert.match(
     stdout,
-    new RegExp(`✓ removed links: agents ${agents.length * 2}, bin 1, skills ${skills.length * 2}\n`, "u"),
+    new RegExp(
+      `✓ Removed: agents ${agents.length * 2}, bin 1, guard 1, hook 3, instructions 1, mcp 4, skills ${skills.length * 2}\n`,
+      "u",
+    ),
   );
   const log = (await readText(box.log)).slice(logBefore.length);
   for (const name of servers) {
     assert.match(log, new RegExp(`^claude mcp remove -s user ${name}$`, "mu"));
-    assert.match(stdout, new RegExp(`✓ removed ${name}\n`, "u"));
+    assert.match(stdout, new RegExp(`✓ removed MCP server ${name} from Claude Code\n`, "u"));
+    assert.match(stdout, new RegExp(`✓ removed MCP server ${name} from ~/.codex/config.toml\n`, "u"));
   }
   for (const dir of [...p.skills, p.agents, join(p.opencode, "agents")]) {
     assert.deepEqual(await readdir(dir), [], dir);
@@ -461,8 +505,12 @@ test("TestUninstallRemovesWhatInstallAdded", async (t) => {
   assert.doesNotMatch(await readFile(p.codexAgents, "utf8"), /brain:start/u);
   assert.ok(await exists(p.profile), "the Chrome profile stays");
   assert.ok(await exists(join(box.root, "skills", "active")), "the repo stays");
-  assert.match(stdout, /✓ Removed the brain setup. Kept:\n/u);
+  assert.match(stdout, /\nKept:\n/u);
+  assert.match(stdout, /~\/.local\/share\/agent-brain\/chrome-profile \(Chrome test logins\)\n/u);
+  assert.match(stdout, /~\/.claude\/settings.json.brain-bak \(config copy from before the last brain edit\)\n/u);
   assert.match(stdout, new RegExp(`rm -rf "${p.profile}"`, "u"));
+  assert.match(stdout, /\[8\/8\] Remove the config backups: kept 4 backups\. Add --remove-backups to remove them\n/u);
+  assert.match(stdout, /^ {2}scripts\/uninstall.sh --remove-backups$/mu);
 });
 
 test("TestUninstallOnCleanHomeChangesNothing", async (t) => {
@@ -473,19 +521,17 @@ test("TestUninstallOnCleanHomeChangesNothing", async (t) => {
   const { code, stdout, out } = run(box, "uninstall.sh");
 
   assert.equal(code, 0, out);
-  assert.equal(lines(stdout, /no brain links in/u).length, 2, "a blank target line is not a folder");
   for (const line of [
-    "- no receipt",
-    "- no brain links in ~/.claude/skills",
-    "- no brain links in ~/.agents/skills",
-    "- no brain agent links",
-    "- no brain command in ~/.local/bin",
-    "- claude not found. Skipped.",
-    "- no generated copies",
+    "[1/8] Remove links: no receipt",
+    "[2/8] Remove MCP servers from Claude Code: claude not found. Skipped.",
+    "[3/8] Remove the session premises hooks: no change",
+    "[7/8] Remove the generated copies: no change",
+    "[8/8] Remove the config backups: no change",
+    "✓ Nothing to remove.",
   ]) {
-    assert.ok(stdout.includes(`  ${line}\n`), line);
+    assert.ok(stdout.includes(`${line}\n`), line);
   }
-  assert.doesNotMatch(stdout, /✓ (removed|updated)/u);
+  assert.doesNotMatch(stdout, /✓ (removed|updated)|brain-bak|To remove them too/u);
   assert.deepEqual(await readdir(box.home), [], "uninstall creates no file");
 });
 
@@ -500,9 +546,8 @@ test("TestUninstallWithoutReceiptFindsLinks", async (t) => {
   assert.equal(code, 0, out);
   const skills = await expectedSkills(box.root);
   assert.match(stdout, /- no receipt\n/u);
-  assert.match(stdout, new RegExp(`✓ removed ${skills.length} links from ~/.claude/skills\n`, "u"));
-  assert.match(stdout, new RegExp(`✓ removed ${skills.length} links from ~/.agents/skills\n`, "u"));
-  assert.match(stdout, /✓ removed ~\/.claude\/agents\/brain-reviewer.md\n/u);
+  assert.match(stdout, new RegExp(`✓ removed ${skills.length * 2} skill links\n`, "u"));
+  assert.match(stdout, new RegExp(`✓ removed ${(await agentNames(box.root)).length} agent links\n`, "u"));
   assert.match(stdout, /✓ removed ~\/.local\/bin\/brain\n/u);
   for (const dir of [...p.skills, p.agents]) {
     assert.deepEqual(await readdir(dir), [], dir);
@@ -512,7 +557,7 @@ test("TestUninstallWithoutReceiptFindsLinks", async (t) => {
 test("TestUninstallKeepsForeignEntries", async (t) => {
   const box = await sandbox(t, ["node"]);
   const p = paths(box);
-  const other = "/other/checkout";
+  const other = join(box.base, "other");
   const [claudeSkills] = p.skills;
   const foreign = {
     [join(claudeSkills, "brain-next")]: `${other}/skills/active/brain-next`,
@@ -522,6 +567,8 @@ test("TestUninstallKeepsForeignEntries", async (t) => {
   for (const [link, target] of Object.entries(foreign)) {
     await mkdir(join(link, ".."), { recursive: true });
     await symlink(target, link);
+    await mkdir(join(target, ".."), { recursive: true });
+    await writeFile(target, "");
   }
   await mkdir(join(claudeSkills, "mine"));
   await mkdir(join(p.receipt, ".."), { recursive: true });
@@ -530,15 +577,42 @@ test("TestUninstallKeepsForeignEntries", async (t) => {
   const { code, stdout, out } = run(box, "uninstall.sh");
 
   assert.equal(code, 0, out);
-  assert.match(stdout, new RegExp(`- receipt belongs to ${other}. Skipped.\n`, "u"));
+  assert.match(stdout, new RegExp(`\\[1/8\\] Remove links: receipt belongs to ${other}. Skipped.\n`, "u"));
   assert.ok(await exists(p.receipt));
   for (const [link, target] of Object.entries(foreign)) {
     assert.equal(await readlink(link), target);
   }
   assert.ok(await exists(join(claudeSkills, "mine")));
-  assert.match(stdout, /- no brain links in ~\/.claude\/skills\n/u);
-  assert.match(stdout, /- no brain agent links\n/u);
-  assert.match(stdout, /- no brain command in ~\/.local\/bin\n/u);
+  assert.doesNotMatch(stdout, /✓ removed/u);
+});
+
+test("TestUninstallRemovesLinksOfMovedCheckout", async (t) => {
+  const box = await sandbox(t, ["node"]);
+  const p = paths(box);
+  const gone = join(box.base, "gone");
+  const [claudeSkills] = p.skills;
+  const dead = {
+    [join(claudeSkills, "brain-next")]: `${gone}/skills/active/brain-next`,
+    [join(p.agents, "brain-reviewer.md")]: `${gone}/agents/brain-reviewer.md`,
+    [p.bin]: `${gone}/bin/brain.mjs`,
+    [p.plugin]: `${gone}/hooks/opencode/session-premises.js`,
+  };
+  const mine = join(claudeSkills, "mine");
+  for (const [link, target] of Object.entries({ ...dead, [mine]: `${gone}/mine` })) {
+    await mkdir(join(link, ".."), { recursive: true });
+    await symlink(target, link);
+  }
+
+  const { code, stdout, out } = run(box, "uninstall.sh");
+
+  assert.equal(code, 0, out);
+  for (const link of Object.keys(dead)) {
+    assert.ok(!(await exists(link)), link);
+  }
+  assert.ok(await exists(mine), "a dead link without the brain name stays");
+  for (const link of Object.keys(dead)) {
+    assert.match(stdout, new RegExp(`✓ removed ${link.replace(box.home, "~")}\n`, "u"));
+  }
 });
 
 test("TestUninstallReportsUnregisteredServers", async (t) => {
@@ -562,6 +636,147 @@ test("TestUninstallNamesBrokenSettings", async (t) => {
 
   assert.equal(code, 1);
   assert.match(stderr, new RegExp(`${p.settings} is not valid JSON`, "u"));
-  assert.match(stderr, /✗ Step 6\/10 failed: Remove the session premises hooks\n/u);
+  assert.match(stderr, /✗ Step 3\/8 failed: Remove the session premises hooks\n/u);
   assert.equal(await readFile(p.settings, "utf8"), "{");
+});
+
+test("TestInstallDryRunChangesNothing", async (t) => {
+  const box = await sandbox(t);
+
+  const { code, stdout, out } = run(box, "install.sh", { flags: ["--dry-run"] });
+
+  assert.equal(code, 0, out);
+  assertSteps(stdout, installSteps);
+  assert.match(stdout, /^Dry run: nothing changes\.$/mu);
+  assert.match(stdout, /~ would add ~\/.local\/bin\/brain\n/u);
+  assert.match(stdout, /~ would add MCP server brain-premises to Claude Code\n/u);
+  assert.match(stdout, /\[12\/13\] Write the install receipt: skipped in a dry run\n/u);
+  assert.match(
+    stdout,
+    /\nDry run: would add agents \d+, bin 1, guard 1, hook 2, instructions 1, mcp 4, profile 1, skills \d+\n/u,
+  );
+  assert.deepEqual(await readdir(box.home), [], "a dry run writes nothing");
+  assert.equal(await readText(box.log), "", "a dry run runs no pnpm and no claude");
+  assert.ok(!(await exists(join(box.root, ".agents", "linked"))));
+});
+
+test("TestUninstallDryRunRemovesNothing", async (t) => {
+  const box = await sandbox(t);
+  const p = paths(box);
+  installOk(box);
+  const logBefore = await readText(box.log);
+  const settings = await readFile(p.settings, "utf8");
+
+  const { code, stdout, out } = run(box, "uninstall.sh", { flags: ["--dry-run"] });
+
+  assert.equal(code, 0, out);
+  assertSteps(stdout, uninstallSteps);
+  const skills = await expectedSkills(box.root);
+  assert.match(stdout, new RegExp(`~ would remove ${skills.length * 2} skill links\n`, "u"));
+  assert.match(stdout, /~ would remove MCP server brain-premises from Claude Code\n/u);
+  assert.match(
+    stdout,
+    /\nDry run: would remove agents \d+, bin 1, guard 1, hook 2, instructions 1, mcp 4, skills \d+\n/u,
+  );
+  assert.equal(await readFile(p.settings, "utf8"), settings);
+  assert.ok(await exists(p.receipt));
+  assert.ok(await exists(p.bin));
+  assert.equal(await readText(box.log), logBefore, "a dry run runs no claude command");
+});
+
+test("TestScriptsPrintHelp", async (t) => {
+  const box = await sandbox(t, ["node"]);
+
+  for (const script of ["install.sh", "uninstall.sh"]) {
+    const help = run(box, script, { flags: ["--help"] });
+    assert.equal(help.code, 0, script);
+    const options = script === "uninstall.sh" ? "[--dry-run] [--remove-backups] [--help]" : "[--dry-run] [--help]";
+    assert.ok(help.stdout.includes(`\nUsage: scripts/${script} ${options}\n`), help.stdout);
+    assert.match(help.stdout, /^ {2}BRAIN_BIN_DIR /mu);
+    const bad = run(box, script, { flags: ["--nope"] });
+    assert.equal(bad.code, 2, script);
+    assert.match(bad.stderr, /^unknown option: --nope\n/u);
+    assert.doesNotMatch(bad.stderr, /failed/u);
+  }
+  assert.deepEqual(await readdir(box.home), []);
+});
+
+test("TestInstallAfterMoveReplacesLinks", async (t) => {
+  const box = await sandbox(t);
+  const p = paths(box);
+  installOk(box);
+  const moved = { ...box, root: join(box.base, "moved") };
+  await rename(box.root, moved.root);
+
+  const { stdout } = installOk(moved);
+
+  assert.match(stdout, new RegExp(`^The checkout moved from ${box.root}\\. This install replaces its links\\.$`, "mu"));
+  const skills = await expectedSkills(moved.root);
+  assert.match(stdout, new RegExp(`✓ updated ${skills.length * 2} skill links in`, "u"));
+  assert.match(stdout, /This run: updated agents 2, bin 1, hook 2, mcp 4, skills \d+\n/u);
+  assert.equal(await readlink(join(p.skills[0], "brain-next")), join(moved.root, "skills", "active", "brain-next"));
+  assert.equal(await readlink(p.bin), join(moved.root, "bin", "brain.mjs"));
+  assert.match(await readFile(p.receipt, "utf8"), new RegExp(`^root\t${moved.root}\n`, "u"));
+});
+
+test("TestUninstallRemovesOrphanReceipt", async (t) => {
+  const box = await sandbox(t);
+  const p = paths(box);
+  installOk(box);
+  const moved = { ...box, root: join(box.base, "moved") };
+  await rename(box.root, moved.root);
+
+  const { code, stdout, out } = run(moved, "uninstall.sh");
+
+  assert.equal(code, 0, out);
+  assert.match(stdout, new RegExp(`- removed the receipt of ${box.root}, a checkout that is gone\n`, "u"));
+  assert.ok(!(await exists(p.receipt)));
+  for (const dir of p.skills) {
+    assert.deepEqual(await readdir(dir), [], dir);
+  }
+  assert.ok(!(await exists(p.bin)));
+});
+
+test("TestInstallSkipsOpenCodeStepsWhenDone", async (t) => {
+  const box = await sandbox(t);
+  const p = paths(box);
+  await mkdir(p.opencode, { recursive: true });
+  await writeFile(join(p.opencode, "opencode.json"), '{ "mcp": { "brain-premises": {} } }\n');
+  const template = await readFile(join(box.root, "templates", "agent-instructions.md"), "utf8");
+  await writeFile(join(p.opencode, "AGENTS.md"), setBlock("# mine\n", template));
+
+  const { stdout } = installOk(box);
+
+  assert.doesNotMatch(stdout, /OpenCode config|opencode\/AGENTS\.md/u);
+});
+
+test("TestUninstallRemovesBackupsOnRequest", async (t) => {
+  const box = await sandbox(t);
+  const p = paths(box);
+  installOk(box);
+  const userCopy = `${p.settings}.bak`;
+  await writeFile(userCopy, "mine");
+  const backups = [p.settings, p.codexHooks, p.codexConfig, p.codexAgents].map((file) => `${file}.brain-bak`);
+  run(box, "uninstall.sh");
+
+  const dry = run(box, "uninstall.sh", { flags: ["--dry-run", "--remove-backups"] });
+
+  assert.equal(dry.code, 0, dry.out);
+  assert.match(dry.stdout, /~ would remove ~\/.claude\/settings.json.brain-bak\n/u);
+  assert.match(dry.stdout, /\nDry run: would remove backups 4\n/u);
+  for (const backup of backups) {
+    assert.ok(await exists(backup), backup);
+  }
+
+  const { code, stdout, out } = run(box, "uninstall.sh", { flags: ["--remove-backups"] });
+
+  assert.equal(code, 0, out);
+  assertSteps(stdout, uninstallSteps);
+  for (const backup of backups) {
+    assert.ok(!(await exists(backup)), backup);
+    assert.match(stdout, new RegExp(`✓ removed ${backup.replace(box.home, "~")}\n`, "u"));
+  }
+  assert.match(stdout, /✓ Removed: backups 4\n/u);
+  assert.doesNotMatch(stdout, /config copy|--remove-backups$/mu);
+  assert.equal(await readFile(userCopy, "utf8"), "mine", "a .bak file of the user stays");
 });

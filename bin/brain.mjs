@@ -115,7 +115,7 @@ function cmdScope(args, stdout) {
 async function cmdInstalled(args, stdout, stderr) {
   const [sub, ...rest] = args;
   if (sub === "remove" && rest.length === 0) {
-    await removeReceipt(brainRoot(), {}, stdout);
+    await removeReceipt(brainRoot(), { dryRun: process.env.BRAIN_DRY_RUN === "1" }, stdout);
     return 0;
   }
   if (sub === "write") {

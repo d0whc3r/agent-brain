@@ -36,7 +36,7 @@ Every part the brain installs carries a prefix, so a session shows what came fro
 
 Skills, agents, and flows find the brain with `brain root` and a scope root with `brain scope`. `scripts/check-paths.sh` fails when one of them names an absolute home path.
 
-The install writes a receipt to `~/.local/share/agent-brain/installed.txt`. `brain installed` prints it. A later install prints `removed` for each item that the new version dropped and removes its link. The uninstall removes each item in the receipt, then scans for links into the checkout that an install without a receipt left.
+The install writes a receipt to `~/.local/share/agent-brain/installed.txt`. `brain installed` prints it. A later install removes the link of each item that the new version dropped. After a move of the checkout, it replaces the links of the old place. The uninstall removes each link in the receipt, then scans for links into the checkout and for dead brain links. A receipt whose checkout is gone goes with its dead links.
 
 ## The map
 
@@ -229,7 +229,7 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 | `pnpm skills:drift` | Short name for `brain workspace check` |
 | `brain skills list` / `check` / `add` / `update` / `sync` / `remove` | Manage the third-party catalog and the vendored copies |
 | `brain accept-skill NAME` | Move a draft to active and commit |
-| `brain link-skills --target PATH [--apply]` | Link the brain and third-party skills into a tool path. Removes brain links to skills that are gone, and skips entries that another install owns. |
+| `brain link-skills --target PATH [--apply]` | Link the brain and third-party skills into a tool path. Removes brain links to skills that are gone, and skips entries that another install owns. Prints `added`, `updated`, `unchanged`, `removed`, or `skipped` for each link. |
 | `brain mcp` | Start the premise MCP server |
 | `brain mcp check` | Start a fresh server over stdio and verify its code version, tool schemas, and shared premise store. This checks a new process, not a connection already held by an app. |
 | `brain installed` | The install receipt: each skill, agent, command, MCP server, hook, and instruction block the install added |
@@ -242,7 +242,7 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 | `scripts/install.sh`   | Install or update the whole setup                                    |
 | `scripts/uninstall.sh` | Remove the setup. Keeps the repo, the notes, and the Chrome profile. |
 
-The install receipt decision is in [the install receipt spec](superpowers/specs/2026-10-23-install-receipt-design.md). The scripts do not write that file yet.
+Both scripts take `--dry-run`, which prints the changes and writes nothing, and `--help`. `scripts/uninstall.sh --remove-backups` also removes the `.brain-bak` copies of the config files. The install receipt decision is in [the install receipt spec](superpowers/specs/2026-10-23-install-receipt-design.md).
 
 ## MCP servers
 

@@ -12,7 +12,7 @@ import {
 import { dirname, join } from "node:path";
 
 const root = join(import.meta.dirname, "..");
-const hookMarker = "session-premises.mjs";
+export const hookMarker = "session-premises.mjs";
 
 // setCommandHook removes handlers whose command contains marker, then adds command on event.
 // Claude and Codex share this shape. A second call with the same command leaves the file unchanged.
@@ -61,19 +61,50 @@ export function fillCommand(template, dir) {
   return template.replaceAll("${BRAIN_ROOT}", dir.replace(/\/$/u, ""));
 }
 
-// writeText keeps a .brain-bak copy and writes in place, so a linked config stays a link.
-function writeText(path, change, initial) {
-  const exists = existsSync(path);
-  const before = exists ? readFileSync(path, "utf8") : initial;
-  const after = before === undefined ? before : change(before);
-  if (after !== before) {
-    mkdirSync(dirname(path), { recursive: true });
-    if (exists) {
-      copyFileSync(path, `${path}.brain-bak`);
-    }
-    writeFileSync(path, after, { mode: 0o600 });
+// install.sh --dry-run sets BRAIN_DRY_RUN=1. Each status line still prints, but no file changes.
+export const isDryRun = () => process.env.BRAIN_DRY_RUN === "1";
+
+// entryStatus names the change to one brain entry in a config file.
+export function entryStatus(had, add, changed) {
+  if (!add) {
+    return had ? "removed" : "unchanged";
   }
-  process.stdout.write(`${after === before ? "unchanged" : "updated"} ${path}\n`);
+  if (!changed) {
+    return "unchanged";
+  }
+  return had ? "updated" : "added";
+}
+
+const prepositions = { added: "to", removed: "from", updated: "in", unchanged: "in" };
+
+// writeEntryStatus prints "STATUS LABEL to|in|from PATH". install.sh reads the first word.
+export function writeEntryStatus(status, label, path) {
+  process.stdout.write(`${status} ${label} ${prepositions[status]} ${path}\n`);
+}
+
+// writeConfig keeps a .brain-bak copy and writes in place, so a linked config stays a link.
+export function writeConfig(path, text) {
+  if (isDryRun()) {
+    return;
+  }
+  mkdirSync(dirname(path), { recursive: true });
+  if (existsSync(path)) {
+    copyFileSync(path, `${path}.brain-bak`);
+  }
+  writeFileSync(path, text, { mode: 0o600 });
+}
+
+// editEntry applies change to the text of path and prints the status of one brain entry.
+// has tells whether a text holds the entry. A missing file starts as initial, or stays missing
+// when initial is undefined, as a remove needs. An unchanged entry leaves the file as it is.
+export function editEntry(path, { change, has, add, label, initial }) {
+  const before = existsSync(path) ? readFileSync(path, "utf8") : initial;
+  const after = before === undefined ? before : change(before);
+  const status = entryStatus(before !== undefined && has(before), add, after !== before);
+  writeEntryStatus(status, label, path);
+  if (status !== "unchanged") {
+    writeConfig(path, after);
+  }
 }
 
 // parseJson names the file in a parse error, so the install tells the user which file to fix.
@@ -85,8 +116,9 @@ export function parseJson(path, text) {
   }
 }
 
-function writeJson(path, change, initial) {
-  writeText(path, (text) => `${JSON.stringify(change(parseJson(path, text)), null, 2)}\n`, initial);
+// jsonChange turns a change of the parsed JSON into a change of the file text.
+export function jsonChange(path, change) {
+  return (text) => `${JSON.stringify(change(parseJson(path, text)), null, 2)}\n`;
 }
 
 function pluginLink(home, entry) {
@@ -118,11 +150,15 @@ function placeLink(link, current, target) {
     writeLinkStatus(link, "unchanged");
     return;
   }
+  writeLinkStatus(link, current ? "updated" : "added");
+  if (isDryRun()) {
+    return;
+  }
+  mkdirSync(dirname(link), { recursive: true });
   if (current) {
     unlinkSync(link);
   }
   symlinkSync(target, link);
-  writeLinkStatus(link, "updated");
 }
 
 // linkPlugin points the OpenCode plugin name at this checkout. It skips a real file.
@@ -132,11 +168,10 @@ function linkPlugin(home, dir, entry) {
     writeLinkStatus(link, "skipped", "OpenCode is not installed");
     return;
   }
-  mkdirSync(dirname(link), { recursive: true });
   placeLink(link, readPluginLink(link), join(dir, entry.plugin));
 }
 
-// unlinkPlugin removes the plugin link only when it points at this checkout.
+// unlinkPlugin removes the plugin link when it points at this checkout or at nothing.
 function unlinkPlugin(home, dir, entry) {
   const link = pluginLink(home, entry);
   const current = readPluginLink(link);
@@ -148,22 +183,26 @@ function unlinkPlugin(home, dir, entry) {
     writeLinkStatus(link, "unchanged");
     return;
   }
-  if (current !== join(dir, entry.plugin)) {
+  if (current !== join(dir, entry.plugin) && existsSync(link)) {
     writeLinkStatus(link, "skipped", "links to another checkout");
     return;
   }
-  unlinkSync(link);
-  writeLinkStatus(link, "updated");
+  writeLinkStatus(link, "removed");
+  if (!isDryRun()) {
+    unlinkSync(link);
+  }
 }
 
 function writeCommandHook(home, entry, command) {
   const path = entry.tool === "claude" ? join(home, ".claude", "settings.json") : join(home, ".codex", "hooks.json");
-  if (command === "" && !existsSync(path)) {
-    return;
-  }
-  const change = (config) =>
-    setCommandHook(config, { event: entry.event, marker: hookMarker, command, timeout: entry.timeout ?? 10 });
-  writeJson(path, change, command === "" ? undefined : "{}\n");
+  const hook = { event: entry.event, marker: hookMarker, command, timeout: entry.timeout ?? 10 };
+  editEntry(path, {
+    change: jsonChange(path, (config) => setCommandHook(config, hook)),
+    has: (text) => text.includes(hookMarker),
+    add: command !== "",
+    label: `${entry.id.replaceAll("-", " ")} hook`,
+    initial: command === "" ? undefined : "{}\n",
+  });
 }
 
 // applyHooks registers every catalog row for this user. It does not trust a Codex hook.
