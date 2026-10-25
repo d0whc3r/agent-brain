@@ -1,6 +1,6 @@
 ---
 id: new-rpc-in-cluster-service-go
-text: "Add a new RPC to qdrant-cloud-cluster-service, in Go. Leave qdrant-cloud-cluster-api on its Python path."
+text: "Add a new RPC to qdrant-cloud-cluster-service, in Go, and leave qdrant-cloud-cluster-api on its Python path."
 strength: always
 scope: qdrant
 repos:

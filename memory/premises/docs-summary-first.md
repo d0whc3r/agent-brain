@@ -1,6 +1,6 @@
 ---
 id: docs-summary-first
-text: "Write each documentation file summary first: the title, a short summary of the main point and of what the reader must know or do, a table of contents when the file has four or more ## sections, and then the sections from most to least important, with background and detail last."
+text: "Write each documentation file summary first: the title, a short summary of the main point and of what the reader must know or do, a table of contents when the file has four or more ## sections (in an agent file such as SKILL.md or AGENTS.md, only when it is longer than 100 lines), and then the sections from most to least important, with background and detail last."
 strength: always
 scope: "*"
 repos:

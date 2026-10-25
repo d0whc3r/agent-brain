@@ -1,6 +1,6 @@
 ---
 id: stay-in-request-scope
-text: "Keep a change inside the request. Mention unrelated dead code and leave it in place."
+text: "Keep a change inside the request, and mention unrelated dead code or stale text instead of changing it."
 strength: always
 scope: "*"
 repos:

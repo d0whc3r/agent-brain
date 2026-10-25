@@ -1,6 +1,6 @@
 ---
 id: verify-against-origin-main
-text: "Read facts from origin/main, because the local checkout is on a feature branch and local main lags."
+text: "Check a claim about the default branch against origin after git fetch, not against the local copy of that branch."
 strength: always
 scope: qdrant
 repos:
@@ -11,4 +11,6 @@ seen:
   - 2026-10-23 qdrant-cloud-ui correction
 ---
 
-Why: A fact read from a feature branch or a stale main can be wrong for the code the team runs.
+Why: A fact about qdrant-cloud-ui read from a stale local main was wrong. The local main only moves when someone pulls it.
+
+Run `git fetch` first, then read the file or the log at `origin/main`, or at the default branch of the repo. A review of a branch still reads the branch diff.

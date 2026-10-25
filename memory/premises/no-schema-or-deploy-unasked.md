@@ -1,12 +1,12 @@
 ---
 id: no-schema-or-deploy-unasked
-text: "Change a database schema or deploy to production without an explicit request."
+text: "Change a database schema or deploy to production without an explicit request in that turn."
 strength: never
 scope: "*"
 repos:
   - "*"
-status: candidate
-source: memory/decisions/2026-10-23-harvest.md
+status: active
+source: memory/decisions/2026-10-25-premise-review.md
 seen:
   - 2026-10-23 agent-brain correction
 ---

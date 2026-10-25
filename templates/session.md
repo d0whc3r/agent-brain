@@ -5,9 +5,9 @@ scope: qdrant
 repo: qdrant-cloud-ui
 finding_count: 1
 applied:
-  - new-rpc-cluster-service
+  - new-rpc-in-cluster-service-go
 hits:
-  - new-rpc-cluster-service
+  - new-rpc-in-cluster-service-go
 rejected: []
 decision_links:
   - memory/decisions/2026-10-23-sample.md

@@ -30,7 +30,7 @@ The test: a senior engineer would call this overcomplicated. Simplify it.
 
 - Do not reformat, rename, or improve adjacent notes, skills, or code.
 - Do not rewrite an active skill as a side effect. Match the note style already in the folder.
-- Unrelated stale text: mention it. Leave it.
+- Unrelated stale text: mention it. Leave it. The premise `stay-in-request-scope` holds the rule.
 - Remove only the orphans your change created.
 
 The test: every changed line traces to the request.
@@ -39,19 +39,17 @@ The test: every changed line traces to the request.
 
 **Name the check first. The work is done when the check passes.**
 
-- A premise change: `brain premise list` shows the new state, and the file is in `memory/premises/` or `memory/dropped/`.
+- A premise change: `brain premise list` shows the new state, `brain premise check` prints `ok`, and the file is in `memory/premises/` or `memory/dropped/`.
 - A skill draft: the directory is under `skills/drafts/`, and no tool lists that skill name.
 - A review: the output quotes each active `always` and `never` premise for that repo.
-- A task: `brain dod lint --done` prints `ok` for the DoD of the branch.
+- A task that changes files: `brain dod lint --done` prints `ok`. The premise `dod-before-done` holds the rule, and the `brain-dod` skill has the steps.
 - "Looks right" is not a result. Run the check and paste the output.
 
 ## 5. Git
 
-**A commit in a Qdrant repo waits for an explicit ask. A push always waits.**
+**A `git add`, a commit, and a push wait for an explicit ask in this turn, in every repo.**
 
-- Never commit in a repo of the `qdrant` scope root unless the user asks in this turn. `brain scope` prints that root.
-- Never push this repo unless the user asks.
-- Never add a co-author.
+- The premise `no-commit-push-unasked` holds the rule. The premise `no-co-author-no-footer` holds the credit rule.
 - `/brain-accept-skill <name>` is the ask to commit that one skill move in this repo. It is not a push.
 
 ## 6. Code style
@@ -81,7 +79,7 @@ The user talks in natural language. You run `brain` and the review steps. Do not
 - This repo is the user's. It is not a team repo. Do not edit the `AGENTS.md` at the `qdrant` scope root.
 - Do not learn from the copy directories named in that workspace file. Do not modify the engine repo `qdrant/`.
 - Before a review, call `premise_list` for the repo and its scope. `brain scope` prints both. Apply every active `always` and `never` premise. Quote each one you applied.
-- Add a premise with `brain premise add` or `premise_add`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.
+- Add a premise with `brain premise add` or `premise_add`. Change its fields with `brain premise update` or `premise_update`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.
 - Store a rule only when it is important. An explicit ask becomes an active premise. Any other correction or defect class becomes a candidate, and `brain premise seen` counts each repeat. Ephemeral facts go nowhere. The `brain-learn` skill has the table and the thresholds.
 - Do not edit `skills/active/` unless the user accepted that skill in this turn.
 - Do not write tokens, `.env` values, or customer data into a note.

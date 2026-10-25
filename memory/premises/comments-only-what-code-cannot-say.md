@@ -1,6 +1,6 @@
 ---
 id: comments-only-what-code-cannot-say
-text: "Make the code explain itself with names, small functions, named constants, and types, and write a comment only for what the code cannot say: the reason, a constraint, a workaround, a non-obvious invariant, or a link to an issue, a spec, or an ADR."
+text: "Make the code explain itself with names, small functions, named constants, and types, and write a comment only for what the code cannot say: the reason, a constraint, a workaround, a non-obvious invariant, the contract of a public API, or a link to an issue, a spec, or an ADR."
 strength: always
 scope: "*"
 repos:
