@@ -7,6 +7,7 @@ Run [the installation steps](getting-started.md#2-install-once) to set up or upd
 Contents:
 
 - [Configuration files](#configuration-files)
+- [Code intelligence](#code-intelligence)
 - [Chrome profile](#chrome-profile)
 - [Obsidian](#obsidian)
 - [Check MCP drift](#check-mcp-drift)
@@ -22,6 +23,44 @@ The installer creates missing Claude Code and Codex configuration files. Before 
 OpenCode reads its MCP configuration from dotfiles. Add `brain-premises` and `chrome-devtools` there from the snippet files.
 
 The installer registers the session premises hook for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). [brain.config.json](../brain.config.json) defines the scopes. The [catalog](catalog.md#hooks-and-settings) describes the hook and the Git confirmation rules. Codex does not run a new hook until you trust it in `/hooks`.
+
+## Code intelligence
+
+The `brain-lsp` plugin gives Claude Code language servers for Go, TypeScript, protobuf, and Python files. The install links [plugins/brain-lsp](../plugins/brain-lsp/) into `~/.claude/skills/brain-lsp`, and Claude Code loads that folder as the plugin `brain-lsp@skills-dir`. The brain runs no code index server: [the code index benchmark](../communications/2026-10-26-code-index-benchmark.md) found that a language server gives exact answers with no index to keep up to date.
+
+| Files | Server | Requirement |
+| --- | --- | --- |
+| `.go` | `gopls serve` | `gopls` on PATH: `go install golang.org/x/tools/gopls@latest` |
+| `.ts`, `.tsx`, `.mts`, `.cts` | [ts-lsp.sh](../plugins/brain-lsp/scripts/ts-lsp.sh) | The `node_modules` of the project, and `typescript-language-server` on PATH, which the install adds |
+| `.proto` | `buf lsp serve` | `buf` on PATH, and `buf registry login` when the module has dependencies on the Buf Schema Registry |
+| `.py`, `.pyi` | `ty server` | `ty` on PATH, which the install adds with `uv tool install ty`. `ty` finds the `.venv` of the project. The uninstall keeps it |
+
+`ts-lsp.sh` reads the TypeScript version of the project. TypeScript 7 has its own server, `tsc --lsp -stdio`, and no `tsserver.js`, so the script starts that server. Older TypeScript gets `typescript-language-server`. When it is missing, the install runs `npm install -g typescript-language-server typescript@6`. TypeScript 6 serves a folder with no TypeScript of its own, because TypeScript 7 has no `tsserver.js`. The uninstall keeps both packages. The first request after a start can come back empty while the server loads the project.
+
+Run `claude plugin details brain-lsp@skills-dir` to see the four servers. The install warns when `gopls`, `buf`, or `uv` is missing.
+
+OpenCode reads its language servers from dotfiles. Add this block to the OpenCode config, and replace `<brain>` with the output of `brain root`. It runs the same servers as the plugin. It turns off the built-in TypeScript server, which fails on TypeScript 7, and the built-in Python server, `pyright`:
+
+```json
+"lsp": {
+  "typescript": { "disabled": true },
+  "pyright": { "disabled": true },
+  "ts": {
+    "command": ["<brain>/plugins/brain-lsp/scripts/ts-lsp.sh"],
+    "extensions": [".ts", ".tsx", ".mts", ".cts"]
+  },
+  "proto": {
+    "command": ["buf", "lsp", "serve"],
+    "extensions": [".proto"]
+  },
+  "ty": {
+    "command": ["ty", "server"],
+    "extensions": [".py", ".pyi"]
+  }
+}
+```
+
+Codex has no language server support.
 
 ## Chrome profile
 

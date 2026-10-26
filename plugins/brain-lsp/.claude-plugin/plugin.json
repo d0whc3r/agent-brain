@@ -1,0 +1,6 @@
+{
+  "name": "brain-lsp",
+  "version": "1.0.0",
+  "description": "Language servers for Go, TypeScript, protobuf, and Python files",
+  "author": { "name": "d0whc3r" }
+}

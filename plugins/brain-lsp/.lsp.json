@@ -1,0 +1,14 @@
+{
+  "go": { "command": "gopls", "args": ["serve"], "extensionToLanguage": { ".go": "go" } },
+  "ts": {
+    "command": "${CLAUDE_PLUGIN_ROOT}/scripts/ts-lsp.sh",
+    "extensionToLanguage": {
+      ".ts": "typescript",
+      ".tsx": "typescriptreact",
+      ".mts": "typescript",
+      ".cts": "typescript"
+    }
+  },
+  "proto": { "command": "buf", "args": ["lsp", "serve"], "extensionToLanguage": { ".proto": "proto" } },
+  "python": { "command": "ty", "args": ["server"], "extensionToLanguage": { ".py": "python", ".pyi": "python" } }
+}

@@ -31,7 +31,7 @@ Every skill and agent that the brain installs, and its premise MCP server, carri
 
 | Prefix | Parts |
 | --- | --- |
-| `brain-` | Brain skills, agents, and the MCP server `brain-premises` |
+| `brain-` | Brain skills, agents, the MCP server `brain-premises`, and the plugin `brain-lsp` |
 | `brain-tp-` | Third-party skills that the brain vendors. The upstream name stays in `.agents/skills/` and `skills/third-party.json`. The install links a copy named `brain-tp-<name>`. |
 
 Skills, agents, and flows find the brain with `brain root` and a scope root with `brain scope`. `scripts/check-paths.sh` fails when one of them names an absolute home path.
@@ -55,6 +55,7 @@ The install writes a receipt to `~/.local/share/agent-brain/installed.txt`. `bra
 | Flow | A task you do often, with the signals that match it and its steps | `flows/` |
 | `brain` command | The CLI that reads and writes premises, and reads flows, worktrees, and workspace conflicts | `bin/brain.mjs` |
 | MCP server | Tools that the chat calls directly | `mcp/snippets/` |
+| Code intelligence plugin | The `brain-lsp` language servers for Go, TypeScript, protobuf, and Python, which Claude Code loads as `brain-lsp@skills-dir` | `plugins/brain-lsp/`, described in [integrations.md](integrations.md#code-intelligence) |
 | Session hook | Prints premises, invalid premise files, and matching flows when a chat starts | `bin/session-premises.mjs`, registered from `hooks/catalog.json` |
 
 ## Scopes

@@ -18,6 +18,7 @@ Contents:
 - Node 24 or later.
 - git, with read access to the `d0whc3r/agent-brain` repo.
 - Claude Code, Codex, or OpenCode.
+- Optional, for the `brain-lsp` language servers: `gopls` for Go, `buf` for protobuf, and `uv`, which the install uses to add `ty` for Python.
 
 ## Install
 

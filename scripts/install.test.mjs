@@ -30,7 +30,7 @@ import { setBlock } from "./setup-config.mjs";
 const repo = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/u, "");
 // The copy skips what is large or generated. node_modules comes back as a link.
 const notCopied = new Set(["node_modules", ".git", ".agents/linked", "memory/sessions"]);
-const installSteps = 14;
+const installSteps = 15;
 const uninstallSteps = 9;
 const servers = ["brain-premises", "chrome-devtools"];
 
@@ -64,7 +64,7 @@ case "$1" in
 esac
 `;
 
-async function sandbox(t, tools = ["node", "pnpm", "claude"]) {
+async function sandbox(t, tools = ["node", "pnpm", "claude", "gopls", "buf", "typescript-language-server", "ty"]) {
   // realpath, because node resolves /var to /private/var on macOS, and the receipt compares paths.
   const base = await mkdtemp(join(await realpath(tmpdir()), "brain-install-"));
   t.after(() => rm(base, { recursive: true, force: true }));
@@ -114,6 +114,7 @@ const paths = (box) => ({
   skills: [join(box.home, ".claude", "skills"), join(box.home, ".agents", "skills")],
   agents: join(box.home, ".claude", "agents"),
   bin: join(box.home, ".local", "bin", "brain"),
+  lsp: join(box.home, ".claude", "skills", "brain-lsp"),
   settings: join(box.home, ".claude", "settings.json"),
   codexConfig: join(box.home, ".codex", "config.toml"),
   codexHooks: join(box.home, ".codex", "hooks.json"),
@@ -183,8 +184,10 @@ test("TestInstallSetsUpEveryTool", async (t) => {
   assert.doesNotMatch(out, /^ln -sfn/mu);
   assert.ok(!out.includes("\u001B["), "no colors without a terminal");
   const skills = await expectedSkills(box.root);
+  const [claudeSkills, agentSkills] = p.skills;
+  assert.deepEqual((await readdir(claudeSkills)).toSorted(), [...skills, "brain-lsp"].toSorted());
+  assert.deepEqual((await readdir(agentSkills)).toSorted(), skills);
   for (const dir of p.skills) {
-    assert.deepEqual((await readdir(dir)).toSorted(), skills);
     for (const name of skills) {
       await stat(join(dir, name, "SKILL.md"));
     }
@@ -193,6 +196,9 @@ test("TestInstallSetsUpEveryTool", async (t) => {
     stdout,
     new RegExp(`✓ added ${skills.length * 2} skill links in ~/.claude/skills and ~/.agents/skills\n`, "u"),
   );
+  assert.equal(await readlink(p.lsp), join(box.root, "plugins", "brain-lsp"));
+  assert.match(stdout, /✓ added ~\/.claude\/skills\/brain-lsp\n/u);
+  assert.doesNotMatch(out, /not found, so/u, "no language server warning when gopls and buf are present");
   const agents = await agentNames(box.root);
   assert.deepEqual((await readdir(p.agents)).toSorted(), agents.map((n) => `${n}.md`).toSorted());
   assert.equal(await readlink(p.bin), join(box.root, "bin", "brain.mjs"));
@@ -217,10 +223,10 @@ test("TestInstallSetsUpEveryTool", async (t) => {
   const receipt = await readFile(p.receipt, "utf8");
   assert.equal(receipt.split("\n")[0], `root\t${box.root}`);
   assert.match(receipt, /^mcp\tbrain-premises\tclaude$/mu);
-  const summary = `agents ${agents.length}, bin 1, guard 1, hook 2, instructions 1, mcp 4, skills ${skills.length * 2}`;
+  const summary = `agents ${agents.length}, bin 1, guard 1, hook 2, instructions 1, mcp 4, skills ${skills.length * 2 + 1}`;
   assert.match(stdout, new RegExp(`✓ Installed: ${summary}\n`, "u"));
   assert.match(stdout, new RegExp(`  This run: added ${summary.replace("mcp 4, ", "mcp 4, profile 1, ")}\n`, "u"));
-  assert.match(stdout, /^\[1\/14\] Check tools: node v\d+/mu);
+  assert.match(stdout, /^\[1\/15\] Check tools: node v\d+/mu);
   assert.match(stdout, /^ {2}1\. Start a new Claude Code, Codex, or OpenCode session/mu);
   assert.match(stdout, /^ {2}2\. In Codex, trust the new hook once in \/hooks\.$/mu);
   assert.doesNotMatch(stdout, /OpenCode config|opencode\/AGENTS\.md/u, "no OpenCode step without OpenCode");
@@ -245,6 +251,7 @@ test("TestInstallTwiceChangesNothing", async (t) => {
   assert.deepEqual(await Promise.all(files.map((file) => readText(file))), before);
   assert.doesNotMatch(stdout, /✓ (added|updated|removed)/u);
   for (const name of [
+    "Link the code intelligence plugin",
     "Link brain and third-party skills",
     "Create the Chrome profile directory",
     "Register MCP servers in Claude Code",
@@ -344,11 +351,12 @@ test("TestInstallLinksOpenCodeWhenInstalled", async (t) => {
   assert.doesNotMatch(stdout, /OpenCode is not installed/u);
   assert.match(stdout, /\. Add brain-premises and chrome-devtools from mcp\/snippets\/ to the OpenCode config/u);
   assert.match(stdout, /\. Paste templates\/agent-instructions.md into ~\/.config\/opencode\/AGENTS.md/u);
+  assert.match(stdout, /\. Add the lsp block from docs\/integrations.md to the OpenCode config in your dotfiles\.$/mu);
   assert.match(stdout, new RegExp(`✓ Installed: agents ${agents.length * 2}, bin 1, guard 1, hook 3,`, "u"));
 });
 
 test("TestInstallWithoutClaudeWarns", async (t) => {
-  const box = await sandbox(t, ["node", "pnpm"]);
+  const box = await sandbox(t, ["node", "pnpm", "typescript-language-server"]);
 
   const { stdout, out } = installOk(box);
 
@@ -357,13 +365,43 @@ test("TestInstallWithoutClaudeWarns", async (t) => {
   assert.match(stdout, /, mcp 2, /u);
 });
 
+test("TestInstallWithoutLanguageServers", async (t) => {
+  const box = await sandbox(t, ["node", "pnpm", "claude", "npm", "uv"]);
+
+  const { stdout, out } = installOk(box);
+
+  assert.equal(lines(out, /gopls not found, so Go files get no language server/u).length, 2, "the summary repeats it");
+  assert.equal(lines(out, /buf not found, so \.proto files get no language server/u).length, 2);
+  assert.ok(await exists(paths(box).lsp), "the plugin link does not need the servers");
+  const npmGlobal = "npm install -g --no-audit --no-fund --loglevel=error typescript-language-server typescript@6";
+  assert.match(await readText(box.log), new RegExp(`^${npmGlobal}$`, "mu"));
+  assert.match(stdout, /✓ added typescript-language-server and typescript@6 with npm install -g\n/u);
+  assert.match(await readText(box.log), /^uv tool install --quiet ty$/mu);
+  assert.match(stdout, /✓ added ty with uv tool install\n/u);
+  const logBefore = await readText(box.log);
+  assert.equal(run(box, "uninstall.sh").code, 0);
+  assert.doesNotMatch(
+    (await readText(box.log)).slice(logBefore.length),
+    /^(npm|uv) /mu,
+    "the uninstall keeps the language servers",
+  );
+});
+
+test("TestInstallWarnsWithoutUv", async (t) => {
+  const box = await sandbox(t, ["node", "pnpm", "claude", "gopls", "buf", "typescript-language-server"]);
+
+  const { out } = installOk(box);
+
+  assert.equal(lines(out, /uv not found, so the install cannot add ty/u).length, 2, "the summary repeats it");
+});
+
 test("TestInstallFallsBackToNpm", async (t) => {
   const box = await sandbox(t, ["node", "npm", "claude"]);
 
   const { stdout } = installOk(box);
 
   assert.match(await readText(box.log), /^npm install --no-audit --no-fund --loglevel=error$/mu);
-  assert.match(stdout, /\[2\/14\] Install dependencies: npm install\n/u);
+  assert.match(stdout, /\[2\/15\] Install dependencies: npm install\n/u);
 });
 
 test("TestInstallStopsWithoutNode", async (t) => {
@@ -377,7 +415,7 @@ test("TestInstallStopsWithoutNode", async (t) => {
 
   assert.equal(code, 1);
   assert.match(stderr, /✗ node not found. Install node 24 or later.\n/u);
-  assert.match(stderr, /✗ Step 1\/14 failed: Check tools\n/u);
+  assert.match(stderr, /✗ Step 1\/15 failed: Check tools\n/u);
   assert.match(stderr, new RegExp(`run ${join(box.root, "scripts", "install.sh")} again`, "u"));
   assert.deepEqual(await readdir(box.home), []);
   assert.equal(await readText(box.log), "");
@@ -400,9 +438,9 @@ test("TestInstallNamesTheFailedStep", async (t) => {
   const { code, stdout, stderr } = run(box, "install.sh", { env: { STUB_FAIL: "claude add-json" } });
 
   assert.equal(code, 1);
-  assert.match(stderr, /✗ Step 7\/14 failed: Register MCP servers in Claude Code\n/u);
+  assert.match(stderr, /✗ Step 8\/15 failed: Register MCP servers in Claude Code\n/u);
   assert.match(stderr, /Each step is safe to run again/u);
-  assert.doesNotMatch(stdout, /\[8\/14\]/u);
+  assert.doesNotMatch(stdout, /\[9\/15\]/u);
   assert.ok(!(await exists(paths(box).receipt)));
 });
 
@@ -417,7 +455,7 @@ test("TestInstallNamesBrokenSettings", async (t) => {
   assert.equal(code, 1);
   assert.match(stderr, new RegExp(`${p.settings} is not valid JSON`, "u"));
   assert.doesNotMatch(stderr, /^\s+at /mu, "no stack trace");
-  assert.match(stderr, /✗ Step 8\/14 failed: Add the session premises hooks\n/u);
+  assert.match(stderr, /✗ Step 9\/15 failed: Add the session premises hooks\n/u);
   assert.equal(await readFile(p.settings, "utf8"), "{");
 });
 
@@ -431,7 +469,7 @@ test("TestInstallStopsOnMissingSkill", async (t) => {
 
   assert.equal(code, 1);
   assert.match(stderr, new RegExp(`✗ missing third-party skills: ${name}. Run: pnpm skills:update\n`, "u"));
-  assert.match(stderr, /✗ Step 14\/14 failed: Verify\n/u);
+  assert.match(stderr, /✗ Step 15\/15 failed: Verify\n/u);
 });
 
 test("TestInstallStopsWithoutLinkTargets", async (t) => {
@@ -442,8 +480,8 @@ test("TestInstallStopsWithoutLinkTargets", async (t) => {
 
   assert.equal(code, 1);
   assert.match(stderr, /✗ missing mcp\/link-targets.txt. It lists the skill folders/u);
-  assert.match(stderr, /✗ Step 4\/14 failed: Link brain and third-party skills\n/u);
-  assert.ok(!(await exists(join(box.home, ".claude", "skills"))));
+  assert.match(stderr, /✗ Step 5\/15 failed: Link brain and third-party skills\n/u);
+  assert.deepEqual(await readdir(join(box.home, ".claude", "skills")), ["brain-lsp"], "only the step before links");
 
   const removed = run(box, "uninstall.sh");
 
@@ -486,7 +524,7 @@ test("TestUninstallRemovesWhatInstallAdded", async (t) => {
   assertSteps(stdout, uninstallSteps);
   const skills = await expectedSkills(box.root);
   const agents = await agentNames(box.root);
-  assert.match(stdout, new RegExp(`✓ removed ${skills.length * 2} skill links\n`, "u"));
+  assert.match(stdout, new RegExp(`✓ removed ${skills.length * 2 + 1} skill links\n`, "u"));
   assert.match(stdout, new RegExp(`✓ removed ${agents.length * 2} agent links\n`, "u"));
   assert.match(stdout, /✓ removed ~\/.local\/bin\/brain\n/u);
   assert.match(stdout, /✓ removed session premises hook from ~\/.claude\/settings.json\n/u);
@@ -495,7 +533,7 @@ test("TestUninstallRemovesWhatInstallAdded", async (t) => {
   assert.match(
     stdout,
     new RegExp(
-      `✓ Removed: agents ${agents.length * 2}, bin 1, guard 1, hook 3, instructions 1, mcp 4, skills ${skills.length * 2}\n`,
+      `✓ Removed: agents ${agents.length * 2}, bin 1, guard 1, hook 3, instructions 1, mcp 4, skills ${skills.length * 2 + 1}\n`,
       "u",
     ),
   );
@@ -560,7 +598,7 @@ test("TestUninstallWithoutReceiptFindsLinks", async (t) => {
   assert.equal(code, 0, out);
   const skills = await expectedSkills(box.root);
   assert.match(stdout, /- no receipt\n/u);
-  assert.match(stdout, new RegExp(`✓ removed ${skills.length * 2} skill links\n`, "u"));
+  assert.match(stdout, new RegExp(`✓ removed ${skills.length * 2 + 1} skill links\n`, "u"));
   assert.match(stdout, new RegExp(`✓ removed ${(await agentNames(box.root)).length} agent links\n`, "u"));
   assert.match(stdout, /✓ removed ~\/.local\/bin\/brain\n/u);
   for (const dir of [...p.skills, p.agents]) {
@@ -664,7 +702,7 @@ test("TestInstallDryRunChangesNothing", async (t) => {
   assert.match(stdout, /^Dry run: nothing changes\.$/mu);
   assert.match(stdout, /~ would add ~\/.local\/bin\/brain\n/u);
   assert.match(stdout, /~ would add MCP server brain-premises to Claude Code\n/u);
-  assert.match(stdout, /\[13\/14\] Write the install receipt: skipped in a dry run\n/u);
+  assert.match(stdout, /\[14\/15\] Write the install receipt: skipped in a dry run\n/u);
   assert.match(
     stdout,
     /\nDry run: would add agents \d+, bin 1, guard 1, hook 2, instructions 1, mcp 4, profile 1, skills \d+\n/u,
@@ -688,7 +726,7 @@ test("TestUninstallDryRunRemovesNothing", async (t) => {
   assert.equal(code, 0, out);
   assertSteps(stdout, uninstallSteps);
   const skills = await expectedSkills(box.root);
-  assert.match(stdout, new RegExp(`~ would remove ${skills.length * 2} skill links\n`, "u"));
+  assert.match(stdout, new RegExp(`~ would remove ${skills.length * 2 + 1} skill links\n`, "u"));
   assert.match(stdout, /~ would remove MCP server brain-premises from Claude Code\n/u);
   assert.match(stdout, new RegExp(`~ would remove trusted project ${box.root} from ~/.codex/config.toml\n`, "u"));
   assert.match(
@@ -777,7 +815,10 @@ test("TestInstallSkipsOpenCodeStepsWhenDone", async (t) => {
   const box = await sandbox(t);
   const p = paths(box);
   await mkdir(p.opencode, { recursive: true });
-  await writeFile(join(p.opencode, "opencode.json"), '{ "mcp": { "brain-premises": {} } }\n');
+  await writeFile(
+    join(p.opencode, "opencode.json"),
+    '{ "mcp": { "brain-premises": {} }, "lsp": { "ts": { "command": ["/brain/plugins/brain-lsp/scripts/ts-lsp.sh"] } } }\n',
+  );
   const template = await readFile(join(box.root, "templates", "agent-instructions.md"), "utf8");
   await writeFile(join(p.opencode, "AGENTS.md"), setBlock("# mine\n", template));
 

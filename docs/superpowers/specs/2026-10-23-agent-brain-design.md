@@ -219,7 +219,7 @@ Why this server exists: Engram search can miss a rule. A skill is too heavy for 
 | Obsidian Local REST API | Read and edit vault notes while Obsidian is open. | Register it. Premise add and delete still go through `brain premise` when the agent is the writer. |
 | Engram | Session recall across days. | Keep the install that already exists. Run `engram setup <agent>` only when a tool has no Engram server. Codex `config.toml` has no Engram entry today. |
 | Context7 | Current library docs. | Keep it. Add it to a tool that does not have it. |
-| `codebase-memory-mcp` and CodeGraph | Symbol and call graph. | Keep them. Do not add a third code-search server. |
+| `brain-lsp` plugin | Definitions, references, and call hierarchy for Go, TypeScript, protobuf, and Python. | Ship it with the brain. Run no code index server. [The code index benchmark](../../../communications/2026-10-26-code-index-benchmark.md) gives the reason. |
 | GitHub MCP | Issues and pull requests. | Already on OpenCode. Do not add a second copy. |
 
 ### Browser server

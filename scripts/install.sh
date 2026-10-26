@@ -7,11 +7,13 @@
 #   --dry-run   print what would change, and change nothing
 #   --help      print this help
 #
-# It links the brain command, the skills, and the agents, registers the MCP servers in
-# Claude Code and Codex, adds the session premises hook and the git confirmation rules, and
-# adds the brain instructions to ~/.codex/AGENTS.md. After a checkout move, it removes the links
-# and the Codex project trust of the old place. A changed config file keeps a .brain-bak copy.
-# scripts/uninstall.sh removes all of it.
+# It links the brain command, the code intelligence plugin, the skills, and the agents,
+# installs typescript-language-server with npm and ty with uv when they are missing, registers the
+# MCP servers in Claude Code and Codex, adds the session premises hook and the git confirmation
+# rules, and adds the brain instructions to ~/.codex/AGENTS.md. After a checkout move, it
+# removes the links and the Codex project trust of the old place. A changed config file keeps a
+# .brain-bak copy.
+# scripts/uninstall.sh removes all of it, except the language servers that npm and uv installed.
 #
 # Environment:
 #   BRAIN_BIN_DIR   directory for the brain command (default: $HOME/.local/bin)
@@ -90,6 +92,37 @@ case ":$PATH:" in
   *":$bin_dir:"*) ;;
   *) warn "$bin_dir is not in PATH. Add it: export PATH=\"$bin_dir:\$PATH\"" ;;
 esac
+
+# This step runs before the skill links, so a moved checkout updates this link before
+# link-skills sees it as a dead brain link.
+step "Link the code intelligence plugin"
+# Claude Code loads a folder in ~/.claude/skills that holds .claude-plugin/plugin.json as a plugin.
+link_one skills "$root/plugins/brain-lsp" "$HOME/.claude/skills/brain-lsp"
+# typescript-language-server serves a folder with no TypeScript from the tsserver.js of the
+# typescript package beside it. TypeScript 7 has no tsserver.js, so the install pins 6.
+# The uninstall keeps the language servers that npm and uv installed, because other tools can use them.
+if ! command -v typescript-language-server >/dev/null 2>&1; then
+  if [ "$dry_run" -eq 0 ]; then
+    npm install -g --no-audit --no-fund --loglevel=error typescript-language-server typescript@6
+  fi
+  change added lsp "typescript-language-server and typescript@6 with npm install -g"
+fi
+if ! command -v ty >/dev/null 2>&1; then
+  if command -v uv >/dev/null 2>&1; then
+    if [ "$dry_run" -eq 0 ]; then
+      uv tool install --quiet ty
+    fi
+    change added lsp "ty with uv tool install"
+  else
+    warn "uv not found, so the install cannot add ty, and Python files get no language server. Install uv: brew install uv"
+  fi
+fi
+if ! command -v gopls >/dev/null 2>&1; then
+  warn "gopls not found, so Go files get no language server. Install it: go install golang.org/x/tools/gopls@latest"
+fi
+if ! command -v buf >/dev/null 2>&1; then
+  warn "buf not found, so .proto files get no language server. Install it: brew install bufbuild/buf/buf"
+fi
 
 step "Link brain and third-party skills"
 # bash 3.2 does not stop on a missing input file, so check it first.
@@ -254,6 +287,9 @@ opencode="$HOME/.config/opencode"
 if [ -d "$opencode" ]; then
   if ! grep -qs brain-premises "$opencode/opencode.json" "$opencode/opencode.jsonc"; then
     next+=("Add brain-premises and chrome-devtools from mcp/snippets/ to the OpenCode config in your dotfiles.")
+  fi
+  if ! grep -qs ts-lsp.sh "$opencode/opencode.json" "$opencode/opencode.jsonc"; then
+    next+=("Add the lsp block from docs/integrations.md to the OpenCode config in your dotfiles.")
   fi
   case "$(BRAIN_DRY_RUN=1 node scripts/setup-config.mjs instructions-add "$opencode/AGENTS.md")" in
     added\ *) next+=("Paste templates/agent-instructions.md into ~/.config/opencode/AGENTS.md, between <!-- brain:start --> and <!-- brain:end -->.") ;;

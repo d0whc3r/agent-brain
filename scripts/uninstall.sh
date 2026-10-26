@@ -118,7 +118,7 @@ while IFS= read -r target; do
     continue
   fi
   for link in "$target"/*; do
-    if into_root "$link" skills/active .agents/skills .agents/linked || dead_brain_link "$link"; then
+    if into_root "$link" skills/active .agents/skills .agents/linked plugins || dead_brain_link "$link"; then
       remove_link skills "$link"
     fi
   done
