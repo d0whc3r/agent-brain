@@ -16,7 +16,8 @@
     "skills:update": "node bin/brain.mjs skills sync && bash scripts/sync-references.sh"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@modelcontextprotocol/client": "^2.4.0",
+    "@modelcontextprotocol/server": "^2.4.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
