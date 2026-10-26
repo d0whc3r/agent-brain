@@ -1,0 +1,11 @@
+# Keep premises, decision notes, dropped premises, and folder scaffolds. Sessions and working notes stay local.
+memory/**
+!memory/*/
+!memory/premises/**
+!memory/decisions/**
+!memory/dropped/**
+!memory/*/.gitkeep
+!memory/sessions/screenshots/
+!memory/sessions/screenshots/.gitkeep
+.obsidian/
+.DS_Store

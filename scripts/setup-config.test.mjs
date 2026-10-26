@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { dropTables, guardRules, setCodexHook, setGuards, setHook, tomlTable } from "./setup-config.mjs";
+import { changesSince, dropTables, guardRules, setCodexHook, setGuards, setHook, tomlTable } from "./setup-config.mjs";
 
 test("TestSetHookReplacesOnlyBrainHook", () => {
   const other = { type: "command", command: "other-hook" };
@@ -378,4 +378,27 @@ test("TestCodexTrustCleanRemovesOnlyAGoneCheckout", async (t) => {
   assert.equal(invoke("codex-trust-clean", dirs.gone), `removed trusted project ${dirs.gone} from ${path}\n`);
   const gone = `[projects."${dirs.gone}"]\ntrust_level = "trusted"\n\n`;
   assert.equal(await readFile(path, "utf8"), text.replace(gone, ""));
+});
+
+test("TestChangesSinceListsNewerReleases", () => {
+  const text = [
+    "# Changelog",
+    "",
+    "## [0.3.0](https://example.invalid/compare/v0.2.0...v0.3.0) (2026-11-02)",
+    "",
+    "### Features",
+    "",
+    "* add a thing ([abc1234](https://example.invalid/commit/abc1234))",
+    "",
+    "## [0.2.0](https://example.invalid/compare/v0.1.0...v0.2.0) (2026-10-26)",
+    "",
+    "### Bug Fixes",
+    "",
+    "* fix a thing ([def5678](https://example.invalid/commit/def5678))",
+    "",
+  ].join("\n");
+
+  assert.deepEqual(changesSince(text, "0.2.0"), ["0.3.0 (2026-11-02)", "Features", "* add a thing"]);
+  assert.deepEqual(changesSince(text, "0.3.0"), []);
+  assert.equal(changesSince(text, "0.1.9").length, 6);
 });

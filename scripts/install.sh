@@ -2,18 +2,26 @@
 # Install or update the agent brain for the current user.
 # Safe to run again: each step changes only what differs from the last run.
 #
-# Usage: scripts/install.sh [--dry-run] [--help]
+# Usage: scripts/install.sh [--dry-run] [--home DIR] [--no-git-guard] [--no-codex] [--no-lsp] [--help]
 #
-#   --dry-run   print what would change, and change nothing
-#   --help      print this help
+#   --dry-run        print what would change, and change nothing
+#   --home DIR       keep the brain home in DIR, and link ~/.local/share/agent-brain/home to it
+#   --no-git-guard   skip the rules that ask before git commit, push, and destructive git commands
+#   --no-codex       skip the Codex MCP servers, hook, and instructions
+#   --no-lsp         skip the code intelligence plugin and its language servers
+#   --help           print this help
 #
+# It creates the brain home once, from templates/home: your config, premises, notes, flows, and
+# skills, with starter premises as candidates. It never changes a home that exists.
 # It links the brain command, the code intelligence plugin, the skills, and the agents,
 # installs typescript-language-server with npm and ty with uv when they are missing, registers the
 # MCP servers in Claude Code and Codex, adds the session premises hook and the git confirmation
-# rules, and adds the brain instructions to ~/.codex/AGENTS.md. After a checkout move, it
-# removes the links and the Codex project trust of the old place. A changed config file keeps a
-# .brain-bak copy.
-# scripts/uninstall.sh removes all of it, except the language servers that npm and uv installed.
+# rules, and adds the brain instructions to ~/.codex/AGENTS.md. It sets up Codex only when
+# ~/.codex exists. After a checkout move, it removes the links and the Codex project trust of the
+# old place. A changed config file keeps a .brain-bak copy. A part that a --no- option skips keeps
+# what an earlier install added.
+# scripts/uninstall.sh removes all of it, except the brain home and the language servers that npm
+# and uv installed.
 #
 # Environment:
 #   BRAIN_BIN_DIR   directory for the brain command (default: $HOME/.local/bin)
@@ -22,11 +30,44 @@ set -euo pipefail
 
 # shellcheck source=ui.sh
 . "$(dirname "$0")/ui.sh"
-parse_args "$@"
+# These options belong to this script only. parse_args reads the shared options.
+home_dir=''
+no_git_guard=0
+no_codex=0
+no_lsp=0
+args=()
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --home)
+      if [ "$#" -lt 2 ]; then
+        printf 'option --home needs a directory\n\n' >&2
+        usage >&2
+        exit 2
+      fi
+      home_dir="$2"
+      shift
+      ;;
+    --home=*) home_dir="${1#--home=}" ;;
+    --no-git-guard) no_git_guard=1 ;;
+    --no-codex) no_codex=1 ;;
+    --no-lsp) no_lsp=1 ;;
+    *) args+=("$1") ;;
+  esac
+  shift
+done
+parse_args ${args[@]+"${args[@]}"}
+case "$home_dir" in
+  '' | /*) ;;
+  *) home_dir="$PWD/$home_dir" ;;
+esac
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 bin_dir="${BRAIN_BIN_DIR:-$HOME/.local/bin}"
 profile="$HOME/.local/share/agent-brain/chrome-profile"
+# The brain code reads the home from this path. --home makes it a link to another folder.
+home_link="$HOME/.local/share/agent-brain/home"
+home="${home_dir:-$home_link}"
+home_new=0
 cd "$root"
 
 # link_one points dest at source and records the change. A dry run changes nothing.
@@ -47,14 +88,27 @@ link_one() {
   fi
 }
 
+# new_home copies templates/home into an empty folder and starts a git repo there, so the user
+# can commit the home and push it to a private remote.
+new_home() {
+  mkdir -p "$1"
+  command cp -R "$root/templates/home/." "$1/"
+  command mv -f "$1/gitignore" "$1/.gitignore"
+  if command -v git >/dev/null 2>&1; then
+    git -C "$1" init -q
+  fi
+}
+
 printf 'Installing the agent brain from %s\n' "$(short "$root")"
 if [ "$dry_run" -eq 1 ]; then
   printf 'Dry run: nothing changes.\n'
 fi
 # The receipt names the checkout of the last install. Without node, step 1 stops the install.
 old_root=''
+old_version=''
 if command -v node >/dev/null 2>&1; then
   old_root="$(receipt_root)"
+  old_version="$(receipt_version)"
 fi
 if [ -n "$old_root" ] && [ "$old_root" != "$root" ]; then
   if [ -e "$old_root" ]; then
@@ -86,6 +140,35 @@ else
   pass "npm install"
 fi
 
+step "Set up the brain home"
+if [ -z "$(ls -A "$home" 2>/dev/null)" ]; then
+  if [ "$dry_run" -eq 0 ]; then
+    new_home "$home"
+  fi
+  starters="$(find "$root/templates/home/memory/premises" -name '*.md' | wc -l | tr -d ' ')"
+  change added home "$home, with $(plural "$starters" "starter premise") as candidates"
+  home_new=1
+fi
+# An update adds each folder of a newer template, and never changes a file of the user.
+if [ "$home_new" -eq 0 ]; then
+  while IFS= read -r keep; do
+    rel="${keep#"$root/templates/home/"}"
+    if [ ! -e "$home/$rel" ]; then
+      if [ "$dry_run" -eq 0 ]; then
+        mkdir -p "$(dirname "$home/$rel")"
+        : >"$home/$rel"
+      fi
+      change added home "$home/$rel"
+    fi
+  done < <(find "$root/templates/home" -name .gitkeep | sort)
+fi
+if [ -n "$home_dir" ]; then
+  if [ -e "$home_link" ] && [ ! -L "$home_link" ]; then
+    fail "$home_link is a folder. Move it, or run without --home."
+  fi
+  link_one home "$home" "$home_link"
+fi
+
 step "Link the brain command"
 link_one bin "$root/bin/brain.mjs" "$bin_dir/brain"
 case ":$PATH:" in
@@ -96,32 +179,44 @@ esac
 # This step runs before the skill links, so a moved checkout updates this link before
 # link-skills sees it as a dead brain link.
 step "Link the code intelligence plugin"
-# Claude Code loads a folder in ~/.claude/skills that holds .claude-plugin/plugin.json as a plugin.
-link_one skills "$root/plugins/brain-lsp" "$HOME/.claude/skills/brain-lsp"
-# typescript-language-server serves a folder with no TypeScript from the tsserver.js of the
-# typescript package beside it. TypeScript 7 has no tsserver.js, so the install pins 6.
-# The uninstall keeps the language servers that npm and uv installed, because other tools can use them.
-if ! command -v typescript-language-server >/dev/null 2>&1; then
-  if [ "$dry_run" -eq 0 ]; then
-    npm install -g --no-audit --no-fund --loglevel=error typescript-language-server typescript@6
-  fi
-  change added lsp "typescript-language-server and typescript@6 with npm install -g"
-fi
-if ! command -v ty >/dev/null 2>&1; then
-  if command -v uv >/dev/null 2>&1; then
-    if [ "$dry_run" -eq 0 ]; then
-      uv tool install --quiet ty
+# link_lsp links the plugin and adds the language servers that npm and uv install.
+link_lsp() {
+  local ts_lsp="typescript-language-server typescript@6"
+  # Claude Code loads a folder in ~/.claude/skills that holds .claude-plugin/plugin.json as a plugin.
+  link_one skills "$root/plugins/brain-lsp" "$HOME/.claude/skills/brain-lsp"
+  # typescript-language-server serves a folder with no TypeScript from the tsserver.js of the
+  # typescript package beside it. TypeScript 7 has no tsserver.js, so the install pins 6.
+  # The uninstall keeps the language servers that npm and uv installed, because other tools can use them.
+  # npm install -g needs root with the node of a Linux distro, so a failure warns and the install goes on.
+  if ! command -v typescript-language-server >/dev/null 2>&1; then
+    # shellcheck disable=SC2086
+    if [ "$dry_run" -eq 1 ] || npm install -g --no-audit --no-fund --loglevel=error $ts_lsp; then
+      change added lsp "typescript-language-server and typescript@6 with npm install -g"
+    else
+      warn "npm install -g failed, so TypeScript files get no language server. Install it by hand: npm install -g $ts_lsp"
     fi
-    change added lsp "ty with uv tool install"
-  else
-    warn "uv not found, so the install cannot add ty, and Python files get no language server. Install uv: brew install uv"
   fi
-fi
-if ! command -v gopls >/dev/null 2>&1; then
-  warn "gopls not found, so Go files get no language server. Install it: go install golang.org/x/tools/gopls@latest"
-fi
-if ! command -v buf >/dev/null 2>&1; then
-  warn "buf not found, so .proto files get no language server. Install it: brew install bufbuild/buf/buf"
+  if ! command -v ty >/dev/null 2>&1; then
+    if command -v uv >/dev/null 2>&1; then
+      if [ "$dry_run" -eq 0 ]; then
+        uv tool install --quiet ty
+      fi
+      change added lsp "ty with uv tool install"
+    else
+      warn "uv not found, so the install cannot add ty, and Python files get no language server. Install uv: brew install uv"
+    fi
+  fi
+  if ! command -v gopls >/dev/null 2>&1; then
+    warn "gopls not found, so Go files get no language server. Install it: go install golang.org/x/tools/gopls@latest"
+  fi
+  if ! command -v buf >/dev/null 2>&1; then
+    warn "buf not found, so .proto files get no language server. Install it: brew install bufbuild/buf/buf"
+  fi
+}
+if [ "$no_lsp" -eq 1 ]; then
+  skip "skipped (--no-lsp)"
+else
+  link_lsp
 fi
 
 step "Link brain and third-party skills"
@@ -208,8 +303,23 @@ else
   warn "claude not found, so Claude Code has no brain MCP servers. Install Claude Code, then run this script again."
 fi
 
+# Codex gets the brain only when it is installed, and only without --no-codex.
+codex=1
+codex_why=''
+if [ "$no_codex" -eq 1 ]; then
+  codex=0
+  codex_why='--no-codex'
+elif [ ! -d "$HOME/.codex" ]; then
+  codex=0
+  codex_why='Codex is not installed'
+fi
+skip_tools=''
+if [ "$codex" -eq 0 ]; then
+  skip_tools=codex
+fi
+
 step "Add the session premises hooks"
-hooks="$(node scripts/setup-config.mjs hooks-apply)"
+hooks="$(node scripts/setup-config.mjs hooks-apply "$skip_tools")"
 report hook <<<"$hooks"
 codex_hook=0
 if grep -E '^(added|updated) ' <<<"$hooks" | grep -qF "$HOME/.codex/hooks.json"; then
@@ -217,17 +327,29 @@ if grep -E '^(added|updated) ' <<<"$hooks" | grep -qF "$HOME/.codex/hooks.json";
 fi
 
 step "Ask before git commit, push, and destructive git commands"
-apply guard node scripts/setup-config.mjs guard-add
+if [ "$no_git_guard" -eq 1 ]; then
+  skip "skipped (--no-git-guard)"
+else
+  apply guard node scripts/setup-config.mjs guard-add
+fi
 
 step "Register MCP servers in Codex"
-apply mcp node scripts/setup-config.mjs codex-add
+if [ "$codex" -eq 1 ]; then
+  apply mcp node scripts/setup-config.mjs codex-add
+else
+  skip "skipped ($codex_why)"
+fi
 
 # Codex writes the trust of a project when the user gives it. The install never adds one.
 step "Remove the Codex trust of a moved checkout"
 apply trust node scripts/setup-config.mjs codex-trust-clean "$old_root"
 
 step "Add the brain instructions to Codex"
-apply instructions node scripts/setup-config.mjs instructions-add "$HOME/.codex/AGENTS.md"
+if [ "$codex" -eq 1 ]; then
+  apply instructions node scripts/setup-config.mjs instructions-add "$HOME/.codex/AGENTS.md"
+else
+  skip "skipped ($codex_why)"
+fi
 
 step "Write the install receipt"
 if [ "$dry_run" -eq 1 ]; then
@@ -274,8 +396,21 @@ installed="$(node bin/brain.mjs installed | tail -n +2 | cut -f1 | tally)"
 printf '\n%s✓ Installed:%s %s\n' "$green$bold" "$reset" "$installed"
 printf '  This run: %s\n' "${summary:-no change}"
 show_warnings
+new_version="$(node -p 'require("./package.json").version')"
+if [ -n "$old_version" ] && [ "$old_version" != "$new_version" ]; then
+  printf '\nUpdated the brain from %s to %s:\n' "$old_version" "$new_version"
+  node scripts/setup-config.mjs changelog "$old_version" | sed 's/^/  /'
+fi
 
 next=()
+starters="$(node bin/brain.mjs home starters | wc -l | tr -d ' ')"
+if [ "$home_new" -eq 0 ] && [ "$starters" -gt 0 ]; then
+  next+=("Run brain home starters to list $(plural "$starters" "new starter premise"), and add --apply to add them as candidates.")
+fi
+if [ "$home_new" -eq 1 ]; then
+  next+=("Review the starter premises with brain premise list --status candidate, and run brain premise promote ID for each one you want.")
+  next+=("Add scopes for your repos to $(short "$home")/brain.config.json, and commit the home to a private git repo.")
+fi
 if [ -n "$summary" ]; then
   next+=("Start a new Claude Code, Codex, or OpenCode session to load the changes.")
 fi

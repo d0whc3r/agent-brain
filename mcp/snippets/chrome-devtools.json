@@ -7,6 +7,6 @@
     "--no-usage-statistics",
     "--no-performance-crux",
     "--redact-network-headers",
-    "--filesystemRoot=${BRAIN_ROOT}/memory/sessions/screenshots"
+    "--filesystemRoot=${HOME}/.local/share/agent-brain/home/memory/sessions/screenshots"
   ]
 }

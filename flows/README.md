@@ -8,7 +8,7 @@ A flow is a task you do often, with the steps that finish it well. `brain next` 
 | --- | --- |
 | `name` | Flow id. Defaults to the file name. |
 | `description` | One sentence. `brain next` prints it. |
-| `scopes` | Brain scopes from `brain.config.json`, or `*`. Use it for a flow that fits one team or project, so it does not show up in the others. |
+| `scopes` | Brain scopes from `brain.config.json` in the brain home, or `*`. Use it for a flow that fits one team or project, so it does not show up in the others. |
 | `repos` | Origin repo names, or `*`. The flow matches only in these repos. |
 | `kinds` | Changed file kinds: `go`, `python`, `proto`, `ui`, `migration`, `docs`, `test`, `deps` (a dependency manifest or a lockfile). One match is enough. |
 | `branch` | `main` or `feature`. |

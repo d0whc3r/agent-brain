@@ -21,7 +21,7 @@ Many repos in the workspace carry their own rules and skills. A rule in a repo t
    - `duplicate`: the repo already states the premise. Keep both, and note it.
    - `gap`: the repo states a rule that the brain lacks. It is a premise candidate.
    - `stale`: a premise names a command, script, or path that the repo no longer has.
-4. Write `memory/workspace/audit-YYYY-MM-DD.md` with one table: kind, scope, repo, file, line, brain side, repo side, proposal.
+4. Write `<home>/memory/workspace/audit-YYYY-MM-DD.md`, where `<home>` is the output of `brain home`, with one table: kind, scope, repo, file, line, brain side, repo side, proposal.
 5. Show the table. Ask the user how to resolve each `contradiction` and `stale` row, and which `gap` rows to add.
 6. Apply only the approved brain changes: `brain premise add`, `brain premise rm`, or an edit of a brain skill.
 7. Run `brain workspace check` again and show the conflict count.

@@ -4,10 +4,13 @@ import { spawn } from "node:child_process";
 import { realpathSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const here = dirname(realpathSync(import.meta.filename));
 const brainRoot = join(here, "..", "..");
 const script = join(brainRoot, "bin", "session-premises.mjs");
+// The link in the OpenCode plugin folder breaks a relative import, so load the brain code by path.
+const { brainHome } = await import(pathToFileURL(join(brainRoot, "lib", "premise.mjs")).href);
 const cache = new Map();
 
 // runPremises feeds the session directory to the shared script. A non-zero exit rejects with
@@ -57,7 +60,7 @@ export async function markerTime(path) {
 
 // loadPremiseText caches one directory until the premise folder changes.
 export async function loadPremiseText(cwd, run = runPremises) {
-  const mtime = await markerTime(join(brainRoot, "memory", "premises"));
+  const mtime = await markerTime(join(brainHome(), "memory", "premises"));
   const hit = cache.get(cwd);
   if (hit && hit.mtime === mtime) {
     return hit.text;

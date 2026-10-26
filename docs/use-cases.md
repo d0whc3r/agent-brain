@@ -129,7 +129,7 @@ You run `brain premise rm ID`. You do not delete the markdown file by hand. You 
 
 User: "These keep coming up. Make a skill." "What can become a skill?"
 
-You load `brain-garden` and follow it. You write the draft under `skills/drafts/` and its pattern note in `memory/patterns/`. You stop and tell the user the draft path.
+You load `brain-garden` and follow it. You write the draft under `skills/drafts/` and its pattern note in `memory/patterns/`, both in the brain home. You stop and tell the user the draft path.
 
 ## Accept a draft
 
@@ -147,7 +147,7 @@ You load `brain-tp-find-skills`. You show the add command. You do not install it
 
 User: "Write a skill for our proto field numbers."
 
-You load `brain-tp-skill-creator`. You write the draft under `skills/drafts/` in the brain, the path that `brain root` prints. You do not edit `skills/active/`.
+You load `brain-tp-skill-creator`. You write the draft under `skills/drafts/` in the brain home, the path that `brain home` prints. You do not edit `skills/active/`.
 
 ## Import rules from memory
 

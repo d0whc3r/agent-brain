@@ -7,7 +7,7 @@ metadata:
 
 # Worktrees
 
-`<brain>` is the output of `brain root`.
+`<brain>` is the output of `brain root`. `<home>` is the output of `brain home`: the data of the user.
 
 ## Understand
 
@@ -30,7 +30,7 @@ A split turns one branch into a stack or a set of branches, one worktree each. E
 
 1. Run the `brain-split-planner` agent on the branch. Pass the repo path, the branch, and the base. On Codex, follow its file in `<brain>/agents/` in this session.
 2. Show the plan. Change nothing before the user approves it. Change the plan when the user asks.
-3. Write the approved plan to `<brain>/memory/splits/YYYY-MM-DD-<repo>-<branch>.md`.
+3. Write the approved plan to `<home>/memory/splits/YYYY-MM-DD-<repo>-<branch>.md`.
 4. Apply it, one part at a time, in the merge order of the plan:
    - `git worktree add ../<repo>-<slug> -b <branch> <parent>`. The first part starts from the base. A stacked part starts from the part before it.
    - Copy the files of that part from the source branch into the working tree only: `git restore --source=<source> --worktree -- <paths>`. It also deletes a path that the source deleted, and it leaves the index as it is. For a file that the plan splits by hunk, apply only those hunks: write `git diff <base> <source> -- <path>` to a patch, keep the hunks of this part, then `git apply`.

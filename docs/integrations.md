@@ -12,7 +12,6 @@ Contents:
 - [Obsidian](#obsidian)
 - [Check MCP drift](#check-mcp-drift)
 - [Local decision model](#local-decision-model)
-- [Setup record](#setup-record)
 
 ## Configuration files
 
@@ -22,11 +21,11 @@ The installer creates missing Claude Code and Codex configuration files. Before 
 
 OpenCode reads its MCP configuration from dotfiles. Add `brain-premises` and `chrome-devtools` there from the snippet files.
 
-The installer registers the session premises hook for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). [brain.config.json](../brain.config.json) defines the scopes. The [catalog](catalog.md#hooks-and-settings) describes the hook and the Git confirmation rules. Codex does not run a new hook until you trust it in `/hooks`.
+The installer registers the session premises hook for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). `brain.config.json` in the brain home defines the scopes. The [catalog](catalog.md#hooks-and-settings) describes the hook and the Git confirmation rules. Codex does not run a new hook until you trust it in `/hooks`.
 
 ## Code intelligence
 
-The `brain-lsp` plugin gives Claude Code language servers for Go, TypeScript, protobuf, and Python files. The install links [plugins/brain-lsp](../plugins/brain-lsp/) into `~/.claude/skills/brain-lsp`, and Claude Code loads that folder as the plugin `brain-lsp@skills-dir`. The brain runs no code index server: [the code index benchmark](../communications/2026-10-26-code-index-benchmark.md) found that a language server gives exact answers with no index to keep up to date.
+The `brain-lsp` plugin gives Claude Code language servers for Go, TypeScript, protobuf, and Python files. The install links [plugins/brain-lsp](../plugins/brain-lsp/) into `~/.claude/skills/brain-lsp`, and Claude Code loads that folder as the plugin `brain-lsp@skills-dir`. The brain runs no code index server, because a language server gives exact answers with no index to keep up to date.
 
 | Files | Server | Requirement |
 | --- | --- | --- |
@@ -72,15 +71,15 @@ $HOME/.local/share/agent-brain/chrome-profile
 
 The profile stays outside the repo and the Obsidian vault. UI reviews use this profile instead of the daily Chrome profile.
 
-Screenshots go to `memory/sessions/screenshots/`. Git ignores that directory except for its `.gitkeep` file.
+Screenshots go to `memory/sessions/screenshots/` in the brain home. Git ignores that folder except for its `.gitkeep` file.
 
 Use the user server `chrome-devtools` for UI reviews. The `plugin:ecc:chrome-devtools` server does not have the review profile flags.
 
 ## Obsidian
 
-Open the repo as an Obsidian vault. The CLI and `brain-premises` also work when Obsidian is closed.
+Open the brain home as an Obsidian vault. `brain home` prints its path. The CLI and `brain-premises` also work when Obsidian is closed.
 
-Open [premises.base](../premises.base) with the core Bases plugin for Active, Candidates, and Archived views. The Meaning column makes the rule polarity explicit: `always` requires the text, `never` forbids the action in the text, and a candidate does not apply. Scope and repositories stay visible. The Active view spans all scopes; it is not the rule set for a particular repo.
+Open `premises.base` in the brain home with the core Bases plugin for Active, Candidates, and Archived views. The Meaning column makes the rule polarity explicit: `always` requires the text, `never` forbids the action in the text, and a candidate does not apply. Scope and repositories stay visible. The Active view spans all scopes; it is not the rule set for a particular repo.
 
 Use `brain-premises` for rule management. Its initialization instructions describe rule strength, scope, candidates, evidence, and the write path. Read tools carry MCP read-only hints; these hints describe behavior and do not enforce permissions. Agents add, update, and delete premises through `brain premise` or the premise MCP. Direct edits in Bases or a general Obsidian MCP bypass that validation.
 
@@ -104,7 +103,7 @@ Older servers have no drift guard. If `premise_list` exposes no `scope` paramete
 
 ## Local decision model
 
-The `decide` block of [brain.config.json](../brain.config.json) turns on a local decision model in Ollama. Without the block, the brain sends no request. The model answers closed questions through `POST http://localhost:11434/v1/systemone`. This integration is experimental.
+The `decide` block of `brain.config.json` in the brain home turns on a local decision model in Ollama. Without the block, the brain sends no request. The model answers closed questions through `POST http://localhost:11434/v1/systemone`. This integration is experimental.
 
 ```json
 "decide": { "model": "nimble-v3-16k:latest", "scopes": ["*"] }
@@ -118,7 +117,3 @@ The model gives two hints:
 - `brain premise add` and `premise_add` name a premise of the same scope that may state the same rule. The CLI writes the hint to stderr. The MCP result has `repeat_of`. Run `brain premise seen` on that premise when it is a repeat.
 
 A hint never changes the flow order, never blocks an add, and never writes a premise. When Ollama is down, the model is missing, or the answer is not a listed choice, the CLI writes `local model:` and the reason to stderr and keeps its normal output. The MCP result has `repeat_error` with the reason in place of `repeat_of`. The first request after the model unloads takes a few seconds.
-
-## Setup record
-
-The [setup history](setup-history.md) records the skill discovery probe and Engram registration. The [install receipt decision](superpowers/specs/2026-10-23-install-receipt-design.md) defines the requirements for tracking installed items.

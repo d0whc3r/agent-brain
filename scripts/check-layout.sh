@@ -10,10 +10,15 @@ if ! grep -F -q -e "$line" AGENTS.md; then
   exit 1
 fi
 
-# git check-ignore matches the path against the ignore rules, so the file need not exist.
+# A screenshot in a new home must stay out of git. git check-ignore matches the path against
+# the ignore rules of the home template, so the file need not exist.
+probe="$(mktemp -d)"
+trap 'command rm -rf "$probe"' EXIT
+git -C "$probe" init -q
+command cp -f templates/home/gitignore "$probe/.gitignore"
 shot='memory/sessions/screenshots/check.png'
-if ! git check-ignore -q "$shot"; then
-  echo "git check-ignore failed for $shot" >&2
+if ! git -C "$probe" check-ignore -q "$shot"; then
+  echo "templates/home/gitignore does not ignore $shot" >&2
   exit 1
 fi
 

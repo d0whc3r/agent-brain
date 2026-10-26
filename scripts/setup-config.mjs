@@ -89,6 +89,39 @@ export function render(name, vars) {
   return { type: "stdio", ...JSON.parse(filled) };
 }
 
+const releaseHeading = /^## \[(\d+\.\d+\.\d+)\][^(]*(?:\([^)]*\))?\s*(\(\d{4}-\d{2}-\d{2}\))?/u;
+const commitLink = / \(\[[0-9a-f]{7,40}\]\([^)]*\)\)$/u;
+
+// changesSince returns the CHANGELOG.md lines of each release newer than version, so the install
+// can show what an update brought.
+export function changesSince(text, version) {
+  return releases(text).flatMap((release) =>
+    compareVersions(release.version, version) > 0 ? [release.title, ...release.lines] : [],
+  );
+}
+
+// releases splits CHANGELOG.md into its releases: the version, a title with the date, and the
+// lines below the heading, with no blank lines, heading marks, or commit links.
+function releases(text) {
+  const out = [];
+  for (const line of text.split("\n")) {
+    const heading = line.match(releaseHeading);
+    if (heading) {
+      out.push({ version: heading[1], title: heading[2] ? `${heading[1]} ${heading[2]}` : heading[1], lines: [] });
+      continue;
+    }
+    if (out.length > 0 && line.trim() !== "") {
+      out.at(-1).lines.push(line.replace(/^#+ /u, "").replace(commitLink, ""));
+    }
+  }
+  return out;
+}
+
+function compareVersions(a, b) {
+  const [x, y] = [a, b].map((v) => v.split(".").map(Number));
+  return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
+}
+
 // setGuards removes the guard rules from permissions.ask, then adds them back when add is true.
 // Other ask rules stay.
 export function setGuards(settings, add) {
@@ -278,6 +311,15 @@ function claudeMcpState(name, vars) {
 // The arg of instructions-add and instructions-remove is the global instruction file of a tool,
 // such as ~/.codex/AGENTS.md.
 const commands = {
+  changelog: (arg, vars) => {
+    const text = readFileSync(join(vars.root, "CHANGELOG.md"), "utf8");
+    process.stdout.write(
+      changesSince(text, arg)
+        .map((line) => `${line}\n`)
+        .join(""),
+    );
+    return 0;
+  },
   "claude-json": (arg, vars) => {
     process.stdout.write(`${JSON.stringify(render(arg, vars))}\n`);
     return 0;
@@ -288,7 +330,7 @@ const commands = {
   },
   "hook-add": (arg, vars) => editSettings(vars.home, true, hookEntry(arg)),
   "hook-remove": (_arg, vars) => editSettings(vars.home, false, hookEntry("")),
-  "hooks-apply": (_arg, vars) => applyHooks(vars.home, vars.root),
+  "hooks-apply": (arg, vars) => applyHooks(vars.home, vars.root, new Set(arg ? arg.split(",") : [])),
   "hooks-remove": (_arg, vars) => removeHooks(vars.home, vars.root),
   "guard-add": (_arg, vars) => editSettings(vars.home, true, guardEntry(true)),
   "guard-remove": (_arg, vars) => editSettings(vars.home, false, guardEntry(false)),
@@ -306,7 +348,7 @@ function main(args) {
   const [cmd, arg] = args;
   if (!Object.hasOwn(commands, cmd)) {
     process.stderr.write(
-      "usage: setup-config.mjs claude-json NAME | claude-mcp-state NAME | hook-add COMMAND | hook-remove | hooks-apply | hooks-remove | guard-add | guard-remove | codex-add | codex-remove | codex-trust-clean [OLD_ROOT] | codex-trust-remove [OLD_ROOT] | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
+      "usage: setup-config.mjs changelog OLD_VERSION | claude-json NAME | claude-mcp-state NAME | hook-add COMMAND | hook-remove | hooks-apply | hooks-remove | guard-add | guard-remove | codex-add | codex-remove | codex-trust-clean [OLD_ROOT] | codex-trust-remove [OLD_ROOT] | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
     );
     return 1;
   }

@@ -17,4 +17,4 @@ model: opus
 6. For each finding the user rejects, run `/brain-learn`, and add the premise id to `rejected` in the session note.
 7. For each finding the user accepts that names a defect class, and not a one-off slip, find a premise or a candidate that states it with `brain premise search`. Record the repeat with `brain premise seen <id> --repo <repo> --origin defect`. When none exists, add a candidate with `--status candidate` first. Store nothing for a one-off finding.
 
-Done when a session note per worktree exists in `memory/sessions/`, each finding has an answer from the user, and the review shows the result of `brain dod lint --done`. Next flow: `prepare-pr`.
+Done when a session note per worktree exists in `memory/sessions/` of the brain home, each finding has an answer from the user, and the review shows the result of `brain dod lint --done`. Next flow: `prepare-pr`.

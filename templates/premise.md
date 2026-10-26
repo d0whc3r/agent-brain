@@ -1,15 +1,15 @@
 ---
 id: new-rpc-in-cluster-service-go
-text: Add a new RPC to qdrant-cloud-cluster-service, in Go.
+text: Add a new RPC to orders-service, in Go.
 strength: always
-scope: qdrant
+scope: work
 repos:
-  - qdrant-cloud-cluster-service
-  - qdrant-cloud-cluster-api
+  - orders-service
+  - orders-api
 status: candidate
 source: ""
 seen:
-  - 2026-10-23 qdrant-cloud-cluster-api correction
+  - 2026-10-23 orders-api correction
 ---
 
 Why: New backend work moves to the Go service.

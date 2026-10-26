@@ -206,8 +206,12 @@ function writeCommandHook(home, entry, command) {
 }
 
 // applyHooks registers every catalog row for this user. It does not trust a Codex hook.
-export function applyHooks(home, dir = root) {
+// skip names the tools that get no hook, such as codex when Codex is not installed.
+export function applyHooks(home, dir = root, skip = new Set()) {
   for (const entry of loadCatalog(dir)) {
+    if (skip.has(entry.tool)) {
+      continue;
+    }
     if (entry.tool === "opencode") {
       linkPlugin(home, dir, entry);
     } else {

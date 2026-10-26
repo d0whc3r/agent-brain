@@ -39,8 +39,8 @@ The test: every changed line traces to the request.
 
 **Name the check first. The work is done when the check passes.**
 
-- A premise change: `brain premise list` shows the new state, `brain premise check` prints `ok`, and the file is in `memory/premises/` or `memory/dropped/`.
-- A skill draft: the directory is under `skills/drafts/`, and no tool lists that skill name.
+- A premise change: `brain premise list` shows the new state, `brain premise check` prints `ok`, and the file is in `memory/premises/` or `memory/dropped/` of `brain home`.
+- A skill draft: the directory is under `skills/drafts/` of `brain home`, and no tool lists that skill name.
 - A review: the output quotes each active `always` and `never` premise for that repo.
 - A task that changes files: `brain dod lint --done` prints `ok`. The premise `dod-before-done` holds the rule, and the `brain-dod` skill has the steps.
 - "Looks right" is not a result. Run the check and paste the output.
@@ -68,7 +68,7 @@ The test: every changed line traces to the request.
 
 - Comments, commit messages, and replies: cut every word that does not change the meaning.
 - No praise, no superlatives.
-- Chat with the user in Spanish when the user writes in Spanish. Files in this repo stay in English.
+- Chat with the user in the language the user writes in. Files in this repo stay in English.
 
 ## 8. This brain
 
@@ -76,8 +76,8 @@ The test: every changed line traces to the request.
 
 The user talks in natural language. You run `brain` and the review steps. Do not ask the user to type a slash command. Read `docs/use-cases.md` when the request matches a case there.
 
-- This repo is the user's. It is not a team repo. Do not edit the `AGENTS.md` at the `qdrant` scope root.
-- Do not take code patterns from the copy directories that the `AGENTS.md` at the `qdrant` scope root names. Do not modify the engine repo `qdrant/`.
+- This repo holds the brain code. The data of the user lives in `brain home`: config, premises, notes, standing DoDs, flows, and skills. Do not add user data to this repo.
+- Do not edit the `AGENTS.md` at a scope root, or a repo in a scope, unless the user asks.
 - Before a review, call `premise_list` for the repo and its scope. `brain scope` prints both. Apply every active `always` and `never` premise. Quote each one you applied.
 - Add a premise with `brain premise add` or `premise_add`. Change its fields with `brain premise update` or `premise_update`. Remove one with `brain premise rm` or `premise_delete`. Do not delete the markdown file by hand in an agent turn.
 - Store a rule only when it is important. An explicit ask becomes an active premise. Any other correction or defect class becomes a candidate, and `brain premise seen` counts each repeat. Ephemeral facts go nowhere. The `brain-learn` skill has the table and the thresholds.

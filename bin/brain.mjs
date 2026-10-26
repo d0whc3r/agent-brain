@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
-import { realpathSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
+import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { suggestFlow } from "../lib/decide.mjs";
 import { cmdDod } from "../lib/dod-cli.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
+import { cmdHome } from "../lib/home-cli.mjs";
 import { flags, UsageError } from "../lib/io.mjs";
 import { premiseCommands } from "../lib/premise-cli.mjs";
-import { brainRoot, open } from "../lib/premise.mjs";
+import { brainHome, brainRoot, open } from "../lib/premise.mjs";
 import { readReceipt, receiptPath, removeReceipt, writeReceipt } from "../lib/receipt.mjs";
 import { loadConfig, resolveRepo } from "../lib/scope.mjs";
 import { acceptSkill, linkSkills } from "../lib/skills.mjs";
@@ -28,6 +30,7 @@ const usageText = `usage:
   brain premise stats
   brain premise check
   brain root
+  brain home [migrate --from DIR [--apply] | starters [--apply]]
   brain scope [--cwd DIR]
   brain installed [write --bin-dir DIR [--target PATH ...] [--claude] | remove]
   brain workspace check
@@ -47,6 +50,7 @@ ${skillsUsage}`;
 const commands = {
   premise: (args, stdout, stderr) => dispatch(premiseCommands, args, { stdout, stderr }),
   root: cmdRoot,
+  home: cmdHome,
   scope: cmdScope,
   installed: cmdInstalled,
   workspace: cmdWorkspace,
@@ -105,7 +109,7 @@ function cmdScope(args, stdout) {
   if (f.pos.length > 0) {
     throw new UsageError();
   }
-  const config = loadConfig(brainRoot());
+  const config = loadConfig(brainHome());
   const found = resolveRepo(f.cwd || process.cwd(), config);
   const roots = config.scopes[found.scope]?.roots ?? [];
   stdout.write(`${found.scope || "-"}\t${found.repo}\t${found.owner || "-"}\t${roots[0] ?? "-"}\n`);
@@ -129,6 +133,11 @@ async function cmdInstalled(args, stdout, stderr) {
   return installedShow(stdout, stderr);
 }
 
+// brainVersion reads the semver of this checkout, which the receipt keeps for the next install.
+function brainVersion() {
+  return JSON.parse(readFileSync(join(brainRoot(), "package.json"), "utf8")).version;
+}
+
 async function installedWrite(args, stdout) {
   const f = flags(args, { target: "list", "bin-dir": "string", claude: "boolean" });
   if (f.pos.length > 0) {
@@ -136,7 +145,7 @@ async function installedWrite(args, stdout) {
   }
   const items = await writeReceipt(
     brainRoot(),
-    { targets: f.target, binDir: f["bin-dir"] ?? "", claude: f.claude },
+    { targets: f.target, binDir: f["bin-dir"] ?? "", claude: f.claude, version: brainVersion() },
     stdout,
   );
   stdout.write(`${items.length} items in ${receiptPath()}\n`);
@@ -185,14 +194,14 @@ async function cmdNext(args, stdout, stderr) {
     throw new UsageError();
   }
   const cwd = f.cwd || process.cwd();
-  const config = loadConfig(brainRoot());
+  const config = loadConfig(brainHome());
   const ctx = repoContext(cwd, { pr: !f["no-pr"], config });
   if (!ctx) {
     stderr.write(`not a git repo: ${cwd}\n`);
     return 1;
   }
-  const flows = matchFlows(await loadFlows(brainRoot()), ctx);
-  const premises = await (await open(brainRoot())).list(ctx.repo, ctx.scope);
+  const flows = matchFlows(await loadFlows(brainRoot(), brainHome()), ctx);
+  const premises = await (await open(brainHome())).list(ctx.repo, ctx.scope);
   const next = { ctx, flows, premises, request: f.request };
   next.suggested = f.request ? await suggest(config, next, stderr) : null;
   stdout.write(f.json ? nextJson(next) : nextText(next));
@@ -232,7 +241,7 @@ function nextText({ ctx, flows, premises, suggested }) {
 }
 
 async function cmdFlows(args, stdout) {
-  for (const flow of await loadFlows(brainRoot())) {
+  for (const flow of await loadFlows(brainRoot(), brainHome())) {
     stdout.write(`${flow.name}\t${flow.model ?? "-"}\t${flow.description ?? ""}\n`);
   }
   return 0;
@@ -245,9 +254,9 @@ async function cmdWorkspace(args, stdout, stderr) {
   if (args.length !== 1 || args[0] !== "check") {
     throw new UsageError();
   }
-  const brain = brainRoot();
+  const home = brainHome();
   try {
-    const found = conflicts(await scanScopes(loadConfig(brain)), await brainSkills(brain));
+    const found = conflicts(await scanScopes(loadConfig(home)), await brainSkills(brainRoot(), home));
     for (const line of found) {
       stdout.write(`conflict\t${line}\n`);
     }
@@ -265,7 +274,7 @@ async function cmdAcceptSkill(args) {
   if (args.length !== 1 || args[0].startsWith("-")) {
     throw new UsageError("accept-skill needs one NAME");
   }
-  await acceptSkill(brainRoot(), args[0]);
+  await acceptSkill(brainRoot(), brainHome(), args[0]);
   return 0;
 }
 
@@ -280,7 +289,7 @@ async function cmdLinkSkills(args, stdout) {
   if (f.target.length === 0) {
     throw new UsageError("link-skills needs --target PATH");
   }
-  for (const line of await linkSkills(brainRoot(), f.target, f.apply)) {
+  for (const line of await linkSkills(brainRoot(), f.target, { apply: f.apply, home: brainHome() })) {
     stdout.write(`${line}\n`);
   }
   return 0;

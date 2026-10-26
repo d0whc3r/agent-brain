@@ -9,7 +9,7 @@ import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
-import { brainRoot, open } from "../lib/premise.mjs";
+import { brainHome, brainRoot, open } from "../lib/premise.mjs";
 import { loadConfig } from "../lib/scope.mjs";
 
 export function formatContext(ctx, premises, flows) {
@@ -41,16 +41,16 @@ export function formatProblems(problems) {
 }
 
 export async function premiseContext(cwd) {
-  const brain = brainRoot();
+  const home = brainHome();
   // Skip the PR lookup: it calls the network and the hook must stay fast.
-  const ctx = repoContext(cwd, { pr: false, config: loadConfig(brain) });
+  const ctx = repoContext(cwd, { pr: false, config: loadConfig(home) });
   if (!ctx) {
     return "";
   }
-  const store = await open(brain);
+  const store = await open(home);
   const premises = await store.list(ctx.repo, ctx.scope);
   const { problems } = await store.scan();
-  const flows = matchFlows(await loadFlows(brain), ctx).slice(0, 3);
+  const flows = matchFlows(await loadFlows(brainRoot(), home), ctx).slice(0, 3);
   return `${formatContext(ctx, premises, flows)}${formatProblems(problems)}`;
 }
 

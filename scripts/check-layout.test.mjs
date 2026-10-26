@@ -17,7 +17,8 @@ test("TestLayoutKeepsScreenshots", async (t) => {
   const script = join(root, "scripts", "check-layout.sh");
   await copyFile(fileURLToPath(new URL("./check-layout.sh", import.meta.url)), script);
   await writeFile(join(root, "AGENTS.md"), "Premises are rules. Skills are workflows. Engram is the session log.\n");
-  await writeFile(join(root, ".gitignore"), "memory/sessions/screenshots/*\n");
+  await mkdir(join(root, "templates", "home"), { recursive: true });
+  await writeFile(join(root, "templates", "home", "gitignore"), "memory/sessions/screenshots/*\n");
   await writeFile(join(shots, "shot.png"), "existing screenshot");
   const git = (...args) => execFileSync("git", ["-C", root, ...args], { stdio: "ignore" });
   git("init", "-q");
@@ -32,7 +33,7 @@ test("TestLayoutKeepsScreenshots", async (t) => {
 test("TestGitKeepsRulesAndSkipsCaptures", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "brain-memory-git-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  await copyFile(fileURLToPath(new URL("../.gitignore", import.meta.url)), join(root, ".gitignore"));
+  await copyFile(fileURLToPath(new URL("../templates/home/gitignore", import.meta.url)), join(root, ".gitignore"));
   const shared = [
     "memory/premises/global-rule.md",
     "memory/premises/personal-rule.md",
@@ -71,25 +72,20 @@ test("TestGitKeepsRulesAndSkipsCaptures", async (t) => {
   }
 });
 
-// A fresh clone has only what git keeps, so a source outside that set is a broken link there.
-test("TestPremiseSourcesStayInGit", async () => {
-  const repo = fileURLToPath(new URL("..", import.meta.url));
-  const listed = execFileSync(
-    "git",
-    ["-C", repo, "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "memory"],
-    { encoding: "utf8" },
-  );
-  const kept = new Set(listed.split("\0"));
-  const lost = [];
-  for (const dir of ["memory/premises", "memory/dropped"]) {
-    for (const name of await readdir(join(repo, dir))) {
-      const { source } = frontmatter(await readFile(join(repo, dir, name), "utf8"));
-      if (source && !kept.has(source)) {
-        lost.push(`${dir}/${name}: ${source}`);
-      }
+// A new home has no decision notes, so a starter premise that names a source links to nothing.
+test("TestStarterPremisesNameNoSource", async () => {
+  const dir = fileURLToPath(new URL("../templates/home/memory/premises", import.meta.url));
+  const names = (await readdir(dir)).filter((name) => name.endsWith(".md"));
+  assert.ok(names.length > 0, "no starter premise");
+  const linked = [];
+  for (const name of names) {
+    const { source, status } = frontmatter(await readFile(join(dir, name), "utf8"));
+    assert.equal(status, "candidate", name);
+    if (source) {
+      linked.push(`${name}: ${source}`);
     }
   }
-  assert.deepEqual(lost, []);
+  assert.deepEqual(linked, []);
 });
 
 // Premise docs-summary-first: a doc with this many ## sections, or an agent file longer than
@@ -190,7 +186,8 @@ async function layoutRoot(t, { agents = premisesLine, ignore = "memory/sessions/
   if (agents !== null) {
     await writeFile(join(root, "AGENTS.md"), agents);
   }
-  await writeFile(join(root, ".gitignore"), ignore);
+  await mkdir(join(root, "templates", "home"), { recursive: true });
+  await writeFile(join(root, "templates", "home", "gitignore"), ignore);
   execFileSync("git", ["-C", root, "init", "-q"]);
   return root;
 }
@@ -217,7 +214,7 @@ test("TestLayoutReportsEachProblem", async (t) => {
       "screenshots not ignored",
       { ignore: "" },
       null,
-      "git check-ignore failed for memory/sessions/screenshots/check.png",
+      "templates/home/gitignore does not ignore memory/sessions/screenshots/check.png",
     ],
     ["Chrome profile inside the repo", {}, (root) => root, "the Chrome profile is inside the repo: "],
   ];

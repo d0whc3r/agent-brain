@@ -9,7 +9,7 @@ cd "$root"
 # A pattern that matches nothing stays as text, so keep only the files that exist.
 # grep exits 2 on a missing file, and that exit hid each match.
 files=()
-for file in AGENTS.md README.md templates/*.md docs/*.md flows/*.md agents/*.md skills/active/*/SKILL.md memory/premises/*.md; do
+for file in AGENTS.md README.md templates/*.md templates/home/*.md templates/home/memory/premises/*.md docs/*.md flows/*.md agents/*.md skills/active/*/SKILL.md; do
   if [ -f "$file" ]; then
     files+=("$file")
   fi
@@ -20,7 +20,8 @@ if [ "${#files[@]}" -eq 0 ]; then
 fi
 
 status=0
-grep -n -E '(/Users/|/home/)[A-Za-z0-9._-]+' "${files[@]}" || status=$?
+# An absolute path starts the text or follows a space, a quote, a backtick, or a bracket.
+grep -n -E '(^|[[:space:]"`(\[])(/Users/|/home/)[A-Za-z0-9._-]+' "${files[@]}" || status=$?
 if [ "$status" -eq 0 ]; then
   echo "absolute home path found. Use brain root, the scope root from brain scope, or ~/." >&2
   exit 1

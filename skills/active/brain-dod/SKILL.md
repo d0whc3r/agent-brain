@@ -9,7 +9,7 @@ metadata:
 
 A task is done when each criterion of its DoD has fresh evidence. "Everything works" names no check, so it cannot fail and proves nothing. The premise `dod-before-done` holds the rule.
 
-`<brain>` is the output of `brain root`. Each `brain dod` command takes `--cwd <dir>` for a repo or a worktree other than the current directory.
+`<brain>` is the output of `brain root`. `<home>` is the output of `brain home`: the data of the user. Each `brain dod` command takes `--cwd <dir>` for a repo or a worktree other than the current directory.
 
 ## When
 
@@ -23,7 +23,7 @@ A task is done when each criterion of its DoD has fresh evidence. "Everything wo
 1. Run `brain dod path`. It prints the DoD file of the branch.
 2. When the file does not exist, run `brain dod init --title <ticket key or slug>`.
 3. When the file exists, read its title on the first line. On a long-lived branch such as `main` or `master`, the file can hold the DoD of an earlier task. When the title names another task, show the DoD to the user. Run `brain dod init --replace --title <ticket key or slug>` only after the user agrees.
-4. When `brain dod init` prints `no dod/<repo>.md in the brain`, the repo has no standing DoD. Find its check in the CI config, the Makefile, `package.json`, or `CONTRIBUTING.md`, and propose it to the user. After the user agrees, write `<brain>/dod/<repo>.md` in the form of the other files in `<brain>/dod/`, and run `brain dod init --replace --title <ticket key or slug>`. Without that agreement, write the check in the placeholder criterion of this DoD only.
+4. When `brain dod init` prints `no dod/<repo>.md in the brain home`, the repo has no standing DoD. Find its check in the CI config, the Makefile, `package.json`, or `CONTRIBUTING.md`, and propose it to the user. After the user agrees, write `<home>/dod/<repo>.md` in the form of the other files in `<brain>/dod/`, and run `brain dod init --replace --title <ticket key or slug>`. Without that agreement, write the check in the placeholder criterion of this DoD only.
 5. Read the ticket, the plan, or the request. Replace the `<outcome>` placeholder with one criterion per requirement, as `templates/dod.md` describes. Keep each standing criterion.
 6. When a criterion has no check or no pass condition, ask the user with `brain-tp-grilling`: one question at a time, each with a recommended answer. Look up commands and test names yourself.
 7. Add a criterion for an error path when the change handles input. For a test check, name the change to the code that makes the test fail.
@@ -40,4 +40,4 @@ A task is done when each criterion of its DoD has fresh evidence. "Everything wo
 
 - Change a criterion only with the user. Do not drop a criterion to make the lint pass.
 - The DoD file lives in the git dir of the worktree. Do not copy it into the repo.
-- A standing criterion belongs to `<brain>/dod/<repo>.md`. Write or edit that file only after the user agrees, because every task of the repo keeps it.
+- A standing criterion belongs to `<home>/dod/<repo>.md`. Write or edit that file only after the user agrees, because every task of the repo keeps it.

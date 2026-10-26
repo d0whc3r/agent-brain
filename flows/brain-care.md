@@ -8,7 +8,7 @@ model: sonnet
 
 1. Run `brain premise stats`. Review each `noisy`, `stale`, and `idle` premise with the user: keep it or drop it. For each `ready` candidate, show its `seen` entries and ask whether to promote it with `brain-learn`. Drop each `expired` candidate with `brain premise rm` after the user agrees.
 2. Run `brain workspace check`. When it prints lines, follow `brain-workspace-audit`.
-3. Follow `brain-harvest` when the memories changed since the last harvest note in `memory/decisions/`.
+3. Follow `brain-harvest` when the memories changed since the last harvest note in `memory/decisions/` of the brain home.
 4. Follow `brain-garden` when three premises share a repo and a rule.
 5. When you edit a skill, a flow, or `AGENTS.md`, follow `brain-tp-writing-for-agents`.
 6. Run `npm run check`.

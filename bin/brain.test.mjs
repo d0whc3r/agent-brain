@@ -31,14 +31,14 @@ test("cli", { concurrency: 1 }, async (suite) => {
   await suite.test("TestCLIAddListRm", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
-    const previous = process.env.BRAIN_ROOT;
-    process.env.BRAIN_ROOT = root;
+    const previous = process.env.BRAIN_HOME;
+    process.env.BRAIN_HOME = root;
     t.after(() => {
       if (previous === undefined) {
-        delete process.env.BRAIN_ROOT;
+        delete process.env.BRAIN_HOME;
         return;
       }
-      process.env.BRAIN_ROOT = previous;
+      process.env.BRAIN_HOME = previous;
     });
 
     const unscoped = await invoke(["premise", "add", "Rule without a repo", "--strength", "always", "--scope", "*"]);
@@ -82,14 +82,14 @@ test("cli", { concurrency: 1 }, async (suite) => {
   await suite.test("TestCLISecretExitCode", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
-    const previous = process.env.BRAIN_ROOT;
-    process.env.BRAIN_ROOT = root;
+    const previous = process.env.BRAIN_HOME;
+    process.env.BRAIN_HOME = root;
     t.after(() => {
       if (previous === undefined) {
-        delete process.env.BRAIN_ROOT;
+        delete process.env.BRAIN_HOME;
         return;
       }
-      process.env.BRAIN_ROOT = previous;
+      process.env.BRAIN_HOME = previous;
     });
 
     const result = await invoke([
@@ -110,14 +110,14 @@ test("cli", { concurrency: 1 }, async (suite) => {
   await suite.test("TestCLIScopeRequired", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
-    const previous = process.env.BRAIN_ROOT;
-    process.env.BRAIN_ROOT = root;
+    const previous = process.env.BRAIN_HOME;
+    process.env.BRAIN_HOME = root;
     t.after(() => {
       if (previous === undefined) {
-        delete process.env.BRAIN_ROOT;
+        delete process.env.BRAIN_HOME;
         return;
       }
-      process.env.BRAIN_ROOT = previous;
+      process.env.BRAIN_HOME = previous;
     });
     await writeFile(join(root, "brain.config.json"), JSON.stringify({ scopes: { work: { owners: ["org"] } } }));
 
@@ -139,14 +139,14 @@ test("cli", { concurrency: 1 }, async (suite) => {
   await suite.test("TestCLIMissingID", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
-    const previous = process.env.BRAIN_ROOT;
-    process.env.BRAIN_ROOT = root;
+    const previous = process.env.BRAIN_HOME;
+    process.env.BRAIN_HOME = root;
     t.after(() => {
       if (previous === undefined) {
-        delete process.env.BRAIN_ROOT;
+        delete process.env.BRAIN_HOME;
         return;
       }
-      process.env.BRAIN_ROOT = previous;
+      process.env.BRAIN_HOME = previous;
     });
 
     let result = await invoke(["premise", "show", "missing-id"]);
@@ -160,14 +160,14 @@ test("cli", { concurrency: 1 }, async (suite) => {
   await suite.test("TestCLIShowUpdateCheck", async (t) => {
     const root = await mkdtemp(join(tmpdir(), "brain-"));
     t.after(() => rm(root, { recursive: true, force: true }));
-    const previous = process.env.BRAIN_ROOT;
-    process.env.BRAIN_ROOT = root;
+    const previous = process.env.BRAIN_HOME;
+    process.env.BRAIN_HOME = root;
     t.after(() => {
       if (previous === undefined) {
-        delete process.env.BRAIN_ROOT;
+        delete process.env.BRAIN_HOME;
         return;
       }
-      process.env.BRAIN_ROOT = previous;
+      process.env.BRAIN_HOME = previous;
     });
 
     let result = await invoke(["premise", "add", "Old rule", "--strength", "always", "--scope", "*", "--repo", "*"]);
@@ -285,14 +285,14 @@ function waitExit(child) {
 test("TestCLICandidate", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "brain-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const previous = process.env.BRAIN_ROOT;
-  process.env.BRAIN_ROOT = root;
+  const previous = process.env.BRAIN_HOME;
+  process.env.BRAIN_HOME = root;
   t.after(() => {
     if (previous === undefined) {
-      delete process.env.BRAIN_ROOT;
+      delete process.env.BRAIN_HOME;
       return;
     }
-    process.env.BRAIN_ROOT = previous;
+    process.env.BRAIN_HOME = previous;
   });
 
   let result = await invoke([

@@ -8,7 +8,7 @@ skills: [brain-tp-git-workflow-and-versioning, brain-tp-verification-before-comp
 model: sonnet
 ---
 
-1. Close the DoD with `brain-dod`. Its command checks keep the standing checks of the repo from `dod/<repo>.md`, and each manual criterion needs evidence that you write.
+1. Close the DoD with `brain-dod`. Its command checks keep the standing checks of the repo from `dod/<repo>.md` in the brain home, and each manual criterion needs evidence that you write.
 2. Run `brain dod lint --done`. The branch is ready only when it prints `ok`.
 3. Draft the PR title and body. The body describes the final state only, not work that was added and then removed. Put each criterion of the DoD and its evidence in the test notes of the body.
 4. Check the premises: no Co-Authored-By trailer and no Claude footer.

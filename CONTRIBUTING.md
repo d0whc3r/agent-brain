@@ -1,7 +1,5 @@
 # Contributing
 
-[Setup history](docs/setup-history.md) records the initial setup evidence.
-
 ## Checks
 
 Before a commit, run:

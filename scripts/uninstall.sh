@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remove what install.sh added for the current user.
-# Keeps the repo, its memory, node_modules, and the Chrome profile.
+# Keeps the repo, node_modules, the brain home, and the Chrome profile.
 #
 # Usage: scripts/uninstall.sh [--dry-run] [--remove-backups] [--help]
 #
@@ -212,7 +212,11 @@ if [ -n "$removed" ]; then
 else
   printf '\n%s✓ Nothing to remove.%s\n' "$green$bold" "$reset"
 fi
-printf 'Kept:\n  %s (repo and memory)\n' "$(short "$root")"
+printf 'Kept:\n  %s (repo)\n' "$(short "$root")"
+home="$HOME/.local/share/agent-brain/home"
+if [ -e "$home" ]; then
+  printf '  %s (brain home: your config, premises, notes, and skills)\n' "$(short "$home")"
+fi
 if [ -d "$profile" ]; then
   printf '  %s (Chrome test logins)\n' "$(short "$profile")"
 fi

@@ -7,7 +7,7 @@ metadata:
 
 # Next
 
-The brain keeps the usual tasks as flows in `flows/` under `brain root`. This skill finds the flows that fit the current state of the repo and runs the one the user picks.
+The brain keeps the usual tasks as flows in `flows/` under `brain root`, and the flows of the user in `flows/` under `brain home`. A flow of the user replaces the brain flow of the same name. This skill finds the flows that fit the current state of the repo and runs the one the user picks.
 
 ## Suggest
 

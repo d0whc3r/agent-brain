@@ -12,28 +12,16 @@ It hashes `SKILL.md` in each repo of each scope root and compares the shared nam
 
 Copy directories are out of scope. Do not learn rules from them.
 
-## Homes
+## Where repo skills live
 
-| Home | Path | What it owns |
-| --- | --- | --- |
-| Workspace agents | `~/projects/qdrant/.agents/skills` | Vendor skills for every repo in the workspace. This is the set that overlaps the brain Go skills. |
-| Workspace Claude | `~/projects/qdrant/.claude/skills` | Speckit skills. Repo tooling. |
-| Cloud UI publisher | `skills-team-cloud-ui/skills` | The published UI skills. `qdrant-cloud-ui` installs from here. |
-| Cloud UI tooling | `skills-team-cloud-ui/.agents/skills` | `find-skills`, `skill-creator`, `skill-grouping`. |
-| Company skills | `skills-internal/skills` | Advisor, writing style, messaging. Not personal review rules. |
-| Cloud UI repo | `qdrant-cloud-ui/.agents/skills` | UI skills, including `cloud-ui-*`. |
-| Admin UI | `qdrant-cloud-admin-v2/.agents/skills` | Admin UI skills. |
-| Public API | `qdrant-cloud-public-api/.agents/skills` | `protobuf`, `pr-description`, `humanize`. |
-| Regions and clusters docs | `cloud-rc-docs/.agents/skills` | Living-docs skills. |
-
-`skills-team-cloud-ui` keeps three lists apart. `skills.json` is the published vendor set. `skills-lock.json` is the authoring tools. `.claude-plugin/marketplace.json` is the install groups. Do not merge those lists into the brain catalog.
+A workspace can keep skills in several places: a folder of shared vendor skills at the scope root, the `.agents/skills` and `.claude/skills` folders of each repo, and repos that publish skills for others. Keep a note of those places, and of what each one owns, in `memory/workspace/` of your brain home. `brain workspace check` scans every repo under the roots of each scope in `brain.config.json`.
 
 ## What a hash cannot see
 
 A hash does not catch a rule conflict. These stay a chat review:
 
 - A repo `AGENTS.md` says one ownership rule. A brain premise says another.
-- A `cloud-ui-*` skill says how the UI works. A premise says never do that.
+- A repo skill says how a part of the product works. A premise says never do that.
 - Speckit skills in `.claude/skills` plan work. They do not override a premise.
 
 When the user asks which rules disagree, read the repo `AGENTS.md`, the repo skills for that diff, and `premise_list`. Quote both sides. Ask which one wins. Do not edit either file unless the user asks.

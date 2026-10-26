@@ -20,4 +20,4 @@ model: opus
 7. For each finding the user accepts that names a defect class, and not a one-off slip, find a premise or a candidate that states it with `brain premise search`. Record the repeat with `brain premise seen <id> --repo <repo> --origin defect`. When none exists, add a candidate with `--status candidate` first. Store nothing for a one-off finding.
 8. Remove the worktree with `git worktree remove` when the user is done.
 
-Done when each finding has an answer from the user and the session note exists in `memory/sessions/`.
+Done when each finding has an answer from the user and the session note exists in `memory/sessions/` of the brain home.

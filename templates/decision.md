@@ -1,8 +1,8 @@
 ---
 date: 2026-10-23
 tool: claude-code
-scope: qdrant
-repo: qdrant-cloud-ui
+scope: work
+repo: web-ui
 correction: New RPC lands in cluster-service
 strength: always
 evidence: The user said to keep the RPC in cluster-service.

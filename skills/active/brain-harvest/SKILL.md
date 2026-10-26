@@ -7,7 +7,7 @@ metadata:
 
 # Harvest
 
-Corrections pile up in Claude Code memories and in Engram, one repo at a time. A review only applies the rules that are premises. This skill moves the lasting rules into premises, so every repo and every tool sees them.
+Corrections pile up in Claude Code memories and in Engram, one repo at a time. A review only applies the rules that are premises. This skill moves the lasting rules into premises, so every repo and every tool sees them. `<home>` is the output of `brain home`: the data of the user.
 
 ## Sources
 
@@ -28,7 +28,7 @@ A memory from a session in a copy directory is a correction from the user, so it
 6. Show a table: the proposed id or the id of the repeated candidate, text, strength, scope, repos, `ready` or `candidate`, the count, and the source paths. One sentence per text.
 7. Ask the user which rows to add. Add nothing before the answer.
 8. For each approved `candidate` row, record one `brain premise seen` per new occurrence with its date and repo. Add the row with `--status candidate` first only when no candidate exists. Write no decision note for it.
-9. For the approved `ready` rows, write one decision note for the batch, `memory/decisions/YYYY-MM-DD-harvest.md` from `templates/decision.md`. For each premise id, state its reason and its origin in words: the repo, the tool, and what happened. Do not cite a memory file, an Engram id, or any path outside the brain, because another machine does not have them.
+9. For the approved `ready` rows, write one decision note for the batch, `<home>/memory/decisions/YYYY-MM-DD-harvest.md` from `templates/decision.md`. For each premise id, state its reason and its origin in words: the repo, the tool, and what happened. Do not cite a memory file, an Engram id, or any path outside the brain, because another machine does not have them.
 10. Add each approved new `ready` row with `brain premise add` or `premise_add`. Set `source` to that decision note. For a `ready` row that repeats a candidate, record its new occurrences with `brain premise seen`, set its source with `brain premise update <id> --source <note>`, and run `brain premise promote <id>`.
 11. Run `brain premise list` and `brain premise list --status candidate`, and show the new lines.
 

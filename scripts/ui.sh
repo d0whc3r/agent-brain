@@ -229,6 +229,11 @@ receipt_root() {
   node --input-type=module -e 'const r = await (await import("./lib/receipt.mjs")).readReceipt(); process.stdout.write(r?.root ?? "")'
 }
 
+# receipt_version prints the brain version of the last install, or nothing for an older receipt.
+receipt_version() {
+  node --input-type=module -e 'const r = await (await import("./lib/receipt.mjs")).readReceipt(); process.stdout.write(r?.version ?? "")'
+}
+
 # dead_brain_link is true for a brain link whose target is gone: the checkout moved, or a new
 # version dropped the item.
 dead_brain_link() {

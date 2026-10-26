@@ -1,8 +1,8 @@
 ---
 date: 2026-10-23
 tool: claude-code
-scope: qdrant
-repo: qdrant-cloud-ui
+scope: work
+repo: web-ui
 finding_count: 1
 applied:
   - new-rpc-in-cluster-service-go

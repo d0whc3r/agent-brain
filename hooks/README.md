@@ -14,7 +14,7 @@ The command stays stable. Codex ties trust to the hook definition. A changed com
 
 The script fails open. A lookup error does not stop the session. The script skips the pull-request lookup, so it stays fast. It prints nothing outside a git repo.
 
-OpenCode has no `SessionStart` event. The plugin reads `session.location.directory` and calls the same script. It caches that text until `memory/premises/` changes. The install links the plugin only when `~/.config/opencode` already exists. It does not edit `opencode.json`, because that file can be a link into dotfiles.
+OpenCode has no `SessionStart` event. The plugin reads `session.location.directory` and calls the same script. It caches that text until `memory/premises/` of the brain home changes. The install links the plugin only when `~/.config/opencode` already exists. It does not edit `opencode.json`, because that file can be a link into dotfiles.
 
 Do not put a hook file in a team repository. These hooks are user-level, so they apply in every repo you open.
 

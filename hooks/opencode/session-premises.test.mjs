@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -65,18 +65,17 @@ test("TestMarkerTimeFallsBackOnlyWhenMissing", async (t) => {
 test("TestLoadPremiseTextReportsStderr", async (t) => {
   const dir = await mkdtemp(join(tmpdir(), "brain-hook-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
-  // A file as the brain root makes the script fail after it finds the git repo.
-  const file = join(dir, "file");
-  await writeFile(file, "");
-  const previous = process.env.BRAIN_ROOT;
-  process.env.BRAIN_ROOT = file;
+  // A folder as brain.config.json of the home makes the script fail after it finds the git repo.
+  await mkdir(join(dir, "brain.config.json"));
+  const previous = process.env.BRAIN_HOME;
+  process.env.BRAIN_HOME = dir;
   t.after(() => {
     if (previous === undefined) {
-      delete process.env.BRAIN_ROOT;
+      delete process.env.BRAIN_HOME;
       return;
     }
-    process.env.BRAIN_ROOT = previous;
+    process.env.BRAIN_HOME = previous;
   });
   const repo = join(import.meta.dirname, "..", "..");
-  await assert.rejects(loadPremiseText(repo), /session-premises exited 1: [\s\S]*ENOTDIR/u);
+  await assert.rejects(loadPremiseText(repo), /session-premises exited 1: [\s\S]*EISDIR/u);
 });

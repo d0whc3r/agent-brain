@@ -1,13 +1,13 @@
 ---
 id: example-new-rpc
-text: New RPC lands in cluster-service
+text: New RPC lands in orders-service
 strength: always
 repos:
-  - qdrant-cloud-cluster-service
+  - orders-service
 status: dropped
 source: memory/decisions/2026-10-23-example.md
 example: true
-scope: qdrant
+scope: work
 ---
 
 Example of a dropped premise. Reviews do not apply it.

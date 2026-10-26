@@ -24,7 +24,7 @@ Contents:
 | `~/.local/bin` on `PATH` | The agent finds `brain` | The install script prints the export line when it is missing |
 | A git repo | The code you talk about | `brain.config.json` maps it to a scope |
 
-`brain.config.json` defines the scopes: `qdrant` for work repos and `personal` for your own. The owner of the `origin` picks the scope. Add owners or roots there when you add a place to work.
+Your data lives in the brain home, not in the brain repo. `brain home` prints its path, `~/.local/share/agent-brain/home` by default, and `BRAIN_HOME` overrides it for one command. `brain.config.json` in the home defines your scopes, for example `work` for the repos of your employer and `personal` for your own. The owner of the `origin` picks the scope. Add owners or roots there when you add a place to work.
 
 ## 2. Install once
 
@@ -34,6 +34,17 @@ scripts/install.sh
 ```
 
 Run it again after a pull or a skill change. That is also the update. Add `--dry-run` to see what would change, and `--help` to list the options.
+
+| Option | Effect |
+| --- | --- |
+| `--home DIR` | Keeps the brain home in `DIR`, and links `~/.local/share/agent-brain/home` to it. Use it with a clone of your private home repo |
+| `--no-git-guard` | Skips the rules that make Claude Code ask before `git commit`, `git push`, and destructive git commands |
+| `--no-codex` | Skips the Codex MCP servers, hook, and instructions. The install also skips Codex when `~/.codex` does not exist |
+| `--no-lsp` | Skips the `brain-lsp` plugin and its language servers |
+
+A part that an option skips keeps what an earlier install added. `scripts/uninstall.sh` removes it.
+
+The first install creates the brain home from `templates/home`: a config with no scopes, the folders for your notes, and starter premises as candidates. A candidate does not apply until you promote it with `brain premise promote ID`. The install starts a git repo in the home and never changes the home again.
 
 The script links `brain`, links the brain skills and the third-party skills from `.agents/skills`, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a git repo. A repo outside every scope gets only the global premises. A copy or a worktree uses the premises of the repo it was cloned from.
 
@@ -45,11 +56,11 @@ Start a new chat after install. The old chat does not see the new skills.
 
 OpenCode reads MCP servers and `AGENTS.md` from dotfiles. Add `brain-premises` and `chrome-devtools` there from `mcp/snippets/`, and paste `templates/agent-instructions.md` into that `AGENTS.md`. The install tells you when one of them is missing or out of date. The skills still load, because OpenCode reads `~/.agents/skills`.
 
-To remove the setup, run `scripts/uninstall.sh`. It also takes `--dry-run`. It removes the trust that Codex keeps in `~/.codex/config.toml` for the checkout and for the session hook. It keeps the repo, the notes, and the Chrome profile. It lists the `.brain-bak` copies of your config files. Add `--remove-backups` to remove them too.
+To remove the setup, run `scripts/uninstall.sh`. It also takes `--dry-run`. It removes the trust that Codex keeps in `~/.codex/config.toml` for the checkout and for the session hook. It keeps the repo, the brain home, and the Chrome profile. It lists the `.brain-bak` copies of your config files. Add `--remove-backups` to remove them too.
 
 When you move the checkout, run the install or the uninstall from the new place. Both replace or remove the links of the old place, and remove the Codex trust of the old place. The install never adds a Codex trust. You give it in Codex.
 
-The install records each item in `~/.local/share/agent-brain/installed.txt`, and `brain installed` prints it. The decision is in [the install receipt spec](superpowers/specs/2026-10-23-install-receipt-design.md).
+The install records each item in `~/.local/share/agent-brain/installed.txt`, and `brain installed` prints it. The uninstall reads that receipt, so it removes only what the install added.
 
 ## 3. How a chat works
 
@@ -62,7 +73,7 @@ Review this diff. Do not edit files.
 The agent loads `brain-reviewer`, calls `premise_list`, and writes findings. You do not type `/brain-reviewer`.
 
 ```text
-Remember this: new RPCs go in cluster-service, not cluster-api.
+Remember this: new RPCs go in orders-service, not orders-api.
 ```
 
 The agent loads `brain-learn` and runs `brain premise add`. You do not type `/brain-learn`.
@@ -71,7 +82,7 @@ The map of phrases to actions is `docs/use-cases.md`. The agent reads that file 
 
 ## 4. Worked example
 
-Open `qdrant-cloud-cluster-service`. The diff adds an RPC. In the new chat, write:
+Open `orders-service`. The diff adds an RPC. In the new chat, write:
 
 ```text
 Review this diff. Do not change any files.
@@ -84,18 +95,18 @@ Review this diff. Do not change any files.
 3. The agent calls `premise_list` and quotes each `always` and `never` premise.
 4. The agent reads the diff and the Go skills under `.agents/skills/` because the files are `.go`.
 5. The agent writes findings with file and line. It does not edit the diff.
-6. The agent writes a short note under `memory/sessions/`.
+6. The agent writes a short note under `memory/sessions/` in the brain home.
 
 ### What you say next
 
 ```text
-No. Keep new RPCs in cluster-service. Do not add them to cluster-api. Remember that.
+No. Keep new RPCs in orders-service. Do not add them to orders-api. Remember that.
 ```
 
 The agent stores the rule. Ask it to show the list, or run this yourself:
 
 ```bash
-brain premise list --repo qdrant-cloud-cluster-service
+brain premise list --repo orders-service
 ```
 
 The new line is the proof.
@@ -105,8 +116,7 @@ The new line is the proof.
 | You say | The agent does |
 | --- | --- |
 | "Check localhost:3000." | Opens the page in `chrome-devtools`, takes one screenshot, reads the console |
-| "Confirm the proto is the source. Do not touch qdrant/." | Reviews the proto diff and leaves the engine repo alone |
-| "These three rules keep coming up. Make a skill." | Writes a draft under `skills/drafts/` and stops |
+| "These three rules keep coming up. Make a skill." | Writes a draft under `skills/drafts/` in the brain home and stops |
 | "That draft is good. Make go-error-wrapping active." | Runs `brain accept-skill` and shows the commit. It does not push |
 | "Is there a skill for Go context cancellation?" | Loads `brain-tp-find-skills` and shows the add command. It does not install |
 | "Update the third-party skills." | Runs `pnpm skills:update` and shows the diff |
@@ -125,12 +135,12 @@ Full phrases and the commands the agent must run are in [use-cases.md](use-cases
 ## 7. When you want the file, not the chat
 
 ```bash
-brain premise list --repo qdrant-cloud-cluster-service
+brain premise list --repo orders-service
 brain premise rm PREMISE_ID
 pnpm skills:check
 pnpm skills:update
 ```
 
-`rm` moves the file to `memory/dropped/`. The active list no longer returns it.
+`rm` moves the file to `memory/dropped/` in the brain home. The active list no longer returns it.
 
 GitHub refreshes third-party skills every Monday at 06:00 UTC. The workflow is `.github/workflows/update-skills.yml`. It opens a pull request on `bot/update-skills`. Review that diff before you merge.
