@@ -6,6 +6,8 @@
   "ignorePatterns": [
     ".agents/**",
     ".claude/**",
+    ".release-please-manifest.json",
+    "CHANGELOG.md",
     "memory/**",
     "pnpm-lock.yaml",
     "skills-lock.json",
