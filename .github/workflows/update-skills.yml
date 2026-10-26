@@ -34,11 +34,11 @@ jobs:
           node-version-file: .node-version
 
       - name: Install dependencies
-        # brain skills check imports yaml.
+        # bin/brain.mjs imports yaml.
         run: pnpm install --frozen-lockfile
 
       - name: Update project skills
-        run: npx --yes skills update -p -y
+        run: node bin/brain.mjs skills update --apply
 
       - name: Confirm every catalog skill is present
         run: node bin/brain.mjs skills check
@@ -71,4 +71,4 @@ jobs:
             --base "${{ github.ref_name }}" \
             --head "$branch" \
             --title "chore: update third-party skills" \
-            --body "This pull request refreshes the copies in .agents/skills from skills-lock.json. Review the diff before you merge."
+            --body "This pull request refreshes the copies in .agents/skills from the sources in skills/third-party.json. Review the diff before you merge."
