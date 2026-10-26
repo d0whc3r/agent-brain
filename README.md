@@ -35,6 +35,7 @@ To use another directory, clone into it, and use that path in the commands on th
 
 | Option | Use it to |
 | --- | --- |
+| `--home-repo URL` | Clone your brain home from your private git repo. An empty repo gets the starter home |
 | `--home DIR` | Keep your brain home in `DIR`, such as a clone of your private home repo |
 | `--no-git-guard` | Skip the rules that make Claude Code ask before `git commit`, `git push`, and destructive git commands |
 | `--no-codex` | Skip Codex. The install also skips it when `~/.codex` does not exist |
@@ -65,13 +66,19 @@ When a session opens in a git repo, the brain hook prints the active premises fo
 
 ## Your brain home
 
-The brain home holds your data: `brain.config.json`, your premises and notes, the standing DoD of each repo, and your own flows and skills. `brain home` prints its path, which is `~/.local/share/agent-brain/home` by default. The `BRAIN_HOME` variable overrides it for one command. The install creates the home once from [templates/home](templates/home/README.md), starts a git repo there, and never changes it again.
+The brain home holds your data: `brain.config.json`, your premises and notes, the standing DoD of each repo, and your own flows and skills. `brain home` prints its path, `~/.local/share/agent-brain/home` by default. The install creates it once, or clones it with `--home-repo`, and never changes a file in it.
 
-Commit the home to a private repo of your own. On another machine, clone that repo and run `scripts/install.sh --home <clone>`.
+Keep the home in a private git repo. Git keeps it the same on each machine:
+
+- **First machine:** create an empty private repo, then run `scripts/install.sh --home-repo <url>`. Commit and push the home.
+- **Another machine:** run `scripts/install.sh --home-repo <url>` with the same repo.
+- **Each day:** run `git -C "$(brain home)" pull --rebase` before you work, and commit and push the home after a change. Only `brain accept-skill` commits for you.
+
+[Brain home: setup, sync, and updates](docs/home.md) has every step, the conflict case, and the move from a checkout that kept your data.
 
 ## Update
 
-Pull the repo, then run the install script again:
+Pull the brain repo, then run the install script again, on each machine:
 
 ```bash
 cd ~/.local/share/agent-brain/repo
@@ -79,13 +86,9 @@ git pull --ff-only
 scripts/install.sh
 ```
 
-The update never changes your premises or your config. The install prints the changes since your last install, and adds to your brain home the folders of a newer template. When a release adds starter premises, the install says so: run `brain home starters` to list them, and `brain home starters --apply` to add them as candidates. A starter premise that you removed never comes back.
+The update changes only code. The install prints the changes since your last install, adds the folders of a newer template to your home, and tells you when `brain home starters` has new starter premises for you. Commit and push the home when the install changed it.
 
-Before the brain home existed, the repo held your config and premises. To move them once from an old checkout:
-
-1. Clone the new version into a new folder, and run `scripts/install.sh` there.
-2. Run `brain home migrate --from <old checkout>`. It prints the plan: each file it adds, and each conflict with a home file that you changed.
-3. Run it again with `--apply`, then commit the home and remove the old checkout.
+Before the brain home existed, the repo held your premises. Do not pull such an old checkout: follow [the move steps](docs/home.md#move-from-a-checkout-that-kept-your-data).
 
 ## Remove
 
@@ -100,6 +103,7 @@ The uninstall removes the links, the MCP servers, the session hook, the git conf
 | Need                                   | Read                                       |
 | -------------------------------------- | ------------------------------------------ |
 | Follow a first review step by step     | [Getting started](docs/getting-started.md) |
+| Set up, sync, or update your home      | [Brain home](docs/home.md)                 |
 | Know what to say in chat               | [Use cases](docs/use-cases.md)             |
 | Find a skill, command, agent, or scope | [Brain catalog](docs/catalog.md)           |
 | Add or change a workflow               | [Flow format](flows/README.md)             |

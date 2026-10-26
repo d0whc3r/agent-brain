@@ -263,7 +263,7 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 | `scripts/install.sh` | Install or update the whole setup |
 | `scripts/uninstall.sh` | Remove the setup. Keeps the repo, the brain home, and the Chrome profile. |
 
-Both scripts take `--dry-run`, which prints the changes and writes nothing, and `--help`. `scripts/uninstall.sh --remove-backups` also removes the `.brain-bak` copies of the config files. The install also takes `--home DIR`, `--no-git-guard`, `--no-codex`, and `--no-lsp`. [Getting started](getting-started.md#2-install-once) describes each one.
+Both scripts take `--dry-run`, which prints the changes and writes nothing, and `--help`. `scripts/uninstall.sh --remove-backups` also removes the `.brain-bak` copies of the config files. The install also takes `--home-repo URL`, `--home DIR`, `--no-git-guard`, `--no-codex`, and `--no-lsp`. [Getting started](getting-started.md#2-install-once) describes each one, and [Brain home](home.md) describes the setup and the sync of the home.
 
 ## MCP servers
 

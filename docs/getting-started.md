@@ -37,6 +37,7 @@ Run it again after a pull or a skill change. That is also the update. Add `--dry
 
 | Option | Effect |
 | --- | --- |
+| `--home-repo URL` | Clones the brain home from your private git repo when the home is empty. An empty repo gets the starter home. Use it on each machine to share one home |
 | `--home DIR` | Keeps the brain home in `DIR`, and links `~/.local/share/agent-brain/home` to it. Use it with a clone of your private home repo |
 | `--no-git-guard` | Skips the rules that make Claude Code ask before `git commit`, `git push`, and destructive git commands |
 | `--no-codex` | Skips the Codex MCP servers, hook, and instructions. The install also skips Codex when `~/.codex` does not exist |
@@ -44,7 +45,7 @@ Run it again after a pull or a skill change. That is also the update. Add `--dry
 
 A part that an option skips keeps what an earlier install added. `scripts/uninstall.sh` removes it.
 
-The first install creates the brain home from `templates/home`: a config with no scopes, the folders for your notes, and starter premises as candidates. A candidate does not apply until you promote it with `brain premise promote ID`. The install starts a git repo in the home and never changes the home again.
+The first install creates the brain home from `templates/home`, or clones it with `--home-repo`: a config with no scopes, the folders for your notes, and starter premises as candidates. A candidate does not apply until you promote it with `brain premise promote ID`. The install never changes a file of the home again. Keep the home in a private git repo, and pull, commit, and push it yourself: [Brain home](home.md) has the steps for a first machine, a second machine, and the sync.
 
 The script links `brain`, links the brain skills and the third-party skills from `.agents/skills`, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a git repo. A repo outside every scope gets only the global premises. A copy or a worktree uses the premises of the repo it was cloned from.
 

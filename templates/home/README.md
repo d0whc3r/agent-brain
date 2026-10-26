@@ -2,7 +2,13 @@
 
 This folder holds your brain data: your config, premises, notes, standing DoDs, flows, and skills. The brain code reads it from `brain home`, and an update of the code never changes it.
 
-Commit this folder to a private git repo of your own. The history keeps every change to a premise, and a clone gives you the same brain on another machine: run `scripts/install.sh --home <clone>`.
+Commit this folder to a private git repo of your own. The history keeps every change to a premise, and git keeps the brain the same on each machine:
+
+- On another machine, run `scripts/install.sh --home-repo <url of this repo>` from the brain repo. The install clones this home.
+- Before you work, run `git pull --rebase` here. After a change, commit and push. Only `brain accept-skill` commits for you.
+- After an update of the brain, commit what the install added here, and run `brain home starters` to see new starter premises.
+
+`docs/home.md` in the brain repo has every step, and the case of a conflict between two machines.
 
 | Path | Holds |
 | --- | --- |

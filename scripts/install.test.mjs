@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import {
   cp,
@@ -757,7 +757,7 @@ test("TestScriptsPrintHelp", async (t) => {
     const options =
       script === "uninstall.sh"
         ? "[--dry-run] [--remove-backups] [--help]"
-        : "[--dry-run] [--home DIR] [--no-git-guard] [--no-codex] [--no-lsp] [--help]";
+        : "[--dry-run] [--home DIR] [--home-repo URL] [--no-git-guard] [--no-codex] [--no-lsp] [--help]";
     assert.ok(help.stdout.includes(`\nUsage: scripts/${script} ${options}\n`), help.stdout);
     assert.match(help.stdout, /^ {2}BRAIN_BIN_DIR /mu);
     const bad = run(box, script, { flags: ["--nope"] });
@@ -968,4 +968,76 @@ test("TestInstallPrintsTheChangesSinceTheLastVersion", async (t) => {
   assert.match(stdout, new RegExp(`\\nUpdated the brain from 0\\.0\\.1 to ${version.replaceAll(".", "\\.")}:\\n`, "u"));
   assert.match(stdout, /^ {2}\* serve brain-premises with MCP SDK v2$/mu);
   assert.match(await readFile(p.receipt, "utf8"), new RegExp(`^root\\t${box.root}\\t${version}\\n`, "u"));
+});
+
+function gitAs(cwd, ...args) {
+  return execFileSync("git", ["-c", "user.name=test", "-c", "user.email=test@example.invalid", ...args], {
+    cwd,
+    stdio: "pipe",
+  });
+}
+
+// homeRepo makes a bare git repo in the sandbox, with files in its first commit when given.
+async function homeRepo(box, files) {
+  const bare = join(box.base, "home-repo.git");
+  gitAs(box.base, "init", "-q", "--bare", "-b", "main", bare);
+  if (!files) {
+    return bare;
+  }
+  const work = join(box.base, "home-work");
+  gitAs(box.base, "clone", "-q", bare, work);
+  for (const [rel, text] of Object.entries(files)) {
+    await mkdir(join(work, rel, ".."), { recursive: true });
+    await writeFile(join(work, rel), text);
+  }
+  gitAs(work, "add", "-A");
+  gitAs(work, "commit", "-q", "-m", "home");
+  gitAs(work, "push", "-q", "origin", "HEAD:main");
+  return bare;
+}
+
+const myRule =
+  '---\nid: my-rule\ntext: "My rule."\nstrength: always\nscope: "*"\nrepos:\n  - "*"\nstatus: active\n---\n';
+
+test("TestInstallClonesHomeRepo", async (t) => {
+  const box = await sandbox(t);
+  const url = await homeRepo(box, {
+    "brain.config.json": '{ "scopes": { "mine": { "roots": ["~/code"] } } }\n',
+    "memory/premises/my-rule.md": myRule,
+  });
+  const home = join(box.home, ".local", "share", "agent-brain", "home");
+
+  const { stdout } = installOk(box, { flags: ["--home-repo", url] });
+
+  assert.match(stdout, /✓ added ~\/\.local\/share\/agent-brain\/home, cloned from /u);
+  assert.doesNotMatch(stdout, /with \d+ starter premises as candidates/u);
+  assert.match(await readFile(join(home, "brain.config.json"), "utf8"), /"mine"/u);
+  assert.equal(await readFile(join(home, "memory", "premises", "my-rule.md"), "utf8"), myRule);
+  assert.equal(execFileSync("git", ["-C", home, "remote", "get-url", "origin"], { encoding: "utf8" }).trim(), url);
+
+  const again = installOk(box, { flags: ["--home-repo", url] });
+  assert.doesNotMatch(again.stdout, /cloned from/u);
+});
+
+test("TestInstallFillsAnEmptyHomeRepo", async (t) => {
+  const box = await sandbox(t);
+  const url = await homeRepo(box);
+  const home = join(box.home, ".local", "share", "agent-brain", "home");
+
+  const { stdout } = installOk(box, { flags: ["--home-repo", url] });
+
+  assert.match(stdout, /starter premises as candidates/u);
+  assert.deepEqual(JSON.parse(await readFile(join(home, "brain.config.json"), "utf8")), { scopes: {} });
+  assert.equal(execFileSync("git", ["-C", home, "remote", "get-url", "origin"], { encoding: "utf8" }).trim(), url);
+});
+
+test("TestInstallStopsOnHomeWithAnotherOrigin", async (t) => {
+  const box = await sandbox(t);
+  installOk(box);
+  const url = await homeRepo(box);
+
+  const { code, stderr } = run(box, "install.sh", { flags: ["--home-repo", url] });
+
+  assert.equal(code, 1);
+  assert.match(stderr, /its origin is not set, not .*home-repo\.git\. Move the folder, or run without --home-repo\./u);
 });

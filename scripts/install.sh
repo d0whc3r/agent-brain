@@ -2,17 +2,20 @@
 # Install or update the agent brain for the current user.
 # Safe to run again: each step changes only what differs from the last run.
 #
-# Usage: scripts/install.sh [--dry-run] [--home DIR] [--no-git-guard] [--no-codex] [--no-lsp] [--help]
+# Usage: scripts/install.sh [--dry-run] [--home DIR] [--home-repo URL] [--no-git-guard] [--no-codex] [--no-lsp] [--help]
 #
 #   --dry-run        print what would change, and change nothing
 #   --home DIR       keep the brain home in DIR, and link ~/.local/share/agent-brain/home to it
+#   --home-repo URL  clone the brain home from your git repo when the home is empty
 #   --no-git-guard   skip the rules that ask before git commit, push, and destructive git commands
 #   --no-codex       skip the Codex MCP servers, hook, and instructions
 #   --no-lsp         skip the code intelligence plugin and its language servers
 #   --help           print this help
 #
 # It creates the brain home once, from templates/home: your config, premises, notes, flows, and
-# skills, with starter premises as candidates. It never changes a home that exists.
+# skills, with starter premises as candidates. With --home-repo, it clones the home instead, and
+# fills an empty repo from the template. It never pulls, and never changes a file of a home that
+# exists. docs/home.md describes the setup of a second machine and the sync.
 # It links the brain command, the code intelligence plugin, the skills, and the agents,
 # installs typescript-language-server with npm and ty with uv when they are missing, registers the
 # MCP servers in Claude Code and Codex, adds the session premises hook and the git confirmation
@@ -32,6 +35,7 @@ set -euo pipefail
 . "$(dirname "$0")/ui.sh"
 # These options belong to this script only. parse_args reads the shared options.
 home_dir=''
+home_repo=''
 no_git_guard=0
 no_codex=0
 no_lsp=0
@@ -48,6 +52,16 @@ while [ "$#" -gt 0 ]; do
       shift
       ;;
     --home=*) home_dir="${1#--home=}" ;;
+    --home-repo)
+      if [ "$#" -lt 2 ]; then
+        printf 'option --home-repo needs a git URL\n\n' >&2
+        usage >&2
+        exit 2
+      fi
+      home_repo="$2"
+      shift
+      ;;
+    --home-repo=*) home_repo="${1#--home-repo=}" ;;
     --no-git-guard) no_git_guard=1 ;;
     --no-codex) no_codex=1 ;;
     --no-lsp) no_lsp=1 ;;
@@ -68,6 +82,7 @@ profile="$HOME/.local/share/agent-brain/chrome-profile"
 home_link="$HOME/.local/share/agent-brain/home"
 home="${home_dir:-$home_link}"
 home_new=0
+home_cloned=0
 cd "$root"
 
 # link_one points dest at source and records the change. A dry run changes nothing.
@@ -94,8 +109,29 @@ new_home() {
   mkdir -p "$1"
   command cp -R "$root/templates/home/." "$1/"
   command mv -f "$1/gitignore" "$1/.gitignore"
-  if command -v git >/dev/null 2>&1; then
+  if [ ! -d "$1/.git" ] && command -v git >/dev/null 2>&1; then
     git -C "$1" init -q
+  fi
+}
+
+# clone_home clones --home-repo into an empty home, or checks that the home is a clone of it.
+# The sync stays with the user: the install never pulls, so a conflict never stops it.
+clone_home() {
+  local origin
+  if ! command -v git >/dev/null 2>&1; then
+    fail "git not found, so the install cannot clone $home_repo."
+  fi
+  if [ -z "$(ls -A "$home" 2>/dev/null)" ]; then
+    if [ "$dry_run" -eq 0 ]; then
+      git clone -q "$home_repo" "$home"
+    fi
+    change added home "$home, cloned from $home_repo"
+    home_cloned=1
+    return
+  fi
+  origin="$(git -C "$home" remote get-url origin 2>/dev/null || true)"
+  if [ "$origin" != "$home_repo" ]; then
+    fail "$home exists, and its origin is ${origin:-not set}, not $home_repo. Move the folder, or run without --home-repo."
   fi
 }
 
@@ -141,7 +177,12 @@ else
 fi
 
 step "Set up the brain home"
-if [ -z "$(ls -A "$home" 2>/dev/null)" ]; then
+if [ -n "$home_repo" ]; then
+  clone_home
+fi
+# A home with nothing but .git, such as the clone of a new empty repo, gets the template. A dry
+# run cannot see what a clone would bring, so it skips this check.
+if [ -z "$(ls -A "$home" 2>/dev/null | grep -vx .git)" ] && ! { [ "$dry_run" -eq 1 ] && [ "$home_cloned" -eq 1 ]; }; then
   if [ "$dry_run" -eq 0 ]; then
     new_home "$home"
   fi

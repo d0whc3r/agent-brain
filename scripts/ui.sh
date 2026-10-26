@@ -110,10 +110,11 @@ print_line() {
   esac
 }
 
-# short writes the home directory as ~. A tilde in the replacement needs a variable in bash 3.2.
+# short writes a path under the home directory with ~/. A sibling such as $HOME-repo stays whole.
+# A tilde in the replacement needs a variable in bash 3.2.
 short() {
-  local tilde='~'
-  printf '%s' "${1//"$HOME"/$tilde}"
+  local tilde='~/' under="$HOME/"
+  printf '%s' "${1//"$under"/$tilde}"
 }
 
 # verb names a status for this run: "added", or "would add" in a dry run.
