@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/d0whc3r/agent-brain/compare/v0.2.0...v0.2.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* update third-party skills with -a codex --copy, not npx skills update ([0512d6d](https://github.com/d0whc3r/agent-brain/commit/0512d6dd90cfcde4a593003ef21afac52ae9554b))
+
 ## [0.2.0](https://github.com/d0whc3r/agent-brain/compare/v0.1.0...v0.2.0) (2026-10-26)
 
 
