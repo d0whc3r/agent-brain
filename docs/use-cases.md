@@ -19,6 +19,7 @@ Contents:
 - [Keep a rule apart by scope](#keep-a-rule-apart-by-scope)
 - [Keep a rule](#keep-a-rule)
 - [Drop a rule](#drop-a-rule)
+- [Sync the brain home](#sync-the-brain-home)
 - [Turn repeated rules into a skill](#turn-repeated-rules-into-a-skill)
 - [Accept a draft](#accept-a-draft)
 - [Find a third-party skill](#find-a-third-party-skill)
@@ -124,6 +125,12 @@ Ask only when the repo or the strength is unclear.
 User: "Forget that rule." "Ya no aplica." "Delete the premise about RPC ownership."
 
 You run `brain premise rm ID`. You do not delete the markdown file by hand. You show the list after the remove.
+
+## Sync the brain home
+
+User: "Sync the brain." "Sincroniza el brain." "Push my rules to the other machine."
+
+You run `brain home sync`, and you show its output. On a conflict, you show the file and the steps, and you ask the user which text to keep.
 
 ## Turn repeated rules into a skill
 

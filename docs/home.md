@@ -5,7 +5,7 @@ The brain home is a git repo of your own. It holds your data: `brain.config.json
 What you do:
 
 - Keep the home in a private git repo, and install each machine with `scripts/install.sh --home-repo <url>`.
-- Pull the home before you work, and commit and push it after a change.
+- Run `brain home sync` after a change. It commits, pulls, and pushes the home. Each new session pulls the home in the background.
 - Update the brain with `git pull --ff-only` in the brain repo, then `scripts/install.sh`.
 
 Contents:
@@ -36,23 +36,15 @@ Contents:
 5. Commit and push the home:
 
    ```bash
-   cd "$(brain home)"
-   git add -A
-   git commit -m "brain: first home"
-   git push -u origin HEAD
+   brain home sync
    ```
 
 When an earlier install created the home with no remote, connect it to your empty repo instead of steps 1 and 2:
 
 ```bash
-cd "$(brain home)"
-git remote add origin git@github.com:<you>/my-brain-home.git
-git add -A
-git commit -m "brain: home"
-git push -u origin HEAD
+git -C "$(brain home)" remote add origin git@github.com:<you>/my-brain-home.git
+brain home sync
 ```
-
-Skip the commit when `git status` shows no change.
 
 ## Add a second machine
 
@@ -72,24 +64,16 @@ The install clones your home with every premise, note, standing DoD, flow, and s
 
 ## Keep two machines in sync
 
-Git syncs the home. The install never pulls and never pushes, so you decide when.
+Run `brain home sync` after a change, or ask the agent to sync the brain. Claude Code asks you before the agent runs it. The command does four things:
 
-Before you work on a machine, pull the home:
+1. It commits each change of the home with the message `brain: sync from <host>`.
+2. It rebases the commits on `origin`.
+3. It pushes them.
+4. It checks the premises, as `brain premise check` does.
 
-```bash
-git -C "$(brain home)" pull --rebase
-```
+The session hook of Claude Code, Codex, and OpenCode starts `git pull --ff-only` of the home at the start of each session, and does not wait for it. When both machines have new commits, that pull changes nothing, and `brain home sync` rebases them.
 
-After a change, commit and push it:
-
-```bash
-cd "$(brain home)"
-git add -A
-git commit -m "brain: <what changed>"
-git push
-```
-
-Only `brain accept-skill` makes a commit in the home. Commit the other changes yourself, or ask the agent to commit the home. These actions write to the home:
+`brain accept-skill` commits its own change. `brain home sync` commits every other change. These actions write to the home:
 
 | Action | Changes in the home |
 | --- | --- |
@@ -101,17 +85,16 @@ Only `brain accept-skill` makes a commit in the home. Commit the other changes y
 | `brain home starters --apply`, and the install after an update | `memory/premises/`, and new template folders |
 | A review | `memory/sessions/`, which stays on this machine |
 
-When two machines change the same premise, the pull stops and git marks the file. Keep the right text in the file, then finish the pull and check the premises:
+When two machines change the same file, `brain home sync` stops, names the file, and prints the steps. Keep the right text in the file, then finish the rebase and sync again:
 
 ```bash
 cd "$(brain home)"
 git add memory/premises/<id>.md
 git rebase --continue
-brain premise check
-git push
+brain home sync
 ```
 
-`brain premise check` prints `ok: N premises` when every premise is valid. A new session loads the pulled premises. An open session keeps the premises that it printed at the start, but `premise_list` reads the files on each call.
+`brain home sync` prints `ok: N premises` when every premise is valid. A new session loads the pulled premises. An open session keeps the premises that it printed at the start, but `premise_list` reads the files on each call.
 
 ## Update the brain
 
@@ -129,7 +112,7 @@ The install does three things for the home:
 - It adds each folder of a newer template to the home, with an empty `.gitkeep`. It changes no file.
 - It tells you when the release adds starter premises. `brain home starters` lists them, and `brain home starters --apply` adds them as candidates. A starter premise that you removed never comes back.
 
-When the install changed the home, commit and push the home. A release that changes the format of the home has a `BREAKING CHANGE` note in `CHANGELOG.md`, with the steps to follow.
+When the install changed the home, run `brain home sync`. A release that changes the format of the home has a `BREAKING CHANGE` note in `CHANGELOG.md`, with the steps to follow.
 
 ## Share a premise with every user
 
@@ -149,7 +132,7 @@ Before the brain home existed, the brain repo held the config, the premises, and
 2. Clone the new version into a new folder, and run `scripts/install.sh` there. Add `--home-repo` when you already have a home repo.
 3. Run `brain home migrate --from <old checkout>`. It prints the plan: each file that it adds, updates, or leaves unchanged, and each conflict with a home file that you changed.
 4. Run it again with `--apply`. It never overwrites a home file that you changed, and it exits 1 when a conflict keeps a file out.
-5. Commit and push the home, then remove the old checkout.
+5. Run `brain home sync`, then remove the old checkout.
 
 ## How the install treats the home
 

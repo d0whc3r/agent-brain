@@ -31,12 +31,14 @@ const servers = ["brain-premises", "chrome-devtools"];
 // Git commands that need a confirmation in Claude Code. They enforce the premises
 // no-commit-push-unasked and no-schema-or-deploy-unasked for git, so the rule does not
 // depend on the model reading it. After git-guardrails-claude-code in mattpocock/skills.
+// brain home sync commits and pushes the home from node, where the git rules do not match.
 export const guardRules = [
   "Bash(git commit:*)",
   "Bash(git push:*)",
   "Bash(git reset --hard:*)",
   "Bash(git clean:*)",
   "Bash(git branch -D:*)",
+  "Bash(brain home sync:*)",
 ];
 
 // The brain block in a global instruction file, between these markers.

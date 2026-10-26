@@ -212,6 +212,7 @@ The agent runs these. You can run them too.
 | `brain home` | The path of the brain home: your config, premises, notes, and skills |
 | `brain home migrate --from DIR [--apply]` | Copy the config, premises, notes, standing DoDs, and your flows and skills from an old checkout that kept them. It never overwrites a home file that you changed, and exits 1 on a conflict |
 | `brain home starters [--apply]` | List the starter premises of the template that your home lacks, and skip one that you removed. `--apply` adds them as candidates |
+| `brain home sync` | Commit each change of the home, rebase the commits on `origin`, push them, and check the premises. Exits 1 with the steps when the home has no origin or a rebase conflict |
 | `brain premise add TEXT --strength S --scope SCOPE --repo R [--id ID] [--source PATH] [--status candidate]` | Add a premise. Rejects a bad strength, an unknown scope, and text that looks like a secret. |
 | `brain premise seen ID --repo R --origin correction\|defect [--date YYYY-MM-DD]` | Record one repeat of a rule |
 | `brain premise promote ID` | Make a candidate active |
@@ -280,8 +281,8 @@ The install registers `brain-premises` and `chrome-devtools` in Claude Code and 
 
 | Piece | What it does |
 | --- | --- |
-| Git confirmation rules in `~/.claude/settings.json` | Commit, push, hard reset, clean, and forced branch delete ask before they run, so the premises about commit and push hold even when the model misses them. The install adds the rules and the uninstall removes them. |
-| Session premises hook | The install writes it for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). In any git repo, it prints the scope, the premises of that scope, each invalid premise file that it did not apply, and the three best flows. It skips the pull-request lookup, so it stays fast. Codex skips a new hook until you trust it in `/hooks`. |
+| Git confirmation rules in `~/.claude/settings.json` | Commit, push, hard reset, clean, forced branch delete, and `brain home sync` ask before they run, so the premises about commit and push hold even when the model misses them. The install adds the rules and the uninstall removes them. |
+| Session premises hook | The install writes it for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). In any git repo, it prints the scope, the premises of that scope, each invalid premise file that it did not apply, and the three best flows. It skips the pull-request lookup, and it starts `git pull --ff-only` of the brain home without a wait, so it stays fast. Codex skips a new hook until you trust it in `/hooks`. |
 | `.claude/settings.json` in this repo | Allows the read-only premise commands and the tests. Asks before `git commit`, `git push`, and a premise delete. |
 
 ## Files and notes

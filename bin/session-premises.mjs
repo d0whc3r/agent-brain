@@ -5,6 +5,7 @@
 // brain.config.json maps origin owners and root directories to scopes. A repo in no scope
 // gets only the premises that hold in every scope and every repo. A cwd outside git prints nothing.
 
+import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
@@ -54,7 +55,20 @@ export async function premiseContext(cwd) {
   return `${formatContext(ctx, premises, flows)}${formatProblems(problems)}`;
 }
 
+// pullHome starts a fast-forward pull of the home and does not wait, because the hook must not
+// wait for the network. The next session reads the pulled premises. Only a fast-forward runs
+// with no user to watch: a home that diverged stays as it is until brain home sync rebases it.
+export function pullHome(home) {
+  const child = spawn("git", ["-C", home, "pull", "--ff-only", "--quiet"], { detached: true, stdio: "ignore" });
+  child.on("error", (err) => {
+    process.stderr.write(`brain: pull of the home failed: ${err.message}\n`);
+  });
+  child.unref();
+  return child;
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const input = JSON.parse(readFileSync(0, "utf8") || "{}");
+  pullHome(brainHome());
   process.stdout.write(await premiseContext(input.cwd ?? process.cwd()));
 }

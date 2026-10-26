@@ -70,9 +70,9 @@ The brain home holds your data: `brain.config.json`, your premises and notes, th
 
 Keep the home in a private git repo. Git keeps it the same on each machine:
 
-- **First machine:** create an empty private repo, then run `scripts/install.sh --home-repo <url>`. Commit and push the home.
+- **First machine:** create an empty private repo, then run `scripts/install.sh --home-repo <url>` and `brain home sync`.
 - **Another machine:** run `scripts/install.sh --home-repo <url>` with the same repo.
-- **Each day:** run `git -C "$(brain home)" pull --rebase` before you work, and commit and push the home after a change. Only `brain accept-skill` commits for you.
+- **Each day:** run `brain home sync` after a change, or ask the agent to sync the brain. It commits, pulls, and pushes the home. Each new session pulls the home in the background.
 
 [Brain home: setup, sync, and updates](docs/home.md) has every step, the conflict case, and the move from a checkout that kept your data.
 
@@ -86,7 +86,7 @@ git pull --ff-only
 scripts/install.sh
 ```
 
-The update changes only code. The install prints the changes since your last install, adds the folders of a newer template to your home, and tells you when `brain home starters` has new starter premises for you. Commit and push the home when the install changed it.
+The update changes only code. The install prints the changes since your last install, adds the folders of a newer template to your home, and tells you when `brain home starters` has new starter premises for you. Run `brain home sync` when the install changed the home.
 
 Before the brain home existed, the repo held your premises. Do not pull such an old checkout: follow [the move steps](docs/home.md#move-from-a-checkout-that-kept-your-data).
 

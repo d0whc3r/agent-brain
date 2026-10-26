@@ -30,7 +30,7 @@ const usageText = `usage:
   brain premise stats
   brain premise check
   brain root
-  brain home [migrate --from DIR [--apply] | starters [--apply]]
+  brain home [migrate --from DIR [--apply] | starters [--apply] | sync]
   brain scope [--cwd DIR]
   brain installed [write --bin-dir DIR [--target PATH ...] [--claude] | remove]
   brain workspace check

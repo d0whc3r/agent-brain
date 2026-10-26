@@ -45,7 +45,7 @@ Run it again after a pull or a skill change. That is also the update. Add `--dry
 
 A part that an option skips keeps what an earlier install added. `scripts/uninstall.sh` removes it.
 
-The first install creates the brain home from `templates/home`, or clones it with `--home-repo`: a config with no scopes, the folders for your notes, and starter premises as candidates. A candidate does not apply until you promote it with `brain premise promote ID`. The install never changes a file of the home again. Keep the home in a private git repo, and pull, commit, and push it yourself: [Brain home](home.md) has the steps for a first machine, a second machine, and the sync.
+The first install creates the brain home from `templates/home`, or clones it with `--home-repo`: a config with no scopes, the folders for your notes, and starter premises as candidates. A candidate does not apply until you promote it with `brain premise promote ID`. The install never changes a file of the home again. Keep the home in a private git repo, and run `brain home sync` to commit, pull, and push it: [Brain home](home.md) has the steps for a first machine, a second machine, and the sync.
 
 The script links `brain`, links the brain skills and the third-party skills from `.agents/skills`, registers the MCP servers, and adds the session hook. The hook prints the active premises and the flows that match the repo state when you open a git repo. A repo outside every scope gets only the global premises. A copy or a worktree uses the premises of the repo it was cloned from.
 
