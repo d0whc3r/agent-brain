@@ -60,6 +60,10 @@ export function setBlock(text, block) {
   return out ? `${out}\n` : "";
 }
 
+// Claude tools that an OpenCode subagent turns off when the agent lacks them. The OpenCode name
+// of each one is its Claude name in lower case.
+const opencodeTools = ["Edit", "Write", "Bash", "WebFetch", "WebSearch"];
+
 // opencodeAgent turns a Claude Code agent file into an OpenCode subagent file.
 // OpenCode takes a tools map, so a tool missing from the Claude list is turned off.
 export function opencodeAgent(text) {
@@ -78,8 +82,7 @@ export function opencodeAgent(text) {
     `description: ${field("description")}`,
     "mode: subagent",
     "tools:",
-    `  edit: ${tools.has("Edit")}`,
-    `  write: ${tools.has("Write")}`,
+    ...opencodeTools.map((tool) => `  ${tool.toLowerCase()}: ${tools.has(tool)}`),
   ];
   return `${lines.join("\n")}\n---\n${match[2]}`;
 }

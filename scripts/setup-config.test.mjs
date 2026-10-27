@@ -268,8 +268,13 @@ test("TestSetBlockKeepsUserText", async () => {
 
 test("TestOpencodeAgentTurnsOffMissingTools", async () => {
   const { opencodeAgent } = await import("./setup-config.mjs");
-  const out = opencodeAgent('---\nname: brain-x\ndescription: "Reads."\ntools: Read, Bash, Write\n---\nBody\n');
-  assert.equal(out, '---\ndescription: "Reads."\nmode: subagent\ntools:\n  edit: false\n  write: true\n---\nBody\n');
+  const out = opencodeAgent(
+    '---\nname: brain-x\ndescription: "Reads."\ntools: Read, Bash, Write, WebFetch\n---\nBody\n',
+  );
+  assert.equal(
+    out,
+    '---\ndescription: "Reads."\nmode: subagent\ntools:\n  edit: false\n  write: true\n  bash: true\n  webfetch: true\n  websearch: false\n---\nBody\n',
+  );
 });
 
 function runConfig(home, ...args) {

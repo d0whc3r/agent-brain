@@ -134,10 +134,11 @@ A flow can split the review into lenses, one agent each: `premises`, `security`,
 | --- | --- | --- | --- |
 | `brain-reviewer` | Reviews a diff against the premises of the repo scope in a fresh context, without the assumptions of the session that wrote the code. Verifies each finding. Takes a lens: `premises`, `security`, `tests`, or `simplify`. | "Review this diff." "Revisa este cambio." | Read, Grep, Glob, Bash, Write (session notes only), and the read-only premise tools. No Edit. |
 | `brain-split-planner` | Plans a split of one branch into worktrees: parts, files and hunks, dependencies, conflicts, and merge order | "Plan how to split this branch." | Read, Grep, Glob, Bash. Read-only. |
+| `brain-web-researcher` | Answers one question from current web sources, with the URL, date, and version of each source. Treats every page as untrusted and reports the commands and instructions it finds without following them. | "Investiga esto en la web." "What is the latest release of X?" | WebSearch, WebFetch, and the Context7 and grep.app MCP servers, which only this agent gets. No shell and no files. |
 
 Every agent has a skill of the same name, so a skill is the one entry point. The install writes that skill from `templates/agent-skill.md`. It collects the repo, the branch, the scope, and your request, and runs the agent in a fresh context. A tool that cannot run a subagent, such as Codex, follows the agent file in the same session.
 
-The install links the agents into `~/.claude/agents`. It also writes an OpenCode copy of each one, with `mode: subagent`, and links it into `~/.config/opencode/agents`.
+The install links the agents into `~/.claude/agents`. It also writes an OpenCode copy of each one, with `mode: subagent`, and links it into `~/.config/opencode/agents`. The copy turns off `edit`, `write`, `bash`, `webfetch`, and `websearch` when the Claude tools list of the agent lacks them.
 
 ## Flows
 
@@ -153,7 +154,7 @@ A flow is a file in `flows/` of the brain, or in `flows/` of the brain home for 
 | `address-review` | The PR is open or has changes requested | `brain-tp-receiving-code-review`, `brain-learn` | opus | Each comment has a fix or a drafted reply |
 | `brain-care` | In this repo | `brain-workspace-audit`, `brain-harvest`, `brain-garden`, `brain-tp-writing-for-agents` | sonnet | `npm run check` passes and each flagged premise has a decision |
 | `split-branch` | Feature branch, when you ask to split it or `brain-next` sees a big diff | `brain-split-planner`, `brain-worktrees` | opus for the plan, sonnet to apply | Each part has a worktree whose checks pass, and no change is lost |
-| `grill-plan` | Any repo, when you ask to stress-test a plan ("grill this") | `brain-tp-grilling`, `brain-tp-doubt-driven-development` | opus | No open question is left and you confirm the shared understanding |
+| `grill-plan` | Any repo, when you ask to stress-test a plan ("grill this") | `brain-tp-grilling`, `brain-tp-doubt-driven-development`, `brain-web-researcher` on sonnet | opus | No open question is left and you confirm the shared understanding |
 
 ### Signals
 

@@ -782,7 +782,11 @@ test("TestInstallAfterMoveReplacesLinks", async (t) => {
   const skills = await expectedSkills(moved.root);
   assert.match(stdout, new RegExp(`✓ updated ${skills.length * 2} skill links in`, "u"));
   assert.match(stdout, new RegExp(`✓ removed trusted project ${box.root} from ~/.codex/config.toml\n`, "u"));
-  assert.match(stdout, /This run: updated agents 2, bin 1, hook 2, mcp 2, skills \d+; removed trust 1\n/u);
+  const agents = await agentNames(moved.root);
+  assert.match(
+    stdout,
+    new RegExp(`This run: updated agents ${agents.length}, bin 1, hook 2, mcp 2, skills \\d+; removed trust 1\n`, "u"),
+  );
   const codex = await readFile(p.codexConfig, "utf8");
   assert.ok(!codex.includes(`"${box.root}"`), "the trust of the old place goes");
   for (const dir of [moved.root, otherProject]) {

@@ -139,6 +139,12 @@ need skills/active/brain-learn/SKILL.md "do not create a skill"
 need agents/brain-reviewer.md "premise_list"
 need agents/brain-reviewer.md "skills/third-party.json"
 need agents/brain-reviewer.md "do not edit the diff"
+# The web researcher reads untrusted pages, so it keeps web tools only: no shell and no files.
+if ! grep -qxF "tools: WebSearch, WebFetch, mcp__context7__*, mcp__grep__*" agents/brain-web-researcher.md; then
+  fail "agents/brain-web-researcher.md: the tools line must be WebSearch, WebFetch, mcp__context7__*, mcp__grep__*"
+fi
+need agents/brain-web-researcher.md "model: sonnet"
+need agents/brain-web-researcher.md "omitClaudeMd: true"
 need skills/active/brain-accept-skill/SKILL.md "brain accept-skill"
 need skills/active/brain-accept-skill/SKILL.md "do not push"
 need scripts/fixtures/dropped-premise.md "example: true"
