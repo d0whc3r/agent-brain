@@ -1,6 +1,6 @@
 ---
 name: brain-learn
-description: "Record a correction from the user in the brain home. An explicit ask (recuerda esto, a partir de ahora, siempre, nunca) becomes an active premise with a decision note. Any other correction becomes a candidate premise that counts repeats, and becomes active only after the user confirms. Use when the user states a rule to keep, corrects the agent, rejects a review finding, or runs /brain-learn."
+description: "Record a correction from the user in the brain home. An explicit ask (remember this, from now on, always, never) becomes an active premise with a decision note. Any other correction becomes a candidate premise that counts repeats, and becomes active only after the user confirms. Use when the user states a rule to keep, corrects the agent, rejects a review finding, or runs /brain-learn."
 metadata:
   opencode/slash: "true"
 ---
