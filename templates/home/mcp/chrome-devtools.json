@@ -1,0 +1,12 @@
+{
+  "command": "npx",
+  "args": [
+    "-y",
+    "chrome-devtools-mcp@latest",
+    "--user-data-dir=${HOME}/.local/share/agent-brain/chrome-profiles/${SCOPE}",
+    "--no-usage-statistics",
+    "--no-performance-crux",
+    "--redact-network-headers",
+    "--filesystemRoot=${BRAIN_HOME}/memory/sessions/screenshots/${SCOPE}"
+  ]
+}

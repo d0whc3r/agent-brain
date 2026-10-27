@@ -338,3 +338,26 @@ test("TestCLICandidate", async (t) => {
   assert.equal(result.code, 0, result.stderr);
   assert.equal((await invoke(["premise", "list"])).stdout, "maybe-rule\t*\tnever\tMaybe rule\n");
 });
+
+test("TestCLIChromeMCPFailsWithoutHomeConfig", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "brain-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const previous = process.env.BRAIN_HOME;
+  process.env.BRAIN_HOME = root;
+  t.after(() => {
+    if (previous === undefined) {
+      delete process.env.BRAIN_HOME;
+      return;
+    }
+    process.env.BRAIN_HOME = previous;
+  });
+
+  const result = await invoke(["chrome-mcp"]);
+
+  assert.equal(result.code, 1);
+  assert.equal(result.stdout, "");
+  assert.match(
+    result.stderr,
+    new RegExp(`no ${join(root, "mcp", "chrome-devtools.json")}: run scripts/install.sh`, "u"),
+  );
+});

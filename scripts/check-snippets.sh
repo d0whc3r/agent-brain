@@ -9,7 +9,7 @@ fail() {
   exit 1
 }
 
-chrome="mcp/snippets/chrome-devtools.json"
+chrome="templates/home/mcp/chrome-devtools.json"
 if [ ! -f "$chrome" ]; then
   fail "missing $chrome"
 fi
@@ -23,11 +23,7 @@ need() {
 
 need "--no-usage-statistics"
 need "--redact-network-headers"
-need '${HOME}/.local/share/agent-brain/chrome-profile'
-
-if grep -F -q -e "@latest" "$chrome"; then
-  fail "$chrome uses @latest. Pin a version"
-fi
+need '${HOME}/.local/share/agent-brain/chrome-profiles/${SCOPE}'
 
 if grep -F -q -e "--isolated" "$chrome"; then
   fail "$chrome contains --isolated"

@@ -4,6 +4,7 @@ import { readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { cmdChromeMCP } from "../lib/chrome.mjs";
 import { suggestFlow } from "../lib/decide.mjs";
 import { cmdDod } from "../lib/dod-cli.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
@@ -38,6 +39,7 @@ const usageText = `usage:
   brain flows
   brain worktree list [--cwd DIR] [--json]
   brain mcp [check]
+  brain chrome-mcp
   brain accept-skill NAME
   brain link-skills [--apply] --target PATH [--target PATH ...]
   brain dod path|run [--cwd DIR]
@@ -58,6 +60,7 @@ const commands = {
   flows: cmdFlows,
   worktree: cmdWorktree,
   mcp: cmdMCP,
+  "chrome-mcp": cmdChromeMCP,
   skills: runSkills,
   "accept-skill": cmdAcceptSkill,
   "link-skills": cmdLinkSkills,

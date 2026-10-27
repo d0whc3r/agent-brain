@@ -34,7 +34,7 @@ parse_args ${args[@]+"${args[@]}"}
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 bin_dir="${BRAIN_BIN_DIR:-$HOME/.local/bin}"
-profile="$HOME/.local/share/agent-brain/chrome-profile"
+profile="$HOME/.local/share/agent-brain/chrome-profiles"
 # The config files that the install and this script edit. Each edit keeps a .brain-bak copy.
 configs=("$HOME/.claude/settings.json" "$HOME/.codex/hooks.json" "$HOME/.codex/config.toml" "$HOME/.codex/AGENTS.md")
 cd "$root"

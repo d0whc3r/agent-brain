@@ -214,7 +214,7 @@ test("TestCodexLinesNameEachServer", async (t) => {
 
   assert.equal(invoke("codex-add"), each("added", "to"));
   assert.equal(invoke("codex-add"), each("unchanged", "in"));
-  await writeFile(codex, (await readFile(codex, "utf8")).replace("chrome-devtools-mcp@", "chrome-devtools-mcp-old@"));
+  await writeFile(codex, (await readFile(codex, "utf8")).replace('"chrome-mcp"', '"chrome-mcp-old"'));
   assert.equal(
     invoke("codex-add"),
     `unchanged MCP server brain-premises in ${codex}\nupdated MCP server chrome-devtools in ${codex}\n`,

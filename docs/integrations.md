@@ -63,15 +63,17 @@ Codex has no language server support.
 
 ## Chrome profile
 
-UI reviews use the user MCP server `chrome-devtools`. Its [snippet](../mcp/snippets/chrome-devtools.json) uses a persistent profile for test logins:
+UI reviews use the user MCP server `chrome-devtools`. Its [snippet](../mcp/snippets/chrome-devtools.json) runs `brain chrome-mcp`, which starts the server of `mcp/chrome-devtools.json` in the brain home. Edit that file to change the flags of the server. The install adds it from [the template](../templates/home/mcp/chrome-devtools.json) when it is missing, and never changes it after that.
+
+`brain chrome-mcp` fills `${SCOPE}` with the scope of the folder where the session starts, or `default` outside a scope. Each scope gets its own persistent profile for test logins, so the logins of one scope never reach another:
 
 ```text
-$HOME/.local/share/agent-brain/chrome-profile
+$HOME/.local/share/agent-brain/chrome-profiles/<scope>
 ```
 
-The profile stays outside the repo and the Obsidian vault. UI reviews use this profile instead of the daily Chrome profile.
+The profiles stay outside the repo and the Obsidian vault. UI reviews use them instead of the daily Chrome profile. Chrome locks a profile while it runs, so two sessions of one scope cannot open it at the same time.
 
-Screenshots go to `memory/sessions/screenshots/` in the brain home. Git ignores that folder except for its `.gitkeep` file.
+Screenshots go to `memory/sessions/screenshots/<scope>/` in the brain home. Git ignores that folder except for its `.gitkeep` file.
 
 Use the user server `chrome-devtools` for UI reviews. The `plugin:ecc:chrome-devtools` server does not have the review profile flags.
 

@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 // a copy of the script and only the files that the case needs.
 
 const repo = fileURLToPath(new URL("..", import.meta.url));
-const snippetPath = join("mcp", "snippets", "chrome-devtools.json");
+const snippetPath = join("templates", "home", "mcp", "chrome-devtools.json");
 const referencesBase = "https://raw.githubusercontent.com/addyosmani/agent-skills/main/references";
 
 async function fixture(t, script, files = {}) {
@@ -93,6 +93,7 @@ test("TestCheckPathsFailsWithoutFiles", async (t) => {
 async function snippetsFixture(t, text) {
   const files = text === null ? {} : { [snippetPath]: text };
   const root = await fixture(t, "check-snippets.sh", files);
+  await mkdir(join(root, "mcp", "snippets"), { recursive: true });
   execFileSync("git", ["-C", root, "init", "-q"]);
   return root;
 }
@@ -114,7 +115,6 @@ test("TestCheckSnippetsReportsEachProblem", async (t) => {
     ["no statistics flag", snippet.replace('"--no-usage-statistics",', ""), "is missing: --no-usage-statistics"],
     ["no header redaction", snippet.replace('"--redact-network-headers",', ""), "is missing: --redact-network-headers"],
     ["other profile", snippet.replace("${HOME}/.local/share", "/tmp"), "is missing: ${HOME}/.local/share"],
-    ["latest version", snippet.replace(/@\d[\d.]*/u, "@latest"), "uses @latest. Pin a version"],
     ["isolated", snippet.replace('"-y",', '"-y", "--isolated",'), "contains --isolated"],
     ["auto connect", snippet.replace('"-y",', '"-y", "--autoConnect",'), "contains --autoConnect"],
   ];

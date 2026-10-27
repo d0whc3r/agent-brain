@@ -122,7 +122,7 @@ const paths = (box) => ({
   codexHooks: join(box.home, ".codex", "hooks.json"),
   codexAgents: join(box.home, ".codex", "AGENTS.md"),
   receipt: join(box.home, ".local", "share", "agent-brain", "installed.txt"),
-  profile: join(box.home, ".local", "share", "agent-brain", "chrome-profile"),
+  profile: join(box.home, ".local", "share", "agent-brain", "chrome-profiles"),
   opencode: join(box.home, ".config", "opencode"),
   plugin: join(box.home, ".config", "opencode", "plugins", "brain-session-premises.js"),
 });
@@ -565,7 +565,7 @@ test("TestUninstallRemovesWhatInstallAdded", async (t) => {
   assert.ok(await exists(p.profile), "the Chrome profile stays");
   assert.ok(await exists(join(box.root, "skills", "active")), "the repo stays");
   assert.match(stdout, /\nKept:\n/u);
-  assert.match(stdout, /~\/.local\/share\/agent-brain\/chrome-profile \(Chrome test logins\)\n/u);
+  assert.match(stdout, /~\/.local\/share\/agent-brain\/chrome-profiles \(Chrome test logins\)\n/u);
   assert.match(stdout, /~\/.claude\/settings.json.brain-bak \(config copy from before the last brain edit\)\n/u);
   assert.match(stdout, new RegExp(`rm -rf "${p.profile}"`, "u"));
   assert.match(stdout, /\[9\/9\] Remove the config backups: kept 4 backups\. Add --remove-backups to remove them\n/u);
@@ -953,6 +953,33 @@ test("TestInstallUpdateAddsTemplateFoldersAndOffersStarters", async (t) => {
   assert.match(stdout, /✓ added ~\/\.local\/share\/agent-brain\/home\/flows\/\.gitkeep\n/u);
   assert.ok((await stat(join(home, "flows", ".gitkeep"))).isFile());
   assert.match(stdout, /Run brain home starters to list 1 new starter premise, and add --apply/u);
+});
+
+test("TestInstallAddsMissingChromeDevtoolsHomeConfig", async (t) => {
+  const box = await sandbox(t);
+  const config = join(box.home, ".local", "share", "agent-brain", "home", "mcp", "chrome-devtools.json");
+  const template = await readFile(join(box.root, "templates", "home", "mcp", "chrome-devtools.json"), "utf8");
+  installOk(box);
+  assert.equal(await readFile(config, "utf8"), template, "a new home gets the config");
+  await rm(config);
+
+  const { stdout } = installOk(box);
+
+  assert.match(stdout, /✓ added ~\/\.local\/share\/agent-brain\/home\/mcp\/chrome-devtools\.json\n/u);
+  assert.equal(await readFile(config, "utf8"), template);
+});
+
+test("TestInstallKeepsChromeDevtoolsHomeConfig", async (t) => {
+  const box = await sandbox(t);
+  const config = join(box.home, ".local", "share", "agent-brain", "home", "mcp", "chrome-devtools.json");
+  installOk(box);
+  const mine = '{ "command": "npx", "args": ["mine"] }\n';
+  await writeFile(config, mine);
+
+  const { stdout } = installOk(box);
+
+  assert.doesNotMatch(stdout, /chrome-devtools\.json/u);
+  assert.equal(await readFile(config, "utf8"), mine);
 });
 
 test("TestInstallPrintsTheChangesSinceTheLastVersion", async (t) => {

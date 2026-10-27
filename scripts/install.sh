@@ -77,7 +77,7 @@ esac
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 bin_dir="${BRAIN_BIN_DIR:-$HOME/.local/bin}"
-profile="$HOME/.local/share/agent-brain/chrome-profile"
+profile="$HOME/.local/share/agent-brain/chrome-profiles"
 # The brain code reads the home from this path. --home makes it a link to another folder.
 home_link="$HOME/.local/share/agent-brain/home"
 home="${home_dir:-$home_link}"
@@ -202,6 +202,15 @@ if [ "$home_new" -eq 0 ]; then
       change added home "$home/$rel"
     fi
   done < <(find "$root/templates/home" -name .gitkeep | sort)
+  # The chrome-devtools config belongs to the user once it exists, so an update only adds a missing one.
+  chrome_config="mcp/chrome-devtools.json"
+  if [ ! -e "$home/$chrome_config" ]; then
+    if [ "$dry_run" -eq 0 ]; then
+      mkdir -p "$home/mcp"
+      command cp -f "$root/templates/home/$chrome_config" "$home/$chrome_config"
+    fi
+    change added home "$home/$chrome_config"
+  fi
 fi
 if [ -n "$home_dir" ]; then
   if [ -e "$home_link" ] && [ ! -L "$home_link" ]; then

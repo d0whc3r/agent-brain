@@ -22,7 +22,7 @@ if ! git -C "$probe" check-ignore -q "$shot"; then
   exit 1
 fi
 
-profile="${HOME}/.local/share/agent-brain/chrome-profile"
+profile="${HOME}/.local/share/agent-brain/chrome-profiles"
 repo="$(git rev-parse --show-toplevel)"
 case "$profile/" in
   "$repo"/*)
