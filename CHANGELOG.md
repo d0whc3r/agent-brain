@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.3.0](https://github.com/d0whc3r/agent-brain/compare/v0.2.1...v0.3.0) (2026-10-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* the brain no longer reads memory/, dod/, flows of the user, or brain.config.json from the checkout. Before you pull, clone this version into a new folder, run scripts/install.sh there, and run brain home migrate --from <old checkout> --apply.
+
+### Features
+
+* add brain-web-researcher, a read-only web research agent ([e4ea60a](https://github.com/d0whc3r/agent-brain/commit/e4ea60a7f3a5b4397632162c77f3797a18c368a3))
+* give each scope its own Chrome profile through brain chrome-mcp ([bafdaa8](https://github.com/d0whc3r/agent-brain/commit/bafdaa8ed55414af85219d5fc5df835969de2758))
+* install the brain home from your git repo, and document the sync ([181fee1](https://github.com/d0whc3r/agent-brain/commit/181fee17a14b46428a9c1fa255585473813e3d26))
+* keep the user data in a brain home outside the checkout ([e514ca6](https://github.com/d0whc3r/agent-brain/commit/e514ca632a9f3d4eff6a1849aa4f7d8af9c9f456))
+* name the chrome-devtools server and the screenshot folder of the scope at session start ([d2ed71b](https://github.com/d0whc3r/agent-brain/commit/d2ed71b56e3524e11ef87d1b478bcfdc29dccd3f))
+* pin Node 24 and pnpm 12.15.0 through devEngines ([ed663df](https://github.com/d0whc3r/agent-brain/commit/ed663dff61831f97f58e6bc9ebe794a6229b3a55))
+* sync the brain home with brain home sync, and pull it at session start ([a41e64a](https://github.com/d0whc3r/agent-brain/commit/a41e64a9388a151644320a24dbefccc68454219f))
+
+
+### Bug Fixes
+
+* write the trigger phrases of brain-learn in English ([d8618a8](https://github.com/d0whc3r/agent-brain/commit/d8618a8dea1abafdbd86e58f6cac2491521ebe2e))
+
 ## [0.2.1](https://github.com/d0whc3r/agent-brain/compare/v0.2.0...v0.2.1) (2026-10-26)
 
 
