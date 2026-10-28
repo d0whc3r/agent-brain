@@ -120,7 +120,7 @@ A premise in your home applies only to you. To offer it to every user of the bra
 
 1. Copy `memory/premises/<id>.md` from your home to `templates/home/memory/premises/<id>.md` in the brain repo.
 2. In the copy, set `status: candidate` and `source: ""`, and remove the `seen` entries. A new home has no decision notes and no history.
-3. Run `npm run check`, commit the file in the brain repo, and open a pull request.
+3. Run `pnpm run check`, commit the file in the brain repo, and open a pull request.
 
 Other users get the premise as a candidate with their next update, through `brain home starters`.
 

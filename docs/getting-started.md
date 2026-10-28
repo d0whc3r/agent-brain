@@ -19,7 +19,7 @@ Contents:
 | Requirement | Why | Detail |
 | --- | --- | --- |
 | Node 24 or later | Runs `brain` | `node --version` |
-| pnpm or npm | Installs the one dependency | The install script picks pnpm when it is present |
+| pnpm | Installs the one dependency | The install script adds pnpm with `npm install -g pnpm` when it is missing |
 | Claude Code, OpenCode, or Codex | The chat | Open a new session after install |
 | `~/.local/bin` on `PATH` | The agent finds `brain` | The install script prints the export line when it is missing |
 | A git repo | The code you talk about | `brain.config.json` maps it to a scope |

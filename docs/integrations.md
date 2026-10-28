@@ -97,7 +97,7 @@ The general Obsidian MCP is optional for live vault metadata and UI commands. Fo
 
 ## Check MCP drift
 
-Run `brain mcp check` after an update. The installer and `npm run check` also run it. It starts a fresh stdio server, compares its code version and tool schemas with this checkout, and checks that its premise list matches the shared store. It writes no premise.
+Run `brain mcp check` after an update. The installer and `pnpm run check` also run it. It starts a fresh stdio server, compares its code version and tool schemas with this checkout, and checks that its premise list matches the shared store. It writes no premise.
 
 The server version is the semver of `package.json` with a build hash, such as `0.1.0+dfe89137017e`. The hash covers the source files and the dependency lock at startup. If those files change, an existing server rejects tool calls with a reconnect message. Reconnect `brain-premises`, or start a new app session, to load the current code and tool schemas. The check command does not restart connections that an app already holds.
 

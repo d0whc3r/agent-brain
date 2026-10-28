@@ -168,12 +168,15 @@ pass "node $(node --version)"
 step "Install dependencies"
 if [ "$dry_run" -eq 1 ]; then
   skip "skipped in a dry run"
-elif command -v pnpm >/dev/null 2>&1; then
+else
+  # devEngines.packageManager in package.json names pnpm, so npm install refuses this repo.
+  if ! command -v pnpm >/dev/null 2>&1; then
+    npm install -g --no-audit --no-fund --loglevel=error pnpm ||
+      fail "npm install -g pnpm failed. Install pnpm by hand: https://pnpm.io/installation"
+    pass "npm install -g pnpm"
+  fi
   pnpm install --frozen-lockfile --loglevel=error
   pass "pnpm install"
-else
-  npm install --no-audit --no-fund --loglevel=error
-  pass "npm install"
 fi
 
 step "Set up the brain home"

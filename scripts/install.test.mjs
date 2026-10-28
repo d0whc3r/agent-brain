@@ -403,13 +403,33 @@ test("TestInstallWarnsWithoutUv", async (t) => {
   assert.equal(lines(out, /uv not found, so the install cannot add ty/u).length, 2, "the summary repeats it");
 });
 
-test("TestInstallFallsBackToNpm", async (t) => {
-  const box = await sandbox(t, ["node", "npm", "claude"]);
+// The npm stub copies itself to pnpm on install -g, as npm install -g pnpm adds pnpm to PATH.
+const npmAddsPnpm = `${stub}if [ "$2" = -g ]; then
+  cp "$0" "$(dirname "$0")/pnpm"
+fi
+`;
+
+test("TestInstallAddsPnpmWithNpm", async (t) => {
+  const box = await sandbox(t, ["node", "claude", "gopls", "buf", "typescript-language-server", "ty"]);
+  await addTool(box, "npm", npmAddsPnpm);
 
   const { stdout } = installOk(box);
 
-  assert.match(await readText(box.log), /^npm install --no-audit --no-fund --loglevel=error$/mu);
-  assert.match(stdout, /\[2\/16\] Install dependencies: npm install\n/u);
+  const install =
+    "npm install -g --no-audit --no-fund --loglevel=error pnpm\npnpm install --frozen-lockfile --loglevel=error";
+  assert.match(await readText(box.log), new RegExp(`^${install}$`, "mu"));
+  assert.match(stdout, /✓ npm install -g pnpm\n/u);
+});
+
+test("TestInstallStopsWhenNpmCannotAddPnpm", async (t) => {
+  const box = await sandbox(t, ["node", "claude", "npm"]);
+
+  const { code, stderr } = run(box, "install.sh", { env: { STUB_FAIL: "npm -g" } });
+
+  assert.equal(code, 1);
+  assert.match(stderr, /✗ npm install -g pnpm failed. Install pnpm by hand: https:\/\/pnpm.io\/installation\n/u);
+  assert.match(stderr, /failed: Install dependencies\n/u);
+  assert.doesNotMatch(await readText(box.log), /^pnpm /mu);
 });
 
 test("TestInstallStopsWithoutNode", async (t) => {

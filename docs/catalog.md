@@ -152,7 +152,7 @@ A flow is a file in `flows/` of the brain, or in `flows/` of the brain home for 
 | `sync-with-main` | Feature branch behind `origin/main` |  | sonnet | Not behind, checks pass |
 | `prepare-pr` | Clean feature branch with no PR | `brain-tp-git-workflow-and-versioning`, `brain-tp-verification-before-completion`, `brain-dod` | sonnet | `brain dod lint --done` passes and you have the PR draft |
 | `address-review` | The PR is open or has changes requested | `brain-tp-receiving-code-review`, `brain-learn` | opus | Each comment has a fix or a drafted reply |
-| `brain-care` | In this repo | `brain-workspace-audit`, `brain-harvest`, `brain-garden`, `brain-tp-writing-for-agents` | sonnet | `npm run check` passes and each flagged premise has a decision |
+| `brain-care` | In this repo | `brain-workspace-audit`, `brain-harvest`, `brain-garden`, `brain-tp-writing-for-agents` | sonnet | `pnpm run check` passes and each flagged premise has a decision |
 | `split-branch` | Feature branch, when you ask to split it or `brain-next` sees a big diff | `brain-split-planner`, `brain-worktrees` | opus for the plan, sonnet to apply | Each part has a worktree whose checks pass, and no change is lost |
 | `grill-plan` | Any repo, when you ask to stress-test a plan ("grill this") | `brain-tp-grilling`, `brain-tp-doubt-driven-development`, `brain-web-researcher` on sonnet | opus | No open question is left and you confirm the shared understanding |
 
@@ -197,7 +197,7 @@ The repo keeps every third-party skill once, in `.agents/skills/`, in the open A
 
 Two internal skills help with skills: `brain-tp-find-skills` finds a third-party skill, and `brain-tp-skill-creator` writes and validates one. Say "Is there a skill for Go context cancellation?" or "Write a skill for our proto field numbers." A new skill goes to `skills/drafts/`.
 
-Add a skill to the catalog with `brain skills add owner/repo --skill NAME --kind KIND`. Update the copies with `pnpm skills:update`. It also downloads the `../../references/` files that `addyosmani/agent-skills` skills link into `.agents/references/`, and `npm run check` fails when one is missing.
+Add a skill to the catalog with `brain skills add owner/repo --skill NAME --kind KIND`. Update the copies with `pnpm skills:update`. It also downloads the `../../references/` files that `addyosmani/agent-skills` skills link into `.agents/references/`, and `pnpm run check` fails when one is missing.
 
 ## Commands
 
@@ -222,7 +222,7 @@ The agent runs these. You can run them too.
 | `brain premise rm ID` | Move a premise to `memory/dropped/` in the brain home |
 | `brain premise search QUERY [--repo NAME] [--scope NAME] [--status active\|candidate]` | Literal text or ID search. Defaults to active and candidate; optional filters match `list`. |
 | `brain premise stats` | Per active premise: applied, hits, rejected, and last use, with a flag: `unused`, `stale` (not applied in 90 days), `noisy` (rejected 2 times or more, and at least as often as applied), or `idle` (applied 10 times or more with no hit). Per candidate: repeats and last repeat, with a flag: `ready` (2 corrections or 3 defects on 2 distinct days or more) or `expired` (no repeat in 30 days). |
-| `brain premise check` | Print each file in `memory/premises/` of the brain home that `add` would reject, with the reason, and exit 1. Print `ok: N premises` when every file is valid. `npm run check` runs it. |
+| `brain premise check` | Print each file in `memory/premises/` of the brain home that `add` would reject, with the reason, and exit 1. Print `ok: N premises` when every file is valid. `pnpm run check` runs it. |
 
 Pass at least one `--repo` when you add a premise. Use `--repo "*"` for every repo in its scope.
 
@@ -261,7 +261,7 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 
 | Command | What it does |
 | --- | --- |
-| `npm run check` | Each check of the `check` script in `package.json` |
+| `pnpm run check` | Each check of the `check` script in `package.json` |
 | `scripts/install.sh` | Install or update the whole setup |
 | `scripts/uninstall.sh` | Remove the setup. Keeps the repo, the brain home, and the Chrome profile. |
 

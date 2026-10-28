@@ -11,6 +11,6 @@ model: sonnet
 3. Follow `brain-harvest` when the memories changed since the last harvest note in `memory/decisions/` of the brain home.
 4. Follow `brain-garden` when three premises share a repo and a rule.
 5. When you edit a skill, a flow, or `AGENTS.md`, follow `brain-tp-writing-for-agents`.
-6. Run `npm run check`.
+6. Run `pnpm run check`.
 
 Done when the check passes and each flagged premise has a decision.
