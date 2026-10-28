@@ -225,7 +225,7 @@ test("TestInstallSetsUpEveryTool", async (t) => {
   const receipt = await readFile(p.receipt, "utf8");
   assert.match(receipt.split("\n")[0], new RegExp(`^root\t${box.root}\t\\d+\\.\\d+\\.\\d+$`, "u"));
   assert.match(receipt, /^mcp\tbrain-premises\tclaude$/mu);
-  const summary = `agents ${agents.length}, bin 1, guard 1, hook 2, instructions 1, mcp 4, skills ${skills.length * 2 + 1}`;
+  const summary = `agents ${agents.length}, bin 1, deny 1, guard 1, hook 2, instructions 1, mcp 4, skills ${skills.length * 2 + 1}`;
   assert.match(stdout, new RegExp(`✓ Installed: ${summary}\n`, "u"));
   assert.match(
     stdout,
@@ -360,7 +360,7 @@ test("TestInstallLinksOpenCodeWhenInstalled", async (t) => {
   assert.match(stdout, /\. Add brain-premises and chrome-devtools from mcp\/snippets\/ to the OpenCode config/u);
   assert.match(stdout, /\. Paste templates\/agent-instructions.md into ~\/.config\/opencode\/AGENTS.md/u);
   assert.match(stdout, /\. Add the lsp block from docs\/integrations.md to the OpenCode config in your dotfiles\.$/mu);
-  assert.match(stdout, new RegExp(`✓ Installed: agents ${agents.length * 2}, bin 1, guard 1, hook 3,`, "u"));
+  assert.match(stdout, new RegExp(`✓ Installed: agents ${agents.length * 2}, bin 1, deny 1, guard 1, hook 3,`, "u"));
 });
 
 test("TestInstallWithoutClaudeWarns", async (t) => {
@@ -463,7 +463,7 @@ test("TestInstallNamesBrokenSettings", async (t) => {
   assert.equal(code, 1);
   assert.match(stderr, new RegExp(`${p.settings} is not valid JSON`, "u"));
   assert.doesNotMatch(stderr, /^\s+at /mu, "no stack trace");
-  assert.match(stderr, /✗ Step 10\/16 failed: Add the session premises hooks\n/u);
+  assert.match(stderr, /✗ Step 9\/16 failed: Register MCP servers in Claude Code\n/u);
   assert.equal(await readFile(p.settings, "utf8"), "{");
 });
 
@@ -541,7 +541,7 @@ test("TestUninstallRemovesWhatInstallAdded", async (t) => {
   assert.match(
     stdout,
     new RegExp(
-      `✓ Removed: agents ${agents.length * 2}, bin 1, guard 1, hook 3, instructions 1, mcp 4, skills ${skills.length * 2 + 1}\n`,
+      `✓ Removed: agents ${agents.length * 2}, bin 1, deny 1, guard 1, hook 3, instructions 1, mcp 4, skills ${skills.length * 2 + 1}\n`,
       "u",
     ),
   );
@@ -696,7 +696,7 @@ test("TestUninstallNamesBrokenSettings", async (t) => {
 
   assert.equal(code, 1);
   assert.match(stderr, new RegExp(`${p.settings} is not valid JSON`, "u"));
-  assert.match(stderr, /✗ Step 4\/9 failed: Remove the session premises hooks\n/u);
+  assert.match(stderr, /✗ Step 2\/9 failed: Remove MCP servers from Claude Code\n/u);
   assert.equal(await readFile(p.settings, "utf8"), "{");
 });
 
@@ -713,7 +713,7 @@ test("TestInstallDryRunChangesNothing", async (t) => {
   assert.match(stdout, /\[15\/16\] Write the install receipt: skipped in a dry run\n/u);
   assert.match(
     stdout,
-    /\nDry run: would add agents \d+, bin 1, guard 1, home 1, hook 2, instructions 1, mcp 4, profile 1, skills \d+\n/u,
+    /\nDry run: would add agents \d+, bin 1, deny 1, guard 1, home 1, hook 2, instructions 1, mcp 4, profile 1, skills \d+\n/u,
   );
   assert.deepEqual(await readdir(box.home), [".codex"], "a dry run writes nothing");
   assert.equal(await readText(box.log), "", "a dry run runs no pnpm and no claude");
@@ -739,7 +739,7 @@ test("TestUninstallDryRunRemovesNothing", async (t) => {
   assert.match(stdout, new RegExp(`~ would remove trusted project ${box.root} from ~/.codex/config.toml\n`, "u"));
   assert.match(
     stdout,
-    /\nDry run: would remove agents \d+, bin 1, guard 1, hook 2, instructions 1, mcp 4, skills \d+, trust 1\n/u,
+    /\nDry run: would remove agents \d+, bin 1, deny 1, guard 1, hook 2, instructions 1, mcp 4, skills \d+, trust 1\n/u,
   );
   assert.equal(await readFile(p.settings, "utf8"), settings);
   assert.equal(await readFile(p.codexConfig, "utf8"), codex);

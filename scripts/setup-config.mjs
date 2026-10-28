@@ -22,24 +22,12 @@ import {
   writeConfig,
   writeEntryStatus,
 } from "../hooks/install.mjs";
+import { chromeDeny, guardRules, setChromeDeny, setGuards } from "../lib/permissions.mjs";
 
 export { setCodexHook, setHook };
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const servers = ["brain-premises", "chrome-devtools"];
-
-// Git commands that need a confirmation in Claude Code. They enforce the premises
-// no-commit-push-unasked and no-schema-or-deploy-unasked for git, so the rule does not
-// depend on the model reading it. After git-guardrails-claude-code in mattpocock/skills.
-// brain home sync commits and pushes the home from node, where the git rules do not match.
-export const guardRules = [
-  "Bash(git commit:*)",
-  "Bash(git push:*)",
-  "Bash(git reset --hard:*)",
-  "Bash(git clean:*)",
-  "Bash(git branch -D:*)",
-  "Bash(brain home sync:*)",
-];
 
 // The brain block in a global instruction file, between these markers.
 const blockStart = "<!-- brain:start -->";
@@ -127,21 +115,6 @@ function compareVersions(a, b) {
   return x[0] - y[0] || x[1] - y[1] || x[2] - y[2];
 }
 
-// setGuards removes the guard rules from permissions.ask, then adds them back when add is true.
-// Other ask rules stay.
-export function setGuards(settings, add) {
-  const permissions = settings.permissions ?? {};
-  const ask = (permissions.ask ?? []).filter((rule) => !guardRules.includes(rule));
-  if (add) {
-    ask.push(...guardRules);
-  }
-  const next = { ...permissions, ask };
-  if (ask.length === 0) {
-    delete next.ask;
-  }
-  return { ...settings, permissions: next };
-}
-
 // dropTables removes each named table, such as mcp_servers.NAME, and its subtables from TOML text.
 export function dropTables(text, tables) {
   const out = [];
@@ -193,6 +166,12 @@ const guardEntry = (add) => ({
   change: (settings) => setGuards(settings, add),
   has: (text) => guardRules.some((rule) => text.includes(rule)),
   label: "git confirmation rules",
+});
+
+const chromeDenyEntry = (add) => ({
+  change: (settings) => setChromeDeny(settings, add),
+  has: (text) => text.includes(chromeDeny),
+  label: "deny rule for the ecc chrome-devtools server",
 });
 
 // editInstructions sets the brain block in a global instruction file. An empty block removes it.
@@ -339,6 +318,8 @@ const commands = {
   "hooks-remove": (_arg, vars) => removeHooks(vars.home, vars.root),
   "guard-add": (_arg, vars) => editSettings(vars.home, true, guardEntry(true)),
   "guard-remove": (_arg, vars) => editSettings(vars.home, false, guardEntry(false)),
+  "chrome-deny-add": (_arg, vars) => editSettings(vars.home, true, chromeDenyEntry(true)),
+  "chrome-deny-remove": (_arg, vars) => editSettings(vars.home, false, chromeDenyEntry(false)),
   "opencode-agents": () => writeOpencodeAgents(),
   "instructions-add": (arg) =>
     editInstructions(arg, readFileSync(join(root, "templates", "agent-instructions.md"), "utf8")),
@@ -353,7 +334,7 @@ function main(args) {
   const [cmd, arg] = args;
   if (!Object.hasOwn(commands, cmd)) {
     process.stderr.write(
-      "usage: setup-config.mjs changelog OLD_VERSION | claude-json NAME | claude-mcp-state NAME | hook-add COMMAND | hook-remove | hooks-apply | hooks-remove | guard-add | guard-remove | codex-add | codex-remove | codex-trust-clean [OLD_ROOT] | codex-trust-remove [OLD_ROOT] | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
+      "usage: setup-config.mjs changelog OLD_VERSION | claude-json NAME | claude-mcp-state NAME | hook-add COMMAND | hook-remove | hooks-apply | hooks-remove | guard-add | guard-remove | chrome-deny-add | chrome-deny-remove | codex-add | codex-remove | codex-trust-clean [OLD_ROOT] | codex-trust-remove [OLD_ROOT] | opencode-agents | instructions-add FILE | instructions-remove FILE\n",
     );
     return 1;
   }

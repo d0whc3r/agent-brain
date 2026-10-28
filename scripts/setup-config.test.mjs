@@ -6,7 +6,8 @@ import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { changesSince, dropTables, guardRules, setCodexHook, setGuards, setHook, tomlTable } from "./setup-config.mjs";
+import { chromeDeny, guardRules, setChromeDeny, setGuards } from "../lib/permissions.mjs";
+import { changesSince, dropTables, setCodexHook, setHook, tomlTable } from "./setup-config.mjs";
 
 test("TestSetHookReplacesOnlyBrainHook", () => {
   const other = { type: "command", command: "other-hook" };
@@ -197,6 +198,9 @@ test("TestConfigLinesNameTheEntry", async (t) => {
   assert.equal(invoke("guard-add"), `unchanged git confirmation rules in ${settings}\n`);
   assert.equal(invoke("guard-remove"), `removed git confirmation rules from ${settings}\n`);
   assert.equal(invoke("guard-remove"), `unchanged git confirmation rules in ${settings}\n`);
+  assert.equal(invoke("chrome-deny-add"), `added deny rule for the ecc chrome-devtools server to ${settings}\n`);
+  assert.equal(invoke("chrome-deny-add"), `unchanged deny rule for the ecc chrome-devtools server in ${settings}\n`);
+  assert.equal(invoke("chrome-deny-remove"), `removed deny rule for the ecc chrome-devtools server from ${settings}\n`);
   await mkdir(dirname(agents));
   await writeFile(agents, "# mine\n");
   assert.equal(invoke("instructions-add", agents), `added brain instructions to ${agents}\n`);
@@ -257,6 +261,16 @@ test("TestSetGuardsKeepsOtherRules", () => {
   assert.equal(setGuards({}, false).permissions.ask, undefined);
 });
 
+test("TestSetChromeDenyKeepsOtherRules", () => {
+  const settings = { permissions: { ask: ["Bash(git push:*)"], deny: ["Bash(rm -rf:*)"] } };
+  const added = setChromeDeny(settings, true);
+  assert.deepEqual(added.permissions.deny, ["Bash(rm -rf:*)", chromeDeny]);
+  assert.deepEqual(added.permissions.ask, ["Bash(git push:*)"]);
+  assert.deepEqual(setChromeDeny(added, true), added);
+  assert.deepEqual(setChromeDeny(added, false).permissions, settings.permissions);
+  assert.equal(setChromeDeny({}, false).permissions.deny, undefined);
+});
+
 test("TestSetBlockKeepsUserText", async () => {
   const { setBlock } = await import("./setup-config.mjs");
   const added = setBlock("# mine\n", "rules");
@@ -307,7 +321,14 @@ test("TestSetupConfigNamesBrokenJson", async (t) => {
   await mkdir(dirname(settings));
   await writeFile(settings, "{");
 
-  for (const command of ["guard-add", "guard-remove", "hooks-apply", "hooks-remove"]) {
+  for (const command of [
+    "guard-add",
+    "guard-remove",
+    "chrome-deny-add",
+    "chrome-deny-remove",
+    "hooks-apply",
+    "hooks-remove",
+  ]) {
     const result = runConfig(home, command);
     assert.equal(result.status, 1, command);
     assert.ok(result.stderr.startsWith(`${settings} is not valid JSON: `), result.stderr);

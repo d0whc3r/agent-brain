@@ -73,9 +73,9 @@ $HOME/.local/share/agent-brain/chrome-profiles/<scope>
 
 The profiles stay outside the repo and the Obsidian vault. UI reviews use them instead of the daily Chrome profile. Chrome locks a profile while it runs, so two sessions of one scope cannot open it at the same time.
 
-Screenshots go to `memory/sessions/screenshots/<scope>/` in the brain home. Git ignores that folder except for its `.gitkeep` file.
+Screenshots go to `memory/sessions/screenshots/<scope>/` in the brain home, the `--filesystemRoot` folder of the config. Git ignores that folder except for its `.gitkeep` file. The session hook prints the absolute path of that folder for the scope of the repo. The agent saves each screenshot in the screenshot folder that the session context names, with `take_screenshot` and an absolute `filePath`. Without a `filePath`, the tool keeps no file, and a relative `filePath` writes into the repo.
 
-Use the user server `chrome-devtools` for UI reviews. The `plugin:ecc:chrome-devtools` server does not have the review profile flags.
+Use the user server `chrome-devtools` for UI reviews. The `plugin:ecc:chrome-devtools` server does not have the review profile flags, so the install adds the deny rule `mcp__plugin_ecc_chrome-devtools` to `~/.claude/settings.json`.
 
 ## Obsidian
 

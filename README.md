@@ -96,7 +96,7 @@ Before the brain home existed, the repo held your premises. Do not pull such an 
 ~/.local/share/agent-brain/repo/scripts/uninstall.sh
 ```
 
-The uninstall removes the links, the MCP servers, the session hook, the git confirmation rules, and the brain instructions. It keeps the repo, your brain home, and the Chrome profile. Add `--dry-run` to print what it removes, without a change.
+The uninstall removes the links, the MCP servers, the session hook, the git confirmation rules, the deny rule for the ecc `chrome-devtools` server, and the brain instructions. It keeps the repo, your brain home, and the Chrome profile. Add `--dry-run` to print what it removes, without a change.
 
 ## Documentation
 

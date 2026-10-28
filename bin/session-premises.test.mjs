@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { once } from "node:events";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { promisify } from "node:util";
 
 import { syncHome } from "../lib/home.mjs";
-import { formatContext, formatProblems, pullHome } from "./session-premises.mjs";
+import { browserContext, formatBrowser, formatContext, formatProblems, pullHome } from "./session-premises.mjs";
 
 // oxlint-disable-next-line typescript/strict-void-return -- promisify drops the ChildProcess that execFile returns.
 const execFileAsync = promisify(execFile);
@@ -24,6 +24,28 @@ test("TestFormatContext", () => {
     formatContext({ repo: "clone", scope: "" }, [], []),
     "Brain: repo clone, no scope, so only global premises apply.\n",
   );
+});
+
+test("TestFormatBrowserNamesTheServerAndTheFolder", () => {
+  const server = "For a browser check, use the MCP server chrome-devtools, not plugin:ecc:chrome-devtools.";
+  assert.equal(
+    formatBrowser("/h/shots/work"),
+    `${server} Save each screenshot with take_screenshot and an absolute filePath in /h/shots/work/, such as /h/shots/work/<slug>.png.\n`,
+  );
+  assert.equal(formatBrowser(null), `${server}\n`);
+});
+
+test("TestBrowserContextReportsABrokenConfig", async (t) => {
+  const home = await mkdtemp(join(tmpdir(), "brain-browser-"));
+  t.after(() => rm(home, { recursive: true, force: true }));
+
+  assert.match(
+    browserContext(home, "work"),
+    /^The brain cannot read the chrome-devtools config: no .*chrome-devtools\.json/u,
+  );
+  await mkdir(join(home, "mcp"));
+  await writeFile(join(home, "mcp", "chrome-devtools.json"), "{");
+  assert.match(browserContext(home, "work"), /^The brain cannot read the chrome-devtools config: .*JSON/u);
 });
 
 test("TestFormatProblems", () => {

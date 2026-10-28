@@ -9,6 +9,7 @@ import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
+import { screenshotDir } from "../lib/chrome.mjs";
 import { loadFlows, matchFlows, repoContext } from "../lib/flows.mjs";
 import { brainHome, brainRoot, open } from "../lib/premise.mjs";
 import { loadConfig } from "../lib/scope.mjs";
@@ -41,6 +42,27 @@ export function formatProblems(problems) {
   return `Premise files not applied because they are invalid: ${files}. Tell the user; brain premise check lists them.\n`;
 }
 
+// formatBrowser names the browser server and, when dir is set, the screenshot folder of the scope.
+// The take_screenshot tool keeps no file without a filePath, and it resolves a relative filePath
+// against the repo, so the line asks for an absolute path.
+export function formatBrowser(dir) {
+  const server = "For a browser check, use the MCP server chrome-devtools, not plugin:ecc:chrome-devtools.";
+  if (!dir) {
+    return `${server}\n`;
+  }
+  return `${server} Save each screenshot with take_screenshot and an absolute filePath in ${dir}/, such as ${dir}/<slug>.png.\n`;
+}
+
+// browserContext reads the screenshot folder from the chrome-devtools config of the home. A
+// missing or broken config costs only this line, so the premises still reach the session.
+export function browserContext(home, scope) {
+  try {
+    return formatBrowser(screenshotDir(home, scope));
+  } catch (err) {
+    return `The brain cannot read the chrome-devtools config: ${err.message}. Tell the user.\n`;
+  }
+}
+
 export async function premiseContext(cwd) {
   const home = brainHome();
   // Skip the PR lookup: it calls the network and the hook must stay fast.
@@ -52,7 +74,7 @@ export async function premiseContext(cwd) {
   const premises = await store.list(ctx.repo, ctx.scope);
   const { problems } = await store.scan();
   const flows = matchFlows(await loadFlows(brainRoot(), home), ctx).slice(0, 3);
-  return `${formatContext(ctx, premises, flows)}${formatProblems(problems)}`;
+  return `${formatContext(ctx, premises, flows)}${browserContext(home, ctx.scope)}${formatProblems(problems)}`;
 }
 
 // pullHome starts a fast-forward pull of the home and does not wait, because the hook must not

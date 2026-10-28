@@ -33,7 +33,7 @@ A task is done when each criterion of its DoD has fresh evidence. "Everything wo
 
 1. When the file that `brain dod path` prints does not exist, run Define first. A DoD written after the work still needs the approval of the user.
 2. Run `brain dod run` after the last change to the code. Its first line is the tree line, `tree <hash>`. Run it again when it says that the checks changed files. Fix each failed check, or ask the user when a criterion is wrong. After a fix, run it again.
-3. Check each manual criterion yourself. Mark it `- [x]`, and write its evidence: what you saw, with a screenshot path, the text on the page, or a number, and the tree line of the last `brain dod run`.
+3. Check each manual criterion yourself. Mark it `- [x]`, and write its evidence: what you saw, with the path of a screenshot in the screenshot folder that the session context names, the text on the page, or a number, and the tree line of the last `brain dod run`.
 4. Run `brain dod lint --done`. The task is done only when it prints `ok`. Show that output.
 
 ## Limits

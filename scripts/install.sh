@@ -18,11 +18,11 @@
 # exists. docs/home.md describes the setup of a second machine and the sync.
 # It links the brain command, the code intelligence plugin, the skills, and the agents,
 # installs typescript-language-server with npm and ty with uv when they are missing, registers the
-# MCP servers in Claude Code and Codex, adds the session premises hook and the git confirmation
-# rules, and adds the brain instructions to ~/.codex/AGENTS.md. It sets up Codex only when
-# ~/.codex exists. After a checkout move, it removes the links and the Codex project trust of the
-# old place. A changed config file keeps a .brain-bak copy. A part that a --no- option skips keeps
-# what an earlier install added.
+# MCP servers in Claude Code and Codex, denies the chrome-devtools server of the ecc plugin in
+# Claude Code, adds the session premises hook and the git confirmation rules, and adds the brain
+# instructions to ~/.codex/AGENTS.md. It sets up Codex only when ~/.codex exists. After a checkout
+# move, it removes the links and the Codex project trust of the old place. A changed config file
+# keeps a .brain-bak copy. A part that a --no- option skips keeps what an earlier install added.
 # scripts/uninstall.sh removes all of it, except the brain home and the language servers that npm
 # and uv installed.
 #
@@ -349,6 +349,7 @@ if command -v claude >/dev/null 2>&1; then
       change updated mcp "MCP server $name in Claude Code"
     fi
   done
+  apply deny node scripts/setup-config.mjs chrome-deny-add
 else
   warn "claude not found, so Claude Code has no brain MCP servers. Install Claude Code, then run this script again."
 fi

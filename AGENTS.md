@@ -85,6 +85,6 @@ The user talks in natural language. You run `brain` and the review steps. Do not
 - Do not write tokens, `.env` values, or customer data into a note.
 - Do not read the Chrome profile directory into a note. Do not commit it.
 - Obsidian shows these files. When Obsidian is closed, use the premise CLI and `brain-premises`.
-- A UI check uses the Chrome DevTools profile for test logins. It does not use the user's daily Chrome profile.
+- A UI check uses the MCP server `chrome-devtools`, whose Chrome profile keeps the test logins. It does not use the user's daily Chrome profile. Save each screenshot in the screenshot folder that the session context names.
 
 **Working if:** an explicit rule becomes a premise the user can list and delete, a repeated correction becomes a candidate the user can promote, the next review quotes each active premise, and no team repo changed unless the user asked.

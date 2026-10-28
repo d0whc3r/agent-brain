@@ -152,6 +152,7 @@ if command -v claude >/dev/null 2>&1; then
 else
   skip "claude not found. Skipped."
 fi
+apply deny node scripts/setup-config.mjs chrome-deny-remove
 
 # Codex keys the trust of a hook by its place in ~/.codex/hooks.json, so this step runs while the
 # brain hook is still there.

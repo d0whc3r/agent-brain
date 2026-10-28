@@ -116,7 +116,7 @@ The new line is the proof.
 
 | You say | The agent does |
 | --- | --- |
-| "Check localhost:3000." | Opens the page in `chrome-devtools`, takes one screenshot, reads the console |
+| "Check localhost:3000." | Opens the page in `chrome-devtools`, saves one screenshot in the screenshot folder that the session context names, reads the console |
 | "These three rules keep coming up. Make a skill." | Writes a draft under `skills/drafts/` in the brain home and stops |
 | "That draft is good. Make go-error-wrapping active." | Runs `brain accept-skill` and shows the commit. It does not push |
 | "Is there a skill for Go context cancellation?" | Loads `brain-tp-find-skills` and shows the add command. It does not install |

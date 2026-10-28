@@ -102,7 +102,7 @@ You load `brain-dod` and follow it. Before a task changes files, you write the D
 
 User: "Check the page on localhost:3000." "The layout looks wrong. Look at it."
 
-You open the URL in this session with the `chrome-devtools` MCP server, not `plugin:ecc:chrome-devtools`. You take one screenshot and read the console. The `brain-reviewer` agent has no browser tools, so you load `brain-reviewer` only when the user also asks for a review of the diff. You do not edit the code unless the user asks for a fix.
+You open the URL in this session with the `chrome-devtools` MCP server, not `plugin:ecc:chrome-devtools`. You save one screenshot in the screenshot folder that the session context names, and you read the console. The `brain-reviewer` agent has no browser tools, so you load `brain-reviewer` only when the user also asks for a review of the diff. You do not edit the code unless the user asks for a fix.
 
 ## Keep a rule apart by scope
 

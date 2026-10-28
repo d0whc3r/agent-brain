@@ -283,7 +283,8 @@ The install registers `brain-premises` and `chrome-devtools` in Claude Code and 
 | Piece | What it does |
 | --- | --- |
 | Git confirmation rules in `~/.claude/settings.json` | Commit, push, hard reset, clean, forced branch delete, and `brain home sync` ask before they run, so the premises about commit and push hold even when the model misses them. The install adds the rules and the uninstall removes them. |
-| Session premises hook | The install writes it for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). In any git repo, it prints the scope, the premises of that scope, each invalid premise file that it did not apply, and the three best flows. It skips the pull-request lookup, and it starts `git pull --ff-only` of the brain home without a wait, so it stays fast. Codex skips a new hook until you trust it in `/hooks`. |
+| Deny rule `mcp__plugin_ecc_chrome-devtools` in `~/.claude/settings.json` | Claude Code refuses the tools of the ecc plugin server `chrome-devtools`, so a UI check uses the user server with the Chrome profile and the screenshot folder of the scope. The install adds the rule and the uninstall removes it. |
+| Session premises hook | The install writes it for Claude Code, Codex, and OpenCode from [hooks/catalog.json](../hooks/catalog.json). In any git repo, it prints the scope, the premises of that scope, the three best flows, the browser server and the screenshot folder of the scope, and each invalid premise file that it did not apply. It skips the pull-request lookup, and it starts `git pull --ff-only` of the brain home without a wait, so it stays fast. Codex skips a new hook until you trust it in `/hooks`. |
 | `.claude/settings.json` in this repo | Allows the read-only premise commands and the tests. Asks before `git commit`, `git push`, and a premise delete. |
 
 ## Files and notes
