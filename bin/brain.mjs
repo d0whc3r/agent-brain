@@ -42,9 +42,10 @@ const usageText = `usage:
   brain chrome-mcp
   brain accept-skill NAME
   brain link-skills [--apply] --target PATH [--target PATH ...]
-  brain dod path|run [--cwd DIR]
-  brain dod init [--cwd DIR] [--title TEXT] [--replace]
-  brain dod lint [--cwd DIR] [--done]
+  brain dod path|run [--cwd DIR] [--task SLUG]
+  brain dod init [--cwd DIR] [--task SLUG] [--title TEXT] [--replace]
+  brain dod lint [--cwd DIR] [--task SLUG] [--done]
+  brain dod list [--cwd DIR]
 ${skillsUsage}`;
 
 // Each command takes the arguments after its name and returns the exit code.

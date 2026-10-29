@@ -96,7 +96,7 @@ When the user asks to review the branch before a PR, run the `self-review` flow 
 
 User: "Define the DoD." "Define el DoD." "When is this done?" "¿Cuándo está terminado esto?" "Is this done?"
 
-You load `brain-dod` and follow it. Before a task changes files, you write the DoD of the branch, one criterion per requirement, and ask the user to approve it. To close the task, you run `brain dod run` and `brain dod lint --done`. You say that the task is done only when the lint prints `ok`.
+You load `brain-dod` and follow it. Before a task changes files, you write the DoD of the task, one criterion per requirement, and ask the user to approve it. To close the task, you run `brain dod run` and `brain dod lint --done`. You say that the task is done only when the lint prints `ok`.
 
 ## Review a page in the browser
 

@@ -49,7 +49,7 @@ The install writes a receipt to `~/.local/share/agent-brain/installed.txt`. `bra
 | Premise | One rule with a strength (`always`, `never`, `prefer`), a scope, and the repos it applies to. An `active` premise applies in reviews. A `candidate` premise counts repeats in `seen` and applies nowhere until the user promotes it. | home: `memory/premises/` |
 | Decision note | The record of a persistent rule: an explicit ask or a promoted candidate, with its evidence | home: `memory/decisions/` |
 | Session note | The record of one review: premises applied, hits, and rejected, and a one-line body | home: `memory/sessions/` |
-| Definition of Done (DoD) | The criteria that say when a task is done. Each criterion has an outcome, a check, a pass condition, and evidence. `brain dod lint` rejects a vague criterion. | `<git dir>/brain-dod/<branch>.md`, one per branch, never committed |
+| Definition of Done (DoD) | The criteria that say when a task is done. Each criterion has an outcome, a check, a pass condition, and evidence. `brain dod lint` rejects a vague criterion. One DoD per task: on a feature branch the task is the branch, and on the default branch each task needs `--task`. | `<git dir>/brain-dod/<task>.md`, never committed |
 | Standing DoD | The criteria that every task of a repo keeps, such as its lint and its tests. `brain dod init` copies them into the DoD of the task. | home: `dod/<repo>.md` |
 | Brain skill | A workflow the agent runs: review, learn, next steps | `skills/active/`, and home: `skills/active/` for the skills of the user |
 | Draft skill | A proposed skill that no tool loads yet | home: `skills/drafts/` |
@@ -239,10 +239,11 @@ Updates and deletes keep the Markdown body and additional Obsidian metadata. If 
 | `brain next [--cwd DIR] [--json] [--no-pr] [--request TEXT]` | Repo state and the matching flows. With `--request` and a `decide` block, also the flow that the local decision model suggests |
 | `brain flows` | Every flow with its model |
 | `brain worktree list [--cwd DIR] [--json]` | Each worktree with its branch, state (`main`, `active`, `merged`, `gone`, `detached`, `prunable`), parent branch, ahead, behind, and uncommitted files |
-| `brain dod path [--cwd DIR]` | The DoD file of the branch |
-| `brain dod init [--cwd DIR] [--title TEXT] [--replace]` | Writes the DoD of the branch from `templates/dod.md`, with the standing criteria of the repo. `--replace` overwrites the DoD of an earlier task on the same branch |
-| `brain dod lint [--cwd DIR] [--done]` | Checks that each criterion names an observable outcome, a check that can fail, and a concrete pass condition, and that the standing criteria are there. With `--done`, also checks that each criterion is checked, with evidence for the current code and the current check |
-| `brain dod run [--cwd DIR]` | Prints the tree, runs each command check at the repo top, and writes the time, the tree, a hash of the criterion, and the exit code as evidence. It checks a criterion only when the exit code and each quoted text of `pass` match. It refuses a check that commits, pushes, resets, cleans, or deletes a branch |
+| `brain dod path [--cwd DIR] [--task SLUG]` | The DoD file of the task. The task is `--task`, or the branch. The default branch, from `origin/HEAD` or else `main` and `master`, has no default task, so each `brain dod` command there exits 1 without `--task` and lists the DoDs. A detached HEAD uses `HEAD`, and a rebase keeps the branch under rebase. `--task` must be a valid branch name other than the default branch |
+| `brain dod init [--cwd DIR] [--task SLUG] [--title TEXT] [--replace]` | Writes the DoD of the task from `templates/dod.md`, with the standing criteria of the repo. A sub-task of a feature branch, such as a merge of main, takes its own `--task`. `--replace` restarts the DoD of the same task |
+| `brain dod list [--cwd DIR]` | The DoDs of the worktree, newest first: the date of the last change, the task, and the title |
+| `brain dod lint [--cwd DIR] [--task SLUG] [--done]` | Checks that each criterion names an observable outcome, a check that can fail, and a concrete pass condition, and that the standing criteria are there. With `--done`, also checks that each criterion is checked, with evidence for the current code and the current check |
+| `brain dod run [--cwd DIR] [--task SLUG]` | Prints the tree, runs each command check at the repo top, and writes the time, the tree, a hash of the criterion, and the exit code as evidence. It checks a criterion only when the exit code and each quoted text of `pass` match. It refuses a check that commits, pushes, resets, cleans, or deletes a branch |
 
 ### Workspace and skills
 
