@@ -183,7 +183,7 @@ importers:
         specifier: 4.2.2
         version: 4.2.2(eslint@10.14.0)
       node:
-        specifier: runtime:^26.0.0
+        specifier: runtime:26.13.0
         version: runtime:26.13.0
       oxfmt:
         specifier: 0.76.0

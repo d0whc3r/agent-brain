@@ -25,11 +25,6 @@ jobs:
         # A third-party action runs with write access, so pin it to a commit.
         uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
 
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-
       - name: Install dependencies
         # bin/brain.mjs imports yaml.
         run: pnpm install --frozen-lockfile
