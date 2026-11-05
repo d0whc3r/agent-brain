@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/d0whc3r/agent-brain/compare/v0.3.0...v0.4.0) (2026-11-05)
+
+
+### Features
+
+* keep one DoD per task with brain dod --task and brain dod list ([48334b8](https://github.com/d0whc3r/agent-brain/commit/48334b8df0c239e99b1036634d22659ffa62d4be))
+
+
+### Bug Fixes
+
+* run third-party skills through pnpm dlx, not npx ([f4768e5](https://github.com/d0whc3r/agent-brain/commit/f4768e52829781d9609b7581ad4acbc1f1be106c))
+
 ## [0.3.0](https://github.com/d0whc3r/agent-brain/compare/v0.2.1...v0.3.0) (2026-10-28)
 
 
