@@ -162,7 +162,10 @@ test("TestDocsLinkSectionsFromContents", async () => {
   const deleted = new Set(
     execFileSync("git", ["-C", repo, "ls-files", "-z", "--deleted", "--", "*.md"], { encoding: "utf8" }).split("\0"),
   );
-  const paths = listed.split("\0").filter((path) => path !== "" && !path.startsWith(".agents/") && !deleted.has(path));
+  // release-please writes CHANGELOG.md, so a table of contents there breaks at the next release.
+  const paths = listed
+    .split("\0")
+    .filter((path) => path !== "" && path !== "CHANGELOG.md" && !path.startsWith(".agents/") && !deleted.has(path));
   const results = await Promise.all(
     paths.map(async (path) => contentsProblems(path, await readFile(join(repo, path), "utf8"))),
   );
