@@ -24,8 +24,8 @@
   "devDependencies": {
     "@types/node": "26.6.6",
     "eslint-plugin-sonarjs": "4.2.2",
-    "oxfmt": "0.78.0",
-    "oxlint": "1.93.0",
+    "oxfmt": "0.79.0",
+    "oxlint": "1.94.0",
     "oxlint-tsgolint": "7.0.2007"
   },
   "devEngines": {
@@ -36,12 +36,12 @@
     },
     "runtime": {
       "name": "node",
-      "version": "26.13.0",
+      "version": "26.13.1",
       "onFail": "download"
     }
   },
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@12.18.0"
+  "packageManager": "pnpm@12.21.0"
 }
