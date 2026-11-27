@@ -1,6 +1,6 @@
 {
   "name": "agent-brain",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "bin": {
     "brain": "./bin/brain.mjs"
