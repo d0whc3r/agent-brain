@@ -22,16 +22,16 @@
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@types/node": "26.6.6",
-    "eslint-plugin-sonarjs": "4.2.2",
-    "oxfmt": "0.79.0",
-    "oxlint": "1.94.0",
-    "oxlint-tsgolint": "7.0.2007"
+    "@types/node": "26.6.11",
+    "eslint-plugin-sonarjs": "4.2.3",
+    "oxfmt": "0.80.0",
+    "oxlint": "1.95.0",
+    "oxlint-tsgolint": "7.0.2009"
   },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.21.0",
+      "version": "12.23.0",
       "onFail": "download"
     },
     "runtime": {
@@ -43,5 +43,5 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@12.21.0"
+  "packageManager": "pnpm@12.23.0"
 }
