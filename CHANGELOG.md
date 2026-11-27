@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/d0whc3r/agent-brain/compare/v0.4.0...v0.4.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* skills ([00e3fb0](https://github.com/d0whc3r/agent-brain/commit/00e3fb08d99ab8d8f68628e8f9713c22031db9bf))
+
 ## [0.4.0](https://github.com/d0whc3r/agent-brain/compare/v0.3.0...v0.4.0) (2026-11-05)
 
 
